@@ -12,6 +12,9 @@
     <Filter Include="Header Files\Containers">
       <UniqueIdentifier>{97c4111e-b102-4ba8-9053-6f07ccbbe3d4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External">
+      <UniqueIdentifier>{653da75c-8985-4df5-97fe-2a13ea016105}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -53,6 +56,30 @@
     <ClInclude Include="Source\p2Point.h">
       <Filter>Header Files\Containers</Filter>
     </ClInclude>
+    <ClInclude Include="Source\External\ImGui\imconfig.h">
+      <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\ImGui\imgui.h">
+      <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\ImGui\imgui_impl_opengl3.h">
+      <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\ImGui\imgui_impl_sdl.h">
+      <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\ImGui\imgui_internal.h">
+      <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\ImGui\imstb_rectpack.h">
+      <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\ImGui\imstb_textedit.h">
+      <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\ImGui\imstb_truetype.h">
+      <Filter>External</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -84,6 +111,27 @@
     </ClCompile>
     <ClCompile Include="Source\ModuleWindow.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\ImGui\imgui.cpp">
+      <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\ImGui\imgui_demo.cpp">
+      <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\ImGui\imgui_draw.cpp">
+      <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\ImGui\imgui_impl_opengl3.cpp">
+      <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\ImGui\imgui_impl_sdl.cpp">
+      <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\ImGui\imgui_tables.cpp">
+      <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\ImGui\imgui_widgets.cpp">
+      <Filter>External</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

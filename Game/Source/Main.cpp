@@ -49,6 +49,12 @@ int main(int argc, char ** argv)
 				LOG("-------------- Application Update --------------");
 			}
 
+			if (App->InitImGui() == false)
+			{
+				LOG("InitImGui exits with ERROR");
+				state = MAIN_EXIT;
+			}
+
 			break;
 
 		case MAIN_UPDATE:
