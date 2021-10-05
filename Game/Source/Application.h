@@ -33,7 +33,6 @@ public:
 	~Application();
 
 	bool Init();
-	bool InitImGui();
 	update_status Update();
 	bool CleanUp();
 

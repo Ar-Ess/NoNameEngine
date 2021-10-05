@@ -74,14 +74,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h" />
-    <ClInclude Include="Source\External\ImGui\imconfig.h" />
-    <ClInclude Include="Source\External\ImGui\imgui.h" />
-    <ClInclude Include="Source\External\ImGui\imgui_impl_opengl3.h" />
-    <ClInclude Include="Source\External\ImGui\imgui_impl_sdl.h" />
-    <ClInclude Include="Source\External\ImGui\imgui_internal.h" />
-    <ClInclude Include="Source\External\ImGui\imstb_rectpack.h" />
-    <ClInclude Include="Source\External\ImGui\imstb_textedit.h" />
-    <ClInclude Include="Source\External\ImGui\imstb_truetype.h" />
     <ClInclude Include="Source\Globals.h" />
     <ClInclude Include="Source\Module.h" />
     <ClInclude Include="Source\ModuleAudio.h" />
@@ -97,13 +89,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp" />
-    <ClCompile Include="Source\External\ImGui\imgui.cpp" />
-    <ClCompile Include="Source\External\ImGui\imgui_demo.cpp" />
-    <ClCompile Include="Source\External\ImGui\imgui_draw.cpp" />
-    <ClCompile Include="Source\External\ImGui\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="Source\External\ImGui\imgui_impl_sdl.cpp" />
-    <ClCompile Include="Source\External\ImGui\imgui_tables.cpp" />
-    <ClCompile Include="Source\External\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="Source\log.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\ModuleAudio.cpp" />
