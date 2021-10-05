@@ -4,7 +4,7 @@
 #include "External/SDL\include\SDL.h"
 #include "External/SDL_mixer\include\SDL_mixer.h"
 
-#pragma comment( lib, "External/SDL_mixer/libx86/SDL2_mixer.lib" )
+#pragma comment( lib, "Source/External/SDL_mixer/libx86/SDL2_mixer.lib" )
 
 ModuleAudio::ModuleAudio(Application* app, bool start_enabled) : Module(app, start_enabled), music(NULL)
 {}

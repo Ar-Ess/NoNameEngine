@@ -2,8 +2,8 @@
 #include "Application.h"
 #include "Globals.h"
 
-#pragma comment( lib, "External/SDL/libx86/SDL2.lib" )
-#pragma comment( lib, "External/SDL/libx86/SDL2main.lib" )
+#pragma comment( lib, "Source/External/SDL/libx86/SDL2.lib" )
+#pragma comment( lib, "Source/External/SDL/libx86/SDL2main.lib" )
 
 #include "External/SDL/include/SDL.h"
 
@@ -48,6 +48,14 @@ int main(int argc, char ** argv)
 				state = MAIN_UPDATE;
 				LOG("-------------- Application Update --------------");
 			}
+
+			LOG("-------------- ImGui Init --------------");
+			if (App->InitImGui() == false)
+			{
+				LOG("ImGui Init exits with ERROR");
+				state = MAIN_EXIT;
+			}
+			else LOG("-------------- ImGui Update --------------");
 
 			break;
 
