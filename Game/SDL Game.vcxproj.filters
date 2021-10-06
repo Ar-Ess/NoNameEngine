@@ -18,6 +18,9 @@
     <Filter Include="External\ImGui">
       <UniqueIdentifier>{2a275927-ca8b-4e40-8398-f28a8061b454}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{5dcb9ea3-d982-4d1f-ad4e-d3d5b89e4db4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -62,12 +65,6 @@
     <ClInclude Include="Source\External\imgui\imconfig.h">
       <Filter>External\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\imgui\imgui.h">
-      <Filter>External\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\imgui\imgui_impl_opengl3.h">
-      <Filter>External\ImGui</Filter>
-    </ClInclude>
     <ClInclude Include="Source\External\imgui\imgui_impl_sdl.h">
       <Filter>External\ImGui</Filter>
     </ClInclude>
@@ -81,6 +78,15 @@
       <Filter>External\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="Source\External\imgui\imstb_truetype.h">
+      <Filter>External\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Primitive.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\imgui\imgui_impl_opengl2.h">
+      <Filter>External\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\imgui\imgui.h">
       <Filter>External\ImGui</Filter>
     </ClInclude>
   </ItemGroup>
@@ -115,16 +121,10 @@
     <ClCompile Include="Source\ModuleWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\External\imgui\imgui.cpp">
-      <Filter>External\ImGui</Filter>
-    </ClCompile>
     <ClCompile Include="Source\External\imgui\imgui_demo.cpp">
       <Filter>External\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="Source\External\imgui\imgui_draw.cpp">
-      <Filter>External\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\imgui\imgui_impl_opengl3.cpp">
       <Filter>External\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="Source\External\imgui\imgui_impl_sdl.cpp">
@@ -134,6 +134,15 @@
       <Filter>External\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="Source\External\imgui\imgui_widgets.cpp">
+      <Filter>External\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Primitive.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\imgui\imgui_impl_opengl2.cpp">
+      <Filter>External\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\imgui\imgui.cpp">
       <Filter>External\ImGui</Filter>
     </ClCompile>
   </ItemGroup>
