@@ -15,5 +15,8 @@ public:
 	update_status Update();
 	bool CleanUp();
 
+private:
+	void CreateTestWindow();
+
 public:
 };

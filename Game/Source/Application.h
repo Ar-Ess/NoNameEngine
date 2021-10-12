@@ -36,6 +36,7 @@ public:
 	bool InitImGui();
 	update_status Update();
 	bool CleanUp();
+	void CleanImGui();
 
 private:
 
