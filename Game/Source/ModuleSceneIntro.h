@@ -16,7 +16,8 @@ public:
 	bool CleanUp();
 
 private:
-	void CreateTestWindow();
+	bool exampleWindow = false;
+
 
 public:
 };
