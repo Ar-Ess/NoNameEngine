@@ -1,34 +1,15 @@
-#include "Module.h"
-#include "ModuleWindow.h"
-#include "ModuleRender.h"
-#include "ModuleTextures.h"
-#include "ModuleInput.h"
-#include "ModuleAudio.h"
-#include "ModulePlayer.h"
-#include "ModuleSceneIntro.h"
-
-#include "../Source/External/ImGui/imgui.h"
-#include "../Source/External/ImGui/imgui_impl_sdl.h"
-#include "../Source/External/ImGui/imgui_impl_opengl2.h"
-
-#include <stdio.h>
-#include "External/SDL/include/SDL.h"
-#if defined(IMGUI_IMPL_OPENGL_ES2)
-#include <SDL_opengles2.h>
-#else
-#include "External/SDL/include/SDL_opengl.h"
-#endif
-
 #include "Application.h"
 
 Application::Application()
 {
-	renderer = new ModuleRender(this);
 	window = new ModuleWindow(this);
 	textures = new ModuleTextures(this);
 	input = new ModuleInput(this);
 	audio = new ModuleAudio(this, false);
 	player = new ModulePlayer(this);
+	render = new ModuleRenderer3D(this);
+	camera = new ModuleCamera3D(this);
+	physics = new ModulePhysics3D(this);
 	scene_intro = new ModuleSceneIntro(this);
 
 	// The order of calls is very important!
@@ -37,16 +18,20 @@ Application::Application()
 
 	// Main Modules
 	AddModule(window);
-	AddModule(renderer);
+	AddModule(camera);
 	AddModule(textures);
 	AddModule(input);
 	AddModule(audio);
+	AddModule(physics);
 	
 	// Scenes
 	AddModule(scene_intro);
 	
 	// Player
 	AddModule(player);
+
+	// Last
+	AddModule(render);
 }
 
 Application::~Application()
