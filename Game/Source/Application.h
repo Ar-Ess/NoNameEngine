@@ -11,6 +11,7 @@ class ModuleInput;
 class ModuleAudio;
 class ModulePlayer;
 class ModuleSceneIntro;
+class SDL_Window;
 
 class Application
 {
@@ -38,7 +39,17 @@ public:
 	bool CleanUp();
 	void CleanImGui();
 
+	SDL_Window* mainWindow = nullptr;
+
+	bool GetQuitState()
+	{
+		return quit;
+	}
+
 private:
 
 	void AddModule(Module* mod);
+
+private: //Variables
+	bool quit = false;
 };
