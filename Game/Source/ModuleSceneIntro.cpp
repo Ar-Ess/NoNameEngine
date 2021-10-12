@@ -68,54 +68,28 @@ update_status ModuleSceneIntro::Update()
 	ImGui_ImplSDL2_NewFrame(App->mainWindow);
 	ImGui::NewFrame();
 
-	bool* open;
-	bool titleBar = false, scrollBar = false, menu = false, move = false, resize = false, collapse = false, 
-		nav = false, background = false, bringToFront = false, docking = false, unsavedDocument = false, close = false;
-	ImGuiWindowFlags window_flags = 0;
-	if (titleBar)        window_flags |= ImGuiWindowFlags_NoTitleBar;
-	if (scrollBar)       window_flags |= ImGuiWindowFlags_NoScrollbar;
-	if (!menu)           window_flags |= ImGuiWindowFlags_MenuBar;
-	if (move)            window_flags |= ImGuiWindowFlags_NoMove;
-	if (resize)          window_flags |= ImGuiWindowFlags_NoResize;
-	if (collapse)        window_flags |= ImGuiWindowFlags_NoCollapse;
-	if (nav)             window_flags |= ImGuiWindowFlags_NoNav;
-	if (background)      window_flags |= ImGuiWindowFlags_NoBackground;
-	if (bringToFront)  window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
-	if (docking)         window_flags |= ImGuiWindowFlags_NoDocking;
-	if (unsavedDocument)   window_flags |= ImGuiWindowFlags_UnsavedDocument;
-	if (close)           open = NULL; // Don't pass our bool* to Begin
-
-	if (!ImGui::Begin("Dear ImGui Demo", &ret, (ImGuiWindowFlags)0))
-	{
-		// Early out if the window is collapsed, as an optimization.
-		ImGui::End();
-		if (!ret) return UPDATE_STOP;
-		return UPDATE_CONTINUE;
-	}
-
-	const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-	ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 650, main_viewport->WorkPos.y + 20), ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiCond_FirstUseEver);
-
 	// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
 	if (exampleWindow)
 		ImGui::ShowDemoWindow(&exampleWindow);
 
+	//{
+	//	ImGui::BeginMenuBar();
+	//	{
+	//		ImGui::BeginMenu("Menu");
+	//		{
+	//			if (ImGui::MenuItem("Repository")) ShellExecuteA(NULL, "open", "https://github.com/BooStarGamer/Game-Engine-1.0v", NULL, NULL, SW_SHOWNORMAL);
+	//			ImGui::EndMenu();
+	//		}
+	//		ImGui::EndMenuBar();
+	//	}
+	//}
+
 	{
 		ImGui::Begin("Main Menu", &ret);
 		{
-			/*ImGui::BeginMenuBar();
-			{
-				ImGui::BeginMenu("Menu");
-				{
-					if (ImGui::MenuItem("Repository")) ShellExecuteA(NULL, "open", "https://github.com/BooStarGamer/Game-Engine-1.0v", NULL, NULL, SW_SHOWNORMAL);
-				}
-				ImGui::EndMenu();
-			}
-			ImGui::EndMenuBar();*/
-
 			if (ImGui::Button("Quit", { 100, 20 })) ret = false;
 			ImGui::Checkbox("Example Window", &exampleWindow);
+			if (ImGui::MenuItem("Repository")) ShellExecuteA(NULL, "open", "https://github.com/BooStarGamer/Game-Engine-1.0v", NULL, NULL, SW_SHOWNORMAL);
 			ImGui::SameLine();
 		}
 		ImGui::End();
