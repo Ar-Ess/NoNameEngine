@@ -6,18 +6,6 @@
 #include "ModuleTextures.h"
 #include "ModuleWindow.h"
 
-#include "../Source/External/ImGui/imgui.h"
-#include "../Source/External/ImGui/imgui_impl_sdl.h"
-#include "../Source/External/ImGui/imgui_impl_opengl2.h"
-
-#include <stdio.h>
-#include "External/SDL/include/SDL.h"
-#if defined(IMGUI_IMPL_OPENGL_ES2)
-#include <SDL_opengles2.h>
-#else
-#include "External/SDL/include/SDL_opengl.h"
-#endif
-
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 }
@@ -45,9 +33,6 @@ update_status ModuleSceneIntro::Update()
 {
 	bool ret = true;
 
-	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-
 	// Poll and handle events (inputs, window resize, etc.)
 		// You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
 		// - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
@@ -63,28 +48,13 @@ update_status ModuleSceneIntro::Update()
 			ret = false;
 	}
 
-	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplSDL2_NewFrame(App->mainWindow);
 	ImGui::NewFrame();
 
-	// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-	if (exampleWindow)
-		ImGui::ShowDemoWindow(&exampleWindow);
+	if (exampleWindow) ImGui::ShowDemoWindow(&exampleWindow);
 
-	//{
-	//	ImGui::BeginMenuBar();
-	//	{
-	//		ImGui::BeginMenu("Menu");
-	//		{
-	//			if (ImGui::MenuItem("Repository")) ShellExecuteA(NULL, "open", "https://github.com/BooStarGamer/Game-Engine-1.0v", NULL, NULL, SW_SHOWNORMAL);
-	//			ImGui::EndMenu();
-	//		}
-	//		ImGui::EndMenuBar();
-	//	}
-	//}
-
-	{
+	{ // INITIAL WINDOW
 		ImGui::Begin("Main Menu", &ret);
 		{
 			if (ImGui::Button("Quit", { 100, 20 })) ret = false;
@@ -93,6 +63,18 @@ update_status ModuleSceneIntro::Update()
 			ImGui::SameLine();
 		}
 		ImGui::End();
+	}
+
+	{ // MENU BAR TRY
+		ImGui::BeginMenuBar();
+		{
+			ImGui::BeginMenu("Menu");
+			{
+				if (ImGui::MenuItem("Repository")) ShellExecuteA(NULL, "open", "https://github.com/BooStarGamer/Game-Engine-1.0v", NULL, NULL, SW_SHOWNORMAL);
+			}
+			ImGui::EndMenu();
+		}
+		ImGui::EndMenuBar();
 	}
 
 	/* 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
@@ -128,28 +110,6 @@ update_status ModuleSceneIntro::Update()
 		ImGui::End();
 	}*/
 
-	// Rendering
-	ImGui::Render();
-	glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
-	glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
-	glClear(GL_COLOR_BUFFER_BIT);
-	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
-
-	// Update and Render additional Platform Windows
-	// (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
-	//  For this specific demo app we could also call SDL_GL_MakeCurrent(window, gl_context) directly)
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-	{
-		SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
-		SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
-		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
-		SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
-	}
-
-	SDL_GL_SwapWindow(App->mainWindow);
-
 	if (!ret) return UPDATE_STOP;
-
 	return UPDATE_CONTINUE;
 }
