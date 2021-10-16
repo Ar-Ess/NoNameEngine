@@ -33,11 +33,7 @@ update_status ModuleSceneIntro::Update()
 {
 	bool ret = true;
 
-	// Poll and handle events (inputs, window resize, etc.)
-		// You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
-		// - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
-		// - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
-		// Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
+	// Quit when clicking window cross
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
@@ -48,10 +44,12 @@ update_status ModuleSceneIntro::Update()
 			ret = false;
 	}
 
+	// Generate new frame
 	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplSDL2_NewFrame(App->mainWindow);
 	ImGui::NewFrame();
 
+	// GUI Implementation
 	if (exampleWindow) ImGui::ShowDemoWindow(&exampleWindow);
 
 	//{ // INITIAL WINDOW TRASHCODE
@@ -68,11 +66,19 @@ update_status ModuleSceneIntro::Update()
 	{ // MAIN MENU BAR
 		ImGui::BeginMainMenuBar();
 		{
-			if (ImGui::MenuItem("Exit")) ret = false;
-			if (ImGui::MenuItem("DemoWindow")) exampleWindow = !exampleWindow;
-			if (ImGui::MenuItem("Repository")) ShellExecuteA(NULL, "open", "https://github.com/BooStarGamer/Game-Engine-1.0v", NULL, NULL, SW_SHOWNORMAL);
+			if (ImGui::BeginMenu("File"))
+			{
+				if (ImGui::MenuItem("Exit")) ret = false;
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Help"))
+			{
+				if (ImGui::MenuItem("DemoWindow")) exampleWindow = !exampleWindow;
+				if (ImGui::MenuItem("Repository")) ShellExecuteA(NULL, "open", "https://github.com/BooStarGamer/Game-Engine-1.0v", NULL, NULL, SW_SHOWNORMAL);
+				ImGui::EndMenu();
+			}
+			ImGui::EndMainMenuBar();
 		}
-		ImGui::EndMainMenuBar();
 	}
 
 	/* 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
