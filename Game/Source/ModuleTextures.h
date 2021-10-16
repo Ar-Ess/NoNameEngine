@@ -1,8 +1,9 @@
 #pragma once
 #include "Module.h"
 #include "Globals.h"
-#include "p2List.h"
 #include "External/SDL\include\SDL.h"
+#include <list>
+using namespace std;
 
 class ModuleTextures : public Module
 {
@@ -13,9 +14,6 @@ public:
 	bool Init();
 	bool CleanUp();
 
-	SDL_Texture* const Load(const char* path);
-	void Unload(SDL_Texture* texture);
-
 public:
-	p2List<SDL_Texture*> textures;
+	list<SDL_Texture*> textures;
 };

@@ -69,7 +69,7 @@ update_status ModuleSceneIntro::Update()
 		ImGui::BeginMainMenuBar();
 		{
 			if (ImGui::MenuItem("Exit")) ret = false;
-			if (ImGui::MenuItem("Example Window")) exampleWindow = !exampleWindow;
+			if (ImGui::MenuItem("DemoWindow")) exampleWindow = !exampleWindow;
 			if (ImGui::MenuItem("Repository")) ShellExecuteA(NULL, "open", "https://github.com/BooStarGamer/Game-Engine-1.0v", NULL, NULL, SW_SHOWNORMAL);
 		}
 		ImGui::EndMainMenuBar();

@@ -3,8 +3,6 @@
 #include "ModuleRender.h"
 #include "ModuleTextures.h"
 #include "ModuleInput.h"
-#include "ModuleAudio.h"
-#include "ModulePlayer.h"
 #include "ModuleSceneIntro.h"
 
 #include "Primitive.h"
@@ -29,63 +27,43 @@ Application::Application()
 	window = new ModuleWindow(this);
 	textures = new ModuleTextures(this);
 	input = new ModuleInput(this);
-	audio = new ModuleAudio(this, false);
-	player = new ModulePlayer(this);
 	scene_intro = new ModuleSceneIntro(this);
-
-	// The order of calls is very important!
-	// Modules will Init() Start() and Update in this order
-	// They will CleanUp() in reverse order
 
 	// Main Modules
 	AddModule(window);
 	AddModule(renderer);
 	AddModule(textures);
 	AddModule(input);
-	AddModule(audio);
 	
 	// Scenes
 	AddModule(scene_intro);
-	
-	// Player
-	AddModule(player);
 }
 
 Application::~Application()
 {
-	p2List_item<Module*>* item = list_modules.getLast();
-
-	while(item != NULL)
-	{
-		delete item->data;
-		item = item->prev;
-	}
+	for (list<Module*>::iterator item = moduleList.end(); item != moduleList.begin(); --item) delete item._Ptr;
 }
 
 bool Application::Init()
 {
 	bool ret = true;
 
-	// Call Init() in all modules
-	p2List_item<Module*>* item = list_modules.getFirst();
+	list<Module*>::iterator item;
 
-	while(item != NULL && ret == true)
+	LOG("Application Init --------------");
+	for (item = moduleList.begin(); item != moduleList.end(); ++item) 
+		ret = item._Ptr->_Myval->Init();
+
+	if (InitImGui() == false)
 	{
-		ret = item->data->Init();
-		item = item->next;
+		LOG("InitImGui exits with ERROR");
+		ret = false;
 	}
 
-	// After all Init calls we call Start() in all modules
 	LOG("Application Start --------------");
-	item = list_modules.getFirst();
+	for (item = moduleList.begin(); item != moduleList.end(); ++item) 
+		if (item._Ptr->_Myval->IsEnabled()) ret = item._Ptr->_Myval->Start();
 
-	while(item != NULL && ret == true)
-	{
-		if(item->data->IsEnabled())
-			ret = item->data->Start();
-		item = item->next;
-	}
-	
 	return ret;
 }
 
@@ -175,34 +153,20 @@ void Application::CleanImGui()
 update_status Application::Update()
 {
 	update_status ret = UPDATE_CONTINUE;
-	p2List_item<Module*>* item = list_modules.getFirst();
 
-	while(item != NULL && ret == UPDATE_CONTINUE)
-	{
-		if(item->data->IsEnabled())
-			ret = item->data->PreUpdate();
-		item = item->next;
-	}
+	list<Module*>::iterator item;
 
-	item = list_modules.getFirst();
+	//PreUpdate
+	for (item = moduleList.begin(); item != moduleList.end() && ret == UPDATE_CONTINUE; ++item) 
+		if (item._Ptr->_Myval->IsEnabled()) ret = item._Ptr->_Myval->PreUpdate();
 
-	while(item != NULL && ret == UPDATE_CONTINUE)
-	{
-		if(item->data->IsEnabled())
-  			ret = item->data->Update();
-		item = item->next;
-	}
+	//Update
+	for (item = moduleList.begin(); item != moduleList.end() && ret == UPDATE_CONTINUE; ++item)
+		if (item._Ptr->_Myval->IsEnabled()) ret = item._Ptr->_Myval->Update();
 
-	item = list_modules.getFirst();
-
-	while(item != NULL && ret == UPDATE_CONTINUE)
-	{
-		if(item->data->IsEnabled())
-			ret = item->data->PostUpdate();
-		item = item->next;
-	}
-
-	if (quit) ret = update_status::UPDATE_STOP;
+	//PostUpdate
+	for (item = moduleList.begin(); item != moduleList.end() && ret == UPDATE_CONTINUE; ++item)
+		if (item._Ptr->_Myval->IsEnabled()) ret = item._Ptr->_Myval->PostUpdate();
 
 	return ret;
 }
@@ -210,17 +174,21 @@ update_status Application::Update()
 bool Application::CleanUp()
 {
 	bool ret = true;
-	p2List_item<Module*>* item = list_modules.getLast();
 
-	while(item != NULL && ret == true)
-	{
-		ret = item->data->CleanUp();
-		item = item->prev;
-	}
+	list<Module*>::iterator item;
+
+	LOG("Application CleanUp--------------");
+	for (item = moduleList.begin(); item != moduleList.end() && ret == true; ++item)
+		ret = item._Ptr->_Myval->CleanUp();
+
+	CleanImGui();
+
+	moduleList.clear();
+
 	return ret;
 }
 
 void Application::AddModule(Module* mod)
 {
-	list_modules.add(mod);
+	moduleList.push_back(mod);
 }

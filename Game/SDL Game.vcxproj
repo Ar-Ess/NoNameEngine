@@ -13,7 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{746CC4C3-787F-4B0E-AA66-E388FE3FF4F6}</ProjectGuid>
     <RootNamespace>SDLGame</RootNamespace>
-    <ProjectName>2D Physics - class 2</ProjectName>
+    <ProjectName>NoNameEngine</ProjectName>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -85,9 +85,7 @@
     <ClInclude Include="Source\External\imgui\imstb_truetype.h" />
     <ClInclude Include="Source\Globals.h" />
     <ClInclude Include="Source\Module.h" />
-    <ClInclude Include="Source\ModuleAudio.h" />
     <ClInclude Include="Source\ModuleInput.h" />
-    <ClInclude Include="Source\ModulePlayer.h" />
     <ClInclude Include="Source\ModuleRender.h" />
     <ClInclude Include="Source\ModuleSceneIntro.h" />
     <ClInclude Include="Source\ModuleTextures.h" />
@@ -108,9 +106,7 @@
     <ClCompile Include="Source\External\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Source\log.cpp" />
     <ClCompile Include="Source\Main.cpp" />
-    <ClCompile Include="Source\ModuleAudio.cpp" />
     <ClCompile Include="Source\ModuleInput.cpp" />
-    <ClCompile Include="Source\ModulePlayer.cpp" />
     <ClCompile Include="Source\ModuleRender.cpp" />
     <ClCompile Include="Source\ModuleSceneIntro.cpp" />
     <ClCompile Include="Source\ModuleTextures.cpp" />
