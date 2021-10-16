@@ -54,27 +54,25 @@ update_status ModuleSceneIntro::Update()
 
 	if (exampleWindow) ImGui::ShowDemoWindow(&exampleWindow);
 
-	{ // INITIAL WINDOW
-		ImGui::Begin("Main Menu", &ret);
-		{
-			if (ImGui::Button("Quit", { 100, 20 })) ret = false;
-			ImGui::Checkbox("Example Window", &exampleWindow);
-			if (ImGui::MenuItem("Repository")) ShellExecuteA(NULL, "open", "https://github.com/BooStarGamer/Game-Engine-1.0v", NULL, NULL, SW_SHOWNORMAL);
-			ImGui::SameLine();
-		}
-		ImGui::End();
-	}
+	//{ // INITIAL WINDOW TRASHCODE
+	//	ImGui::Begin("Main Menu", &ret);
+	//	{
+	//		if (ImGui::Button("Quit", { 100, 20 })) ret = false;
+	//		ImGui::Checkbox("Example Window", &exampleWindow);
+	//		if (ImGui::MenuItem("Repository")) ShellExecuteA(NULL, "open", "https://github.com/BooStarGamer/Game-Engine-1.0v", NULL, NULL, SW_SHOWNORMAL);
+	//		ImGui::SameLine();
+	//	}
+	//	ImGui::End();
+	//}
 
-	{ // MENU BAR TRY
-		ImGui::BeginMenuBar();
+	{ // MAIN MENU BAR
+		ImGui::BeginMainMenuBar();
 		{
-			ImGui::BeginMenu("Menu");
-			{
-				if (ImGui::MenuItem("Repository")) ShellExecuteA(NULL, "open", "https://github.com/BooStarGamer/Game-Engine-1.0v", NULL, NULL, SW_SHOWNORMAL);
-			}
-			ImGui::EndMenu();
+			if (ImGui::MenuItem("Exit")) ret = false;
+			if (ImGui::MenuItem("Example Window")) exampleWindow = !exampleWindow;
+			if (ImGui::MenuItem("Repository")) ShellExecuteA(NULL, "open", "https://github.com/BooStarGamer/Game-Engine-1.0v", NULL, NULL, SW_SHOWNORMAL);
 		}
-		ImGui::EndMenuBar();
+		ImGui::EndMainMenuBar();
 	}
 
 	/* 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
