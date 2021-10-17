@@ -12,6 +12,8 @@
 #include "../Source/External/ImGui/imgui_impl_opengl2.h"
 
 #include <stdio.h>
+#include <iostream>
+#include <fstream>
 #include "External/SDL/include/SDL.h"
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <SDL_opengles2.h>
@@ -168,6 +170,10 @@ update_status Application::Update()
 	for (item = moduleList.begin(); item != moduleList.end() && ret == UPDATE_CONTINUE; ++item)
 		if (item._Ptr->_Myval->IsEnabled()) ret = item._Ptr->_Myval->PostUpdate();
 
+	
+	if (loadRequest) Load(loadFileName);
+	if (saveRequest)!Save(saveFileName);
+
 	return ret;
 }
 
@@ -191,4 +197,68 @@ bool Application::CleanUp()
 void Application::AddModule(Module* mod)
 {
 	moduleList.push_back(mod);
+}
+
+bool Application::Load(string fileName)
+{
+	if (!loadRequest)
+	{ // Reaching when the function is called anywhere in the code. Variable "loadFileName" is setted as the variable "file"
+		loadRequest = true;
+		loadFileName = fileName;
+		loadFileName += ".json";
+	}
+	else
+	{ // Reaching at the end of the code iteration. Variable "file" is actually the variable "loadFileName"
+		loadRequest = false;
+
+		JSON_Value* loadFile = json_parse_file(fileName.c_str());
+
+		this->scene_intro->exampleWindow = json_object_get_boolean(json_object(loadFile), "isExampleWindowOpen");
+
+		json_value_free(loadFile);
+
+		loadFileName.clear();
+	}
+
+	return true;
+}
+
+bool Application::Save(string fileName)
+{
+	bool ret = true;
+	if (!saveRequest)
+	{ // Reaching when the function is called anywhere in the code. Variable "saveFileName" is setted as the variable "file"
+		saveRequest = true;
+		saveFileName = fileName;
+		saveFileName += ".json";
+	}
+	else
+	{ // Reaching at the end of the code iteration. Variable "file" is actually the variable "saveFileName"
+		saveRequest = false;
+
+		JSON_Value* schema = json_parse_string(
+			"{isExampleWindowOpen: }"
+		);
+
+		JSON_Value* saveFile = json_parse_file(fileName.c_str());
+
+		//const char* name = NULL;
+
+		if (saveFile == NULL || json_validate(schema, saveFile) != JSONSuccess) 
+		{
+			saveFile = json_value_init_object();
+
+			json_object_set_boolean(json_object(saveFile), "isExampleWindowOpen", this->scene_intro->exampleWindow);
+
+			json_serialize_to_file(saveFile, fileName.c_str());
+		}
+
+		//name = json_object_get_string(json_object(saveFile), "name");
+		json_value_free(schema);
+		json_value_free(saveFile);
+
+		saveFileName.clear();
+	}
+
+	return ret;
 }

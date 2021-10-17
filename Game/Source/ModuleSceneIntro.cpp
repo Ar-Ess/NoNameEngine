@@ -17,7 +17,7 @@ bool ModuleSceneIntro::Start()
 {
 	LOG("Loading Intro assets");
 	bool ret = true;
-	App->renderer->camera.x = App->renderer->camera.y = 0;
+	app->renderer->camera.x = app->renderer->camera.y = 0;
 
 	return ret;
 }
@@ -40,13 +40,13 @@ update_status ModuleSceneIntro::Update()
 		ImGui_ImplSDL2_ProcessEvent(&event);
 		if (event.type == SDL_QUIT)
 			ret = false;
-		if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(App->mainWindow))
+		if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(app->mainWindow))
 			ret = false;
 	}
 
 	// Generate new frame
 	ImGui_ImplOpenGL2_NewFrame();
-	ImGui_ImplSDL2_NewFrame(App->mainWindow);
+	ImGui_ImplSDL2_NewFrame(app->mainWindow);
 	ImGui::NewFrame();
 
 	// GUI Implementation
@@ -68,6 +68,8 @@ update_status ModuleSceneIntro::Update()
 		{
 			if (ImGui::BeginMenu("File"))
 			{
+				if (ImGui::MenuItem("Save File")) app->Save("NNE_Project_Saving");
+				if (ImGui::MenuItem("Load File")) app->Load("NNE_Project_Saving");
 				if (ImGui::MenuItem("Exit")) ret = false;
 				ImGui::EndMenu();
 			}

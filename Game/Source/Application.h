@@ -2,8 +2,16 @@
 
 #include "Globals.h"
 #include "External/imgui/imgui.h"
+#include "External/json/json.h"
+#include "External/rapidjson/document.h"
+#include "External/rapidjson/writer.h"
+#include "External/rapidjson/stringbuffer.h"
+#include "External/parson/Parson.h"
 #include <list>
+#include <string>
+
 using namespace std;
+using namespace rapidjson;
 
 class Module;
 class ModuleRender;
@@ -36,11 +44,21 @@ public:
 	update_status Update();
 	bool CleanUp();
 	void CleanImGui();
+	bool Load(string fileName);
+	// Do not add the extension when writing the file name
+	bool Save(string fileName);
 
 	SDL_Window* mainWindow = nullptr;
 
 private:
 
 	void AddModule(Module* mod);
+
+private: //Variables
+
+	bool loadRequest = false;
+	bool saveRequest = false;
+	string loadFileName;
+	string saveFileName;
 
 };

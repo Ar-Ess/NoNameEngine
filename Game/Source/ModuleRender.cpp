@@ -30,7 +30,7 @@ bool ModuleRender::Init()
 		flags |= SDL_RENDERER_PRESENTVSYNC;
 	}
 
-	renderer = SDL_CreateRenderer(App->window->window, -1, flags);
+	renderer = SDL_CreateRenderer(app->window->window, -1, flags);
 	
 	if(renderer == NULL)
 	{
@@ -80,7 +80,7 @@ update_status ModuleRender::PostUpdate()
 		SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
 	}
 
-	SDL_GL_SwapWindow(App->mainWindow);
+	SDL_GL_SwapWindow(app->mainWindow);
 
 	return UPDATE_CONTINUE;
 }

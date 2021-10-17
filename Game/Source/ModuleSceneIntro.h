@@ -26,8 +26,10 @@ public:
 	update_status Update();
 	bool CleanUp();
 
-private:
 	bool exampleWindow = false;
+
+private:
+	//bool exampleWindow = false;
 	ImVec4 backgroundColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 

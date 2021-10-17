@@ -83,6 +83,37 @@
     <ClInclude Include="Source\External\imgui\imstb_rectpack.h" />
     <ClInclude Include="Source\External\imgui\imstb_textedit.h" />
     <ClInclude Include="Source\External\imgui\imstb_truetype.h" />
+    <ClInclude Include="Source\External\json\allocator.h" />
+    <ClInclude Include="Source\External\json\assertions.h" />
+    <ClInclude Include="Source\External\json\config.h" />
+    <ClInclude Include="Source\External\json\forwards.h" />
+    <ClInclude Include="Source\External\json\json.h" />
+    <ClInclude Include="Source\External\json\json_features.h" />
+    <ClInclude Include="Source\External\json\json_tool.h" />
+    <ClInclude Include="Source\External\json\reader.h" />
+    <ClInclude Include="Source\External\json\value.h" />
+    <ClInclude Include="Source\External\json\version.h" />
+    <ClInclude Include="Source\External\json\writer.h" />
+    <ClInclude Include="Source\External\parson\Parson.h" />
+    <ClInclude Include="Source\External\rapidjson\allocators.h" />
+    <ClInclude Include="Source\External\rapidjson\document.h" />
+    <ClInclude Include="Source\External\rapidjson\encodedstream.h" />
+    <ClInclude Include="Source\External\rapidjson\encodings.h" />
+    <ClInclude Include="Source\External\rapidjson\filereadstream.h" />
+    <ClInclude Include="Source\External\rapidjson\filewritestream.h" />
+    <ClInclude Include="Source\External\rapidjson\fwd.h" />
+    <ClInclude Include="Source\External\rapidjson\istreamwrapper.h" />
+    <ClInclude Include="Source\External\rapidjson\memorybuffer.h" />
+    <ClInclude Include="Source\External\rapidjson\memorystream.h" />
+    <ClInclude Include="Source\External\rapidjson\ostreamwrapper.h" />
+    <ClInclude Include="Source\External\rapidjson\pointer.h" />
+    <ClInclude Include="Source\External\rapidjson\prettywriter.h" />
+    <ClInclude Include="Source\External\rapidjson\rapidjson.h" />
+    <ClInclude Include="Source\External\rapidjson\reader.h" />
+    <ClInclude Include="Source\External\rapidjson\schema.h" />
+    <ClInclude Include="Source\External\rapidjson\stream.h" />
+    <ClInclude Include="Source\External\rapidjson\stringbuffer.h" />
+    <ClInclude Include="Source\External\rapidjson\writer.h" />
     <ClInclude Include="Source\Globals.h" />
     <ClInclude Include="Source\Module.h" />
     <ClInclude Include="Source\ModuleInput.h" />
@@ -104,6 +135,10 @@
     <ClCompile Include="Source\External\imgui\imgui_impl_sdl.cpp" />
     <ClCompile Include="Source\External\imgui\imgui_tables.cpp" />
     <ClCompile Include="Source\External\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="Source\External\json\json_reader.cpp" />
+    <ClCompile Include="Source\External\json\json_value.cpp" />
+    <ClCompile Include="Source\External\json\json_writer.cpp" />
+    <ClCompile Include="Source\External\parson\Parson.cpp" />
     <ClCompile Include="Source\log.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\ModuleInput.cpp" />
@@ -112,6 +147,9 @@
     <ClCompile Include="Source\ModuleTextures.cpp" />
     <ClCompile Include="Source\ModuleWindow.cpp" />
     <ClCompile Include="Source\Primitive.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Source\External\json\json_valueiterator.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
