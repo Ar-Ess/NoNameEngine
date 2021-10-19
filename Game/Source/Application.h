@@ -13,6 +13,12 @@
 using namespace std;
 using namespace rapidjson;
 
+enum class FileContent
+{
+	PROJECT,
+	CONFIG_PREFERENCES
+};
+
 class Module;
 class ModuleRender;
 class ModuleWindow;
@@ -44,9 +50,9 @@ public:
 	update_status Update();
 	bool CleanUp();
 	void CleanImGui();
-	bool Load(string fileName);
+	bool Load(string fileName, FileContent fileType);
 	// Do not add the extension when writing the file name
-	bool Save(string fileName);
+	bool Save(string fileName, FileContent fileType);
 
 	SDL_Window* mainWindow = nullptr;
 
@@ -58,7 +64,7 @@ private: //Variables
 
 	bool loadRequest = false;
 	bool saveRequest = false;
-	string loadFileName;
-	string saveFileName;
+	string fileName;
+	FileContent fileContent;
 
 };

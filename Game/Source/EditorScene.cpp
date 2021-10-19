@@ -34,52 +34,65 @@ bool EditorScene::Update()
 	ImGui_ImplSDL2_NewFrame(app->mainWindow);
 	ImGui::NewFrame();
 
-	// GUI Implementation
-	if (exampleWindow) ImGui::ShowDemoWindow(&exampleWindow);
-
-	//{ // INITIAL WINDOW TRASHCODE
-	//	ImGui::Begin("Main Menu", &ret);
-	//	{
-	//		if (ImGui::Button("Quit", { 100, 20 })) ret = false;
-	//		ImGui::Checkbox("Example Window", &exampleWindow);
-	//		if (ImGui::MenuItem("Repository")) ShellExecuteA(NULL, "open", "https://github.com/BooStarGamer/Game-Engine-1.0v", NULL, NULL, SW_SHOWNORMAL);
-	//		ImGui::SameLine();
-	//	}
-	//	ImGui::End();
-	//}
-
-	{ // MAIN MENU BAR
+	// GUI DEMO WINDOW
+	if (demoWindow) ImGui::ShowDemoWindow(&demoWindow);
+	
+	// MAIN MENU BAR
+	{
 		ImGui::BeginMainMenuBar();
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("Save File")) app->Save("NNE_Project_Saving");
-				if (ImGui::MenuItem("Load File")) app->Load("NNE_Project_Saving");
-				if (ImGui::MenuItem("Exit")) ret = false;
+				if (ImGui::MenuItem("Save File")) 
+					app->Save("NNE_Project_Saving", FileContent::PROJECT);
+
+				if (ImGui::MenuItem("Load File")) 
+					app->Load("NNE_Project_Saving", FileContent::PROJECT);
+
+				if (ImGui::MenuItem("Configuration"))
+					configWindow = !configWindow;
+
+				if (ImGui::MenuItem("Exit")) 
+					ret = false;
+
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("View"))
+			{
+				if (ImGui::MenuItem("Output Log"))
+					outputWindow = !outputWindow;
+
 				ImGui::EndMenu();
 			}
 			if (ImGui::BeginMenu("Help"))
 			{
 				if (ImGui::MenuItem("Gui Demo"))
-					exampleWindow = !exampleWindow;
+					demoWindow = !demoWindow;
 
 				if (ImGui::MenuItem("Repository"))
-					ShellExecuteA(NULL, "open", "https://github.com/BooStarGamer/Game-Engine-1.0v", NULL, NULL, SW_SHOWNORMAL);
+					LinkBrowser("https://github.com/BooStarGamer/Game-Engine-1.0v");
 
 				if (ImGui::MenuItem("Documentation"))
-					ShellExecuteA(NULL, "open", "https://github.com/BooStarGamer/Game-Engine-1.0v/wiki", NULL, NULL, SW_SHOWNORMAL);
+					LinkBrowser("https://github.com/BooStarGamer/Game-Engine-1.0v/wiki");
 
 				if (ImGui::MenuItem("Download latest"))
-					ShellExecuteA(NULL, "open", "https://github.com/BooStarGamer/Game-Engine-1.0v/releases", NULL, NULL, SW_SHOWNORMAL);
+					LinkBrowser("https://github.com/BooStarGamer/Game-Engine-1.0v/releases");
 
 				if (ImGui::MenuItem("Report Bug"))
-					ShellExecuteA(NULL, "open", "https://github.com/BooStarGamer/Game-Engine-1.0v/issues", NULL, NULL, SW_SHOWNORMAL);
+					LinkBrowser("https://github.com/BooStarGamer/Game-Engine-1.0v/issues");
+
+				if (ImGui::MenuItem("About"))
+					aboutPopup = !aboutPopup;
 
 				ImGui::EndMenu();
 			}
 			ImGui::EndMainMenuBar();
 		}
 	}
+
+	aboutPopup = ShowAboutWindow(aboutPopup);
+	outputWindow = ShowOutputWindow(outputWindow);
+	configWindow = ShowConfigWindow(configWindow);
 
 	/* 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 	{
@@ -104,16 +117,6 @@ bool EditorScene::Update()
 		ImGui::End();
 	}*/
 
-	/* 3. Show another simple window.
-	if (show_another_window)
-	{
-		ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-		ImGui::Text("Hello from another window!");
-		if (ImGui::Button("Close Me"))
-			show_another_window = false;
-		ImGui::End();
-	}*/
-
 	return ret;
 }
 
@@ -122,4 +125,51 @@ bool EditorScene::CleanUp()
 	bool ret = true;
 
 	return ret;
+}
+
+bool EditorScene::ShowAboutWindow(bool open)
+{
+	if (open)
+	{
+		ImGui::OpenPopup("About");
+
+		if (ImGui::BeginPopupModal("About", &open))
+		{
+			ImGui::Text("Hello");
+			ImGui::EndPopup();
+		}
+	}
+
+	return open;
+}
+
+bool EditorScene::ShowOutputWindow(bool open)
+{
+	return open;
+}
+
+bool EditorScene::ShowConfigWindow(bool open)
+{
+	if (open)
+	{
+		if (ImGui::Begin("Configuration", &open))
+		{
+			if (ImGui::BeginMenu("Options"))
+			{
+				if (ImGui::MenuItem("Save"))
+					app->Save("NNE_Preferences_Saving", FileContent::CONFIG_PREFERENCES);
+
+				if (ImGui::MenuItem("Load"))
+					app->Load("NNE_Preferences_Saving", FileContent::CONFIG_PREFERENCES);
+
+				if (ImGui::MenuItem("Default"))
+					app->Load("NNE_Preferences_Default", FileContent::CONFIG_PREFERENCES);
+
+				ImGui::EndMenu();
+			}
+			ImGui::End();
+		}
+	}
+
+	return open;
 }

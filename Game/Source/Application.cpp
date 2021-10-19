@@ -154,6 +154,7 @@ void Application::CleanImGui()
 
 update_status Application::Update()
 {
+	bool call = false;
 	update_status ret = UPDATE_CONTINUE;
 
 	list<Module*>::iterator item;
@@ -171,8 +172,8 @@ update_status Application::Update()
 		if (item._Ptr->_Myval->IsEnabled()) ret = item._Ptr->_Myval->PostUpdate();
 
 	
-	if (loadRequest) Load(loadFileName);
-	if (saveRequest)!Save(saveFileName);
+	if (loadRequest) call = Load(fileName, fileContent);
+	if (saveRequest && !call) Save(fileName, fileContent);
 
 	return ret;
 }
@@ -199,65 +200,106 @@ void Application::AddModule(Module* mod)
 	moduleList.push_back(mod);
 }
 
-bool Application::Load(string fileName)
+bool Application::Load(string fName, FileContent fc)
 {
 	if (!loadRequest)
 	{ // Reaching when the function is called anywhere in the code. Variable "loadFileName" is setted as the variable "file"
 		loadRequest = true;
-		loadFileName = fileName;
-		loadFileName += ".json";
+		fileName = fName;
+		fileName += ".json";
 	}
 	else
 	{ // Reaching at the end of the code iteration. Variable "file" is actually the variable "loadFileName"
 		loadRequest = false;
 
-		JSON_Value* loadFile = json_parse_file(fileName.c_str());
+		JSON_Value* file = json_parse_file(fName.c_str());;
 
-		this->scene->exampleWindow = json_object_get_boolean(json_object(loadFile), "isExampleWindowOpen");
+		switch (fc)
+		{
+		case FileContent::PROJECT:
+		{
+			this->scene->SetWindowState(Windows::DEMO_W, json_object_get_boolean(json_object(file), "isDemoWindowOpen"));
+			this->scene->SetWindowState(Windows::CONFIG_W, json_object_get_boolean(json_object(file), "isConfigWindowOpen"));
+			this->scene->SetWindowState(Windows::OUTPUT_W, json_object_get_boolean(json_object(file), "isOutputWindowOpen"));
 
-		json_value_free(loadFile);
+			break;
+		}
+		case FileContent::CONFIG_PREFERENCES:
+		{
+			//this->scene->demoWindow = json_object_get_boolean(json_object(file), "isExampleWindowOpen");
 
-		loadFileName.clear();
+			break;
+		}
+		}
+
+		json_value_free(file);
+		fileName.clear();
 	}
 
 	return true;
 }
 
-bool Application::Save(string fileName)
+bool Application::Save(string fName, FileContent fc)
 {
 	bool ret = true;
 	if (!saveRequest)
 	{ // Reaching when the function is called anywhere in the code. Variable "saveFileName" is setted as the variable "file"
 		saveRequest = true;
-		saveFileName = fileName;
-		saveFileName += ".json";
+		fileName = fName;
+		fileName += ".json";
 	}
 	else
 	{ // Reaching at the end of the code iteration. Variable "file" is actually the variable "saveFileName"
 		saveRequest = false;
 
-		JSON_Value* schema = json_parse_string(
-			"{isExampleWindowOpen: }"
-		);
+		JSON_Value* file = json_parse_file(fName.c_str());
 
-		JSON_Value* saveFile = json_parse_file(fileName.c_str());
-
-		//const char* name = NULL;
-
-		if (saveFile == NULL || json_validate(schema, saveFile) != JSONSuccess) 
+		switch (fc)
 		{
-			saveFile = json_value_init_object();
+		case FileContent::PROJECT:
+		{
+			JSON_Value* schema = json_parse_string(
+				"{isDemoWindowOpen: "
+				"\nisConfigWindowOpen: "
+				"\nisOutputWindowOpen: }"
+			);
 
-			json_object_set_boolean(json_object(saveFile), "isExampleWindowOpen", this->scene->exampleWindow);
+			if (file == NULL || json_validate(schema, file) != JSONSuccess)
+			{
+				file = json_value_init_object();
 
-			json_serialize_to_file(saveFile, fileName.c_str());
+				json_object_set_boolean(json_object(file), "isDemoWindowOpen", this->scene->GetWindowState(Windows::DEMO_W));
+				json_object_set_boolean(json_object(file), "isConfigWindowOpen", this->scene->GetWindowState(Windows::CONFIG_W));
+				json_object_set_boolean(json_object(file), "isOutputWindowOpen", this->scene->GetWindowState(Windows::OUTPUT_W));
+
+				json_serialize_to_file(file, fName.c_str());
+
+				json_value_free(schema);
+			}
+			break;
+		}
+		case FileContent::CONFIG_PREFERENCES:
+		{
+			JSON_Value* schema = json_parse_string(
+				"{isExampleWindowOpen: }"
+			);
+
+			if (file == NULL || json_validate(schema, file) != JSONSuccess)
+			{
+				file = json_value_init_object();
+
+				//json_object_set_boolean(json_object(file), "isExampleWindowOpen", this->scene->demoWindow);
+
+				json_serialize_to_file(file, fName.c_str());
+
+				json_value_free(schema);
+			}
+			break;
+		}
 		}
 
-		//name = json_object_get_string(json_object(saveFile), "name");
-		json_value_free(schema);
-		json_value_free(saveFile);
-
-		saveFileName.clear();
+		json_value_free(file);
+		fileName.clear();
 	}
 
 	return ret;

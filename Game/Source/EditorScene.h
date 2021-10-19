@@ -1,6 +1,7 @@
 #pragma once
 #include "Application.h"
 #include "Globals.h"
+#include <string>
 
 #include "../Source/External/ImGui/imgui.h"
 #include "../Source/External/ImGui/imgui_impl_sdl.h"
@@ -25,13 +26,25 @@ public:
 
 	bool CleanUp();
 
-	bool exampleWindow = false;
+private: // Functions
+	bool ShowAboutWindow(bool open);
+	bool ShowOutputWindow(bool open);
+	bool ShowConfigWindow(bool open);
 
-private:
-	//bool exampleWindow = false;
+	void LinkBrowser(string link)
+	{
+		ShellExecuteA(NULL, "open", link.c_str(), NULL, NULL, SW_SHOWNORMAL);
+	}
+
+public: // Variables
+	bool demoWindow = false;
+	bool outputWindow = false;
+	bool configWindow = false;
+
+	bool aboutPopup = false;
+
+private: // Variables
+
 	ImVec4 backgroundColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
 	Application* app = nullptr;
-
-public:
 };
