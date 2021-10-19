@@ -6,6 +6,7 @@
 #include "../Source/External/ImGui/imgui.h"
 #include "../Source/External/ImGui/imgui_impl_sdl.h"
 #include "../Source/External/ImGui/imgui_impl_opengl2.h"
+#include "../Source/External/ImGui/imgui_stdlib.h"
 
 #include <stdio.h>
 #include "External/SDL/include/SDL.h"
@@ -43,8 +44,13 @@ public: // Variables
 
 	bool aboutPopup = false;
 
+	std::string projectName = "New Project";
+	std::string teamName = "Team Name";
+
 private: // Variables
 
 	ImVec4 backgroundColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 	Application* app = nullptr;
+	float framerate = 0.0f;
+	float milliseconds = 0.0f;
 };

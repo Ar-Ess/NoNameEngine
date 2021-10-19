@@ -25,6 +25,8 @@
 
 Application::Application()
 {
+	PERF_START(ptimer);
+
 	renderer = new ModuleRender(this);
 	window = new ModuleWindow(this);
 	textures = new ModuleTextures(this);
@@ -39,6 +41,8 @@ Application::Application()
 	
 	// Scenes
 	AddModule(scene);
+
+	PERF_PEEK(ptimer);
 }
 
 Application::~Application()
@@ -49,6 +53,8 @@ Application::~Application()
 bool Application::Init()
 {
 	bool ret = true;
+
+	PERF_START(ptimer);
 
 	list<Module*>::iterator item;
 
@@ -66,12 +72,16 @@ bool Application::Init()
 	for (item = moduleList.begin(); item != moduleList.end(); ++item) 
 		if (item._Ptr->_Myval->IsEnabled()) ret = item._Ptr->_Myval->Start();
 
+	PERF_PEEK(ptimer);
+
 	return ret;
 }
 
 bool Application::InitImGui()
 {
 	bool ret = true;
+
+	PERF_START(ptimer);
 
 	// Setup SDL
 	// (Some versions of SDL before <2.0.10 appears to have performance/stalling issues on a minority of Windows systems,
@@ -142,6 +152,8 @@ bool Application::InitImGui()
 	//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 	//IM_ASSERT(font != NULL);
 
+	PERF_PEEK(ptimer);
+
 	return ret;
 }
 
@@ -159,6 +171,13 @@ update_status Application::Update()
 
 	list<Module*>::iterator item;
 
+	// Prepare Update
+	frameCount++;
+	lastSecFrameCount++;
+
+	dt = frameTime.ReadSec();
+	frameTime.Start();
+
 	//PreUpdate
 	for (item = moduleList.begin(); item != moduleList.end() && ret == UPDATE_CONTINUE; ++item) 
 		if (item._Ptr->_Myval->IsEnabled()) ret = item._Ptr->_Myval->PreUpdate();
@@ -174,6 +193,8 @@ update_status Application::Update()
 	
 	if (loadRequest) call = Load(fileName, fileContent);
 	if (saveRequest && !call) Save(fileName, fileContent);
+
+	ProfilerLogic();
 
 	return ret;
 }
@@ -200,6 +221,41 @@ void Application::AddModule(Module* mod)
 	moduleList.push_back(mod);
 }
 
+void Application::ProfilerLogic()
+{
+	if (lastSecFrameTime.Read() > 1000)
+	{
+		lastSecFrameTime.Start();
+		prevLastSecFrameCount = lastSecFrameCount;
+		lastSecFrameCount = 0;
+	}
+
+	float averageFps = float(frameCount) / startupTime.ReadSec();
+	float secondsSinceStartup = startupTime.ReadSec();
+	uint32 lastFrameMs = frameTime.Read();
+	uint32 framesOnLastUpdate = prevLastSecFrameCount;
+
+	if (frameDelay > lastFrameMs)
+	{
+		SDL_Delay(frameDelay - lastFrameMs);
+	}
+
+	fpsLog.push_back(framesOnLastUpdate);
+	fpsLog.push_back(0.0f);
+	msLog.push_back(lastFrameMs);
+	msLog.push_back(0.0f);
+	while (fpsLog.size() > frameBarLimit * 2)
+	{
+		fpsLog.erase(fpsLog.begin());
+		fpsLog.erase(fpsLog.begin());
+	}
+	while (msLog.size() > msBarLimit * 2)
+	{
+		msLog.erase(msLog.begin());
+		msLog.erase(msLog.begin());
+	}
+}
+
 bool Application::Load(string fName, FileContent fc)
 {
 	if (!loadRequest)
@@ -207,6 +263,7 @@ bool Application::Load(string fName, FileContent fc)
 		loadRequest = true;
 		fileName = fName;
 		fileName += ".json";
+		fileContent = fc;
 	}
 	else
 	{ // Reaching at the end of the code iteration. Variable "file" is actually the variable "loadFileName"
@@ -218,15 +275,19 @@ bool Application::Load(string fName, FileContent fc)
 		{
 		case FileContent::PROJECT:
 		{
-			this->scene->SetWindowState(Windows::DEMO_W, json_object_get_boolean(json_object(file), "isDemoWindowOpen"));
-			this->scene->SetWindowState(Windows::CONFIG_W, json_object_get_boolean(json_object(file), "isConfigWindowOpen"));
-			this->scene->SetWindowState(Windows::OUTPUT_W, json_object_get_boolean(json_object(file), "isOutputWindowOpen"));
+			this->scene->SetWindowState(Windows::DEMO_W, json_object_get_boolean(json_object(file), "IsDemoWindowOpen"));
+			this->scene->SetWindowState(Windows::CONFIG_W, json_object_get_boolean(json_object(file), "IsConfigWindowOpen"));
+			this->scene->SetWindowState(Windows::OUTPUT_W, json_object_get_boolean(json_object(file), "IsOutputWindowOpen"));
+
+			this->scene->SetProjectName(json_object_get_string(json_object(file), "ProjectName"));
+			this->scene->SetTeamName(json_object_get_string(json_object(file), "TeamName"));
 
 			break;
 		}
 		case FileContent::CONFIG_PREFERENCES:
 		{
-			//this->scene->demoWindow = json_object_get_boolean(json_object(file), "isExampleWindowOpen");
+			frameBarLimit = json_object_get_number(json_object(file), "FrameBarLimit");
+			msBarLimit = json_object_get_number(json_object(file), "MsBarLimit");
 
 			break;
 		}
@@ -247,6 +308,7 @@ bool Application::Save(string fName, FileContent fc)
 		saveRequest = true;
 		fileName = fName;
 		fileName += ".json";
+		fileContent = fc;
 	}
 	else
 	{ // Reaching at the end of the code iteration. Variable "file" is actually the variable "saveFileName"
@@ -259,18 +321,25 @@ bool Application::Save(string fName, FileContent fc)
 		case FileContent::PROJECT:
 		{
 			JSON_Value* schema = json_parse_string(
-				"{isDemoWindowOpen: "
-				"\nisConfigWindowOpen: "
-				"\nisOutputWindowOpen: }"
+				"{"
+				"\nIsDemoWindowOpen: "
+				"\nIsConfigWindowOpen: "
+				"\nIsOutputWindowOpen: "
+				"\nProject Name: "
+				"\nTeam Name: "
+				"\n}"
 			);
 
 			if (file == NULL || json_validate(schema, file) != JSONSuccess)
 			{
 				file = json_value_init_object();
 
-				json_object_set_boolean(json_object(file), "isDemoWindowOpen", this->scene->GetWindowState(Windows::DEMO_W));
-				json_object_set_boolean(json_object(file), "isConfigWindowOpen", this->scene->GetWindowState(Windows::CONFIG_W));
-				json_object_set_boolean(json_object(file), "isOutputWindowOpen", this->scene->GetWindowState(Windows::OUTPUT_W));
+				json_object_set_boolean(json_object(file), "IsDemoWindowOpen", this->scene->GetWindowState(Windows::DEMO_W));
+				json_object_set_boolean(json_object(file), "IsConfigWindowOpen", this->scene->GetWindowState(Windows::CONFIG_W));
+				json_object_set_boolean(json_object(file), "IsOutputWindowOpen", this->scene->GetWindowState(Windows::OUTPUT_W));
+
+				json_object_set_string(json_object(file), "ProjectName", this->scene->GetProjectName().c_str());
+				json_object_set_string(json_object(file), "TeamName", this->scene->GetTeamName().c_str());
 
 				json_serialize_to_file(file, fName.c_str());
 
@@ -281,14 +350,18 @@ bool Application::Save(string fName, FileContent fc)
 		case FileContent::CONFIG_PREFERENCES:
 		{
 			JSON_Value* schema = json_parse_string(
-				"{isExampleWindowOpen: }"
+				"{"
+				"\nFrameBarLimit: "
+				"\nMsBarLimit: "
+				"\n}"
 			);
 
 			if (file == NULL || json_validate(schema, file) != JSONSuccess)
 			{
 				file = json_value_init_object();
 
-				//json_object_set_boolean(json_object(file), "isExampleWindowOpen", this->scene->demoWindow);
+				json_object_set_number(json_object(file), "FrameBarLimit", frameBarLimit);
+				json_object_set_number(json_object(file), "MsBarLimit", msBarLimit);
 
 				json_serialize_to_file(file, fName.c_str());
 

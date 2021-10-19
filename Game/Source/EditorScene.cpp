@@ -167,6 +167,25 @@ bool EditorScene::ShowConfigWindow(bool open)
 
 				ImGui::EndMenu();
 			}
+			if (ImGui::CollapsingHeader("Application"))
+			{
+				ImGui::InputText(" Project Name", &projectName);
+
+				ImGui::InputText(" Developer Team", &teamName);
+
+				ImGui::SliderInt("Frame Graph Bars", &app->frameBarLimit, 30, 80, "Bars: %d");
+
+				char title[25];
+				framerate = app->fpsLog[app->fpsLog.size() - 2];
+				sprintf_s(title, 25, "Framerate %.1f", framerate);
+				ImGui::PlotHistogram("##framerate", &app->fpsLog[0], app->fpsLog.size(), 0, title, 0.0f, 100.0f, ImVec2(307, 100));
+
+				ImGui::SliderInt("Ms Graph Bars", &app->msBarLimit, 30, 80, "Bars: %d");
+
+				milliseconds = app->msLog[app->msLog.size() - 2];
+				sprintf_s(title, 25, "Milliseconds %0.1f", milliseconds);
+				ImGui::PlotHistogram("##milliseconds", &app->msLog[0], app->msLog.size(), 0, title, 0.0f, 40.0f, ImVec2(307, 100));
+			}
 			ImGui::End();
 		}
 	}

@@ -9,6 +9,10 @@
 #include "External/parson/Parson.h"
 #include <list>
 #include <string>
+#include <vector>
+#include "PerfTimer.h"
+#include "Timer.h"
+#include "Defs.h"
 
 using namespace std;
 using namespace rapidjson;
@@ -53,18 +57,49 @@ public:
 	bool Load(string fileName, FileContent fileType);
 	// Do not add the extension when writing the file name
 	bool Save(string fileName, FileContent fileType);
+	uint32 GetFrameCount() const
+	{
+		return frameCount;
+	}
+	float GetDeltaTime() const
+	{
+		return dt;
+	}
 
 	SDL_Window* mainWindow = nullptr;
 
 private:
 
 	void AddModule(Module* mod);
+	void ProfilerLogic();
 
-private: //Variables
+public: // Variables
+
+	std::vector<float> fpsLog;
+	int frameBarLimit = 80;
+	std::vector<float> msLog;
+	int msBarLimit = 80;
+
+private: // Variables
 
 	bool loadRequest = false;
 	bool saveRequest = false;
 	string fileName;
 	FileContent fileContent;
 
+	// L07: DONE 4: Calculate some timing measures
+	// required variables are provided:
+	PerfTimer ptimer;
+	uint64 frameCount = 0;
+
+	Timer startupTime;
+	Timer frameTime;
+	Timer lastSecFrameTime;
+	uint32 lastSecFrameCount = 0;
+	uint32 prevLastSecFrameCount = 0;
+	float dt = 0.0f;
+
+	const uint32 frameDelay = 1000 / 60;
+
+	int	cappedMs = -1;
 };

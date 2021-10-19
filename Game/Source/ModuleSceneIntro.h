@@ -2,6 +2,7 @@
 #include "Module.h"
 #include "Globals.h"
 #include "EditorScene.h"
+#include <string>
 
 enum class Scenes
 {
@@ -56,6 +57,24 @@ public: // Getters & Setters
 		case Windows::DEMO_W: editor->demoWindow = state; break;
 		}
 	}
+	std::string GetProjectName()
+	{
+		return editor->projectName;
+	}
+	void SetProjectName(const char* name)
+	{
+		editor->projectName.clear();
+		editor->projectName = name;
+	}
+	std::string GetTeamName()
+	{
+		return editor->teamName;
+	}
+	void SetTeamName(const char* name)
+	{
+		editor->teamName.clear();
+		editor->teamName = name;
+	}
 
 private:
 	Scenes scene = Scenes::NO_SCENE;
@@ -65,7 +84,4 @@ private:
 	bool sceneChangeRequest = false;
 
 	EditorScene* editor = nullptr;
-
-
-public:
 };
