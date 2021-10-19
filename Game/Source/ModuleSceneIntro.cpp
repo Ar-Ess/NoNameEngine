@@ -6,116 +6,99 @@
 #include "ModuleTextures.h"
 #include "ModuleWindow.h"
 
-ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
+ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 }
 
-ModuleSceneIntro::~ModuleSceneIntro()
+ModuleScene::~ModuleScene()
 {}
 
-bool ModuleSceneIntro::Start()
+bool ModuleScene::Start()
 {
 	LOG("Loading Intro assets");
 	bool ret = true;
 	app->renderer->camera.x = app->renderer->camera.y = 0;
 
+	// Create Scenes
+	editor = new EditorScene(app);
+
+	// Set first state of the Engine
+	scene = Scenes::EDITOR;
+
 	return ret;
 }
 
-bool ModuleSceneIntro::CleanUp()
-{
-	LOG("Unloading Intro scene");
-
-	return true;
-}
-
-update_status ModuleSceneIntro::Update()
+update_status ModuleScene::Update()
 {
 	bool ret = true;
 
-	// Quit when clicking window cross
-	SDL_Event event;
-	while (SDL_PollEvent(&event))
+	switch (scene)
 	{
-		ImGui_ImplSDL2_ProcessEvent(&event);
-		if (event.type == SDL_QUIT)
-			ret = false;
-		if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(app->mainWindow))
-			ret = false;
+	case Scenes::EDITOR: ret = UpdateEditor(); break;
 	}
 
-	// Generate new frame
-	ImGui_ImplOpenGL2_NewFrame();
-	ImGui_ImplSDL2_NewFrame(app->mainWindow);
-	ImGui::NewFrame();
-
-	// GUI Implementation
-	if (exampleWindow) ImGui::ShowDemoWindow(&exampleWindow);
-
-	//{ // INITIAL WINDOW TRASHCODE
-	//	ImGui::Begin("Main Menu", &ret);
-	//	{
-	//		if (ImGui::Button("Quit", { 100, 20 })) ret = false;
-	//		ImGui::Checkbox("Example Window", &exampleWindow);
-	//		if (ImGui::MenuItem("Repository")) ShellExecuteA(NULL, "open", "https://github.com/BooStarGamer/Game-Engine-1.0v", NULL, NULL, SW_SHOWNORMAL);
-	//		ImGui::SameLine();
-	//	}
-	//	ImGui::End();
-	//}
-
-	{ // MAIN MENU BAR
-		ImGui::BeginMainMenuBar();
-		{
-			if (ImGui::BeginMenu("File"))
-			{
-				if (ImGui::MenuItem("Save File")) app->Save("NNE_Project_Saving");
-				if (ImGui::MenuItem("Load File")) app->Load("NNE_Project_Saving");
-				if (ImGui::MenuItem("Exit")) ret = false;
-				ImGui::EndMenu();
-			}
-			if (ImGui::BeginMenu("Help"))
-			{
-				if (ImGui::MenuItem("DemoWindow")) exampleWindow = !exampleWindow;
-				if (ImGui::MenuItem("Repository")) ShellExecuteA(NULL, "open", "https://github.com/BooStarGamer/Game-Engine-1.0v", NULL, NULL, SW_SHOWNORMAL);
-				ImGui::EndMenu();
-			}
-			ImGui::EndMainMenuBar();
-		}
-	}
-
-	/* 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
-	{
-		static float f = 0.0f;
-		static int counter = 0;
-
-		ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-		ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-		ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-		ImGui::Checkbox("Another Window", &show_another_window);
-
-		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-		ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-		if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-			counter++;
-		ImGui::SameLine();
-		ImGui::Text("counter = %d", counter);
-
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-		ImGui::End();
-	}*/
-
-	/* 3. Show another simple window.
-	if (show_another_window)
-	{
-		ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-		ImGui::Text("Hello from another window!");
-		if (ImGui::Button("Close Me"))
-			show_another_window = false;
-		ImGui::End();
-	}*/
+	if (sceneChangeRequest) ret = SetScene(changeScene);
 
 	if (!ret) return UPDATE_STOP;
 	return UPDATE_CONTINUE;
+}
+
+bool ModuleScene::UpdateEditor()
+{
+	bool ret = true;
+
+	ret = editor->Update();
+
+	return ret;
+}
+
+bool ModuleScene::SetScene(Scenes newScene)
+{
+	bool ret = true;
+
+	if (newScene == scene) return true;
+
+	if (!sceneChangeRequest)
+	{
+		sceneChangeRequest = true;
+		changeScene = newScene;
+	}
+	else
+	{
+		CleanUpScene(scene);
+
+		prevScene = scene;
+		scene = newScene;
+
+		switch (newScene)
+		{
+		case Scenes::EDITOR: ret = editor->Start();; break;
+		}
+
+		sceneChangeRequest = false;
+		changeScene = Scenes::NO_SCENE;
+	}
+
+	return ret;
+}
+
+bool ModuleScene::CleanUpScene(Scenes scene)
+{
+	bool ret = true;
+	switch (scene)
+	{
+	case Scenes::EDITOR: ret = editor->CleanUp(); break;
+	}
+
+	return ret;
+}
+
+bool ModuleScene::CleanUp()
+{
+	LOG("Unloading Scene");
+	bool ret = true;
+
+	ret = CleanUpScene(scene);
+
+	return ret;
 }

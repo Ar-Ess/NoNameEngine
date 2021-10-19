@@ -30,6 +30,9 @@
     <Filter Include="External\Parson">
       <UniqueIdentifier>{5508529d-7126-4be6-88cb-c2832293fb47}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scenes">
+      <UniqueIdentifier>{2e53bde3-95bd-4f0e-99da-302533fd6613}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -185,6 +188,9 @@
     <ClInclude Include="Source\External\parson\Parson.h">
       <Filter>External\Parson</Filter>
     </ClInclude>
+    <ClInclude Include="Source\EditorScene.h">
+      <Filter>Scenes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -246,6 +252,9 @@
     </ClCompile>
     <ClCompile Include="Source\External\parson\Parson.cpp">
       <Filter>External\Parson</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\EditorScene.cpp">
+      <Filter>Scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

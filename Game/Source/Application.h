@@ -18,7 +18,7 @@ class ModuleRender;
 class ModuleWindow;
 class ModuleTextures;
 class ModuleInput;
-class ModuleSceneIntro;
+class ModuleScene;
 class SDL_Window;
 
 class Application
@@ -28,7 +28,7 @@ public:
 	ModuleWindow* window;
 	ModuleTextures* textures;
 	ModuleInput* input;
-	ModuleSceneIntro* scene_intro;
+	ModuleScene* scene;
 
 private:
 

@@ -29,7 +29,7 @@ Application::Application()
 	window = new ModuleWindow(this);
 	textures = new ModuleTextures(this);
 	input = new ModuleInput(this);
-	scene_intro = new ModuleSceneIntro(this);
+	scene = new ModuleScene(this);
 
 	// Main Modules
 	AddModule(window);
@@ -38,7 +38,7 @@ Application::Application()
 	AddModule(input);
 	
 	// Scenes
-	AddModule(scene_intro);
+	AddModule(scene);
 }
 
 Application::~Application()
@@ -213,7 +213,7 @@ bool Application::Load(string fileName)
 
 		JSON_Value* loadFile = json_parse_file(fileName.c_str());
 
-		this->scene_intro->exampleWindow = json_object_get_boolean(json_object(loadFile), "isExampleWindowOpen");
+		this->scene->exampleWindow = json_object_get_boolean(json_object(loadFile), "isExampleWindowOpen");
 
 		json_value_free(loadFile);
 
@@ -248,7 +248,7 @@ bool Application::Save(string fileName)
 		{
 			saveFile = json_value_init_object();
 
-			json_object_set_boolean(json_object(saveFile), "isExampleWindowOpen", this->scene_intro->exampleWindow);
+			json_object_set_boolean(json_object(saveFile), "isExampleWindowOpen", this->scene->exampleWindow);
 
 			json_serialize_to_file(saveFile, fileName.c_str());
 		}

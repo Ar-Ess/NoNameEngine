@@ -1,6 +1,7 @@
 #pragma once
 #include "Module.h"
 #include "Globals.h"
+#include "EditorScene.h"
 
 #include "../Source/External/ImGui/imgui.h"
 #include "../Source/External/ImGui/imgui_impl_sdl.h"
@@ -14,23 +15,38 @@
 #include "External/SDL/include/SDL_opengl.h"
 #endif
 
-class PhysBody;
+enum class Scenes
+{
+	NO_SCENE = 0,
+	EDITOR
+};
 
-class ModuleSceneIntro : public Module
+class ModuleScene : public Module
 {
 public:
-	ModuleSceneIntro(Application* app, bool start_enabled = true);
-	~ModuleSceneIntro();
+	ModuleScene(Application* app, bool start_enabled = true);
+	~ModuleScene();
 
 	bool Start();
 	update_status Update();
+
+	// Scene Manager
+	bool UpdateEditor();
+	bool SetScene(Scenes newScene);
+	bool CleanUpScene(Scenes scene);
+
 	bool CleanUp();
 
 	bool exampleWindow = false;
 
 private:
-	//bool exampleWindow = false;
-	ImVec4 backgroundColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+	Scenes scene = Scenes::NO_SCENE;
+	Scenes prevScene = Scenes::NO_SCENE;
+	Scenes changeScene = Scenes::NO_SCENE;
+
+	bool sceneChangeRequest = false;
+
+	EditorScene* editor = nullptr;
 
 
 public:
