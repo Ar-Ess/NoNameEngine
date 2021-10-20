@@ -145,6 +145,18 @@ bool EditorScene::ShowAboutWindow(bool open)
 
 bool EditorScene::ShowOutputWindow(bool open)
 {
+	if (open)
+	{
+		if (ImGui::Begin("Output Log", &open))
+		{
+			for (int i = 0; i < GetOutputSize(); i++)
+			{
+				ImGui::Text(GetOutputText(i).c_str());
+			}
+			ImGui::End();
+		}
+	}
+
 	return open;
 }
 

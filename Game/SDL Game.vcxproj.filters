@@ -9,9 +9,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Header Files\Containers">
-      <UniqueIdentifier>{97c4111e-b102-4ba8-9053-6f07ccbbe3d4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="External">
       <UniqueIdentifier>{26fff0dc-a8d2-4349-b2fc-4d8afb192c19}</UniqueIdentifier>
     </Filter>
@@ -58,15 +55,6 @@
     </ClInclude>
     <ClInclude Include="Source\ModuleWindow.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\p2DynArray.h">
-      <Filter>Header Files\Containers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\p2List.h">
-      <Filter>Header Files\Containers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\p2Point.h">
-      <Filter>Header Files\Containers</Filter>
     </ClInclude>
     <ClInclude Include="Source\External\imgui\imconfig.h">
       <Filter>External\ImGui</Filter>

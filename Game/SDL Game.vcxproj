@@ -124,9 +124,6 @@
     <ClInclude Include="Source\ModuleSceneIntro.h" />
     <ClInclude Include="Source\ModuleTextures.h" />
     <ClInclude Include="Source\ModuleWindow.h" />
-    <ClInclude Include="Source\p2DynArray.h" />
-    <ClInclude Include="Source\p2List.h" />
-    <ClInclude Include="Source\p2Point.h" />
     <ClInclude Include="Source\PerfTimer.h" />
     <ClInclude Include="Source\Primitive.h" />
     <ClInclude Include="Source\Timer.h" />

@@ -1,10 +1,17 @@
 #pragma once
 #include <windows.h>
 #include <stdio.h>
+#include <string>
 
 #define LOG(format, ...) log(__FILE__, __LINE__, format, __VA_ARGS__);
 
+#define OUTPUT_LOG_LIMIT 200
+
 void log(const char file[], int line, const char* format, ...);
+
+std::string GetOutputText(int index);
+
+int GetOutputSize();
 
 #define CAP(n) ((n <= 0.0f) ? n=0.0f : (n >= 1.0f) ? n=1.0f : n=n)
 

@@ -1,5 +1,18 @@
 #pragma once
 #include "Globals.h"
+#include <vector>
+
+std::vector<std::string> outputLog;
+
+std::string GetOutputText(int index)
+{
+	return outputLog[index];
+}
+
+int GetOutputSize()
+{
+	return outputLog.size();
+}
 
 void log(const char file[], int line, const char* format, ...)
 {
@@ -13,4 +26,8 @@ void log(const char file[], int line, const char* format, ...)
 	va_end(ap);
 	sprintf_s(tmp_string2, 4096, "\n%s(%d) : %s", file, line, tmp_string);
 	OutputDebugString(tmp_string2);
+
+	outputLog.push_back(tmp_string2);
+	outputLog.back().erase(outputLog.back().begin());
+	if (outputLog.size() > OUTPUT_LOG_LIMIT) outputLog.erase(outputLog.begin());
 }
