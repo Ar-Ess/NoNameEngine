@@ -235,6 +235,8 @@ void Application::ProfilerLogic()
 	uint32 lastFrameMs = frameTime.Read();
 	uint32 framesOnLastUpdate = prevLastSecFrameCount;
 
+	// Frame Cap
+	frameDelay = 1000 / fps;
 	if (frameDelay > lastFrameMs)
 	{
 		SDL_Delay(frameDelay - lastFrameMs);
@@ -244,11 +246,13 @@ void Application::ProfilerLogic()
 	fpsLog.push_back(0.0f);
 	msLog.push_back(lastFrameMs);
 	msLog.push_back(0.0f);
+
 	while (fpsLog.size() > frameBarLimit * 2)
 	{
 		fpsLog.erase(fpsLog.begin());
 		fpsLog.erase(fpsLog.begin());
 	}
+
 	while (msLog.size() > msBarLimit * 2)
 	{
 		msLog.erase(msLog.begin());
@@ -275,17 +279,22 @@ bool Application::Load(string fName, FileContent fc)
 		{
 		case FileContent::PROJECT:
 		{
-			this->scene->SetWindowState(Windows::DEMO_W, json_object_get_boolean(json_object(file), "IsDemoWindowOpen"));
-			this->scene->SetWindowState(Windows::CONFIG_W, json_object_get_boolean(json_object(file), "IsConfigWindowOpen"));
-			this->scene->SetWindowState(Windows::OUTPUT_W, json_object_get_boolean(json_object(file), "IsOutputWindowOpen"));
+			scene->SetWindowState(Windows::DEMO_W, json_object_get_boolean(json_object(file), "IsDemoWindowOpen"));
+			scene->SetWindowState(Windows::CONFIG_W, json_object_get_boolean(json_object(file), "IsConfigWindowOpen"));
+			scene->SetWindowState(Windows::OUTPUT_W, json_object_get_boolean(json_object(file), "IsOutputWindowOpen"));
 
-			this->scene->SetProjectName(json_object_get_string(json_object(file), "ProjectName"));
-			this->scene->SetTeamName(json_object_get_string(json_object(file), "TeamName"));
+			scene->SetProjectName(json_object_get_string(json_object(file), "ProjectName"));
+			scene->SetTeamName(json_object_get_string(json_object(file), "TeamName"));
+
+			fps = json_object_get_number(json_object(file), "FPS");
+			frameBarLimit = json_object_get_number(json_object(file), "FrameBarLimit");
+			msBarLimit = json_object_get_number(json_object(file), "MsBarLimit");
 
 			break;
 		}
 		case FileContent::CONFIG_PREFERENCES:
 		{
+			fps = json_object_get_number(json_object(file), "FPS");
 			frameBarLimit = json_object_get_number(json_object(file), "FrameBarLimit");
 			msBarLimit = json_object_get_number(json_object(file), "MsBarLimit");
 
@@ -327,6 +336,11 @@ bool Application::Save(string fName, FileContent fc)
 				"\nIsOutputWindowOpen: "
 				"\nProject Name: "
 				"\nTeam Name: "
+
+				// Config Preferences
+				"\nFPS: "
+				"\nFrameBarLimit: "
+				"\nMsBarLimit: "
 				"\n}"
 			);
 
@@ -334,12 +348,19 @@ bool Application::Save(string fName, FileContent fc)
 			{
 				file = json_value_init_object();
 
+				// General Engine - Project
 				json_object_set_boolean(json_object(file), "IsDemoWindowOpen", this->scene->GetWindowState(Windows::DEMO_W));
 				json_object_set_boolean(json_object(file), "IsConfigWindowOpen", this->scene->GetWindowState(Windows::CONFIG_W));
 				json_object_set_boolean(json_object(file), "IsOutputWindowOpen", this->scene->GetWindowState(Windows::OUTPUT_W));
 
+				// Project Information - Project
 				json_object_set_string(json_object(file), "ProjectName", this->scene->GetProjectName().c_str());
 				json_object_set_string(json_object(file), "TeamName", this->scene->GetTeamName().c_str());
+
+				// Engine Performance - Preferences
+				json_object_set_number(json_object(file), "FPS", fps);
+				json_object_set_number(json_object(file), "FrameBarLimit", frameBarLimit);
+				json_object_set_number(json_object(file), "MsBarLimit", msBarLimit);
 
 				json_serialize_to_file(file, fName.c_str());
 
@@ -351,6 +372,7 @@ bool Application::Save(string fName, FileContent fc)
 		{
 			JSON_Value* schema = json_parse_string(
 				"{"
+				"\nFPS: "
 				"\nFrameBarLimit: "
 				"\nMsBarLimit: "
 				"\n}"
@@ -360,6 +382,7 @@ bool Application::Save(string fName, FileContent fc)
 			{
 				file = json_value_init_object();
 
+				json_object_set_number(json_object(file), "FPS", fps);
 				json_object_set_number(json_object(file), "FrameBarLimit", frameBarLimit);
 				json_object_set_number(json_object(file), "MsBarLimit", msBarLimit);
 

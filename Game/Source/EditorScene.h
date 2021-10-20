@@ -37,6 +37,21 @@ private: // Functions
 		ShellExecuteA(NULL, "open", link.c_str(), NULL, NULL, SW_SHOWNORMAL);
 	}
 
+	// Input from 0 (smallest spacing) to whatever you need
+	void AddSpacing(unsigned int spaces = 1)
+	{
+		short int plus = 0;
+		if (spaces == 0) plus = 1;
+		for (int i = 0; i < spaces * 2 + plus; i++) ImGui::Spacing();
+	}
+
+	// Input from 1 to whatever you need
+	void AddSeparator(unsigned int separator = 1)
+	{
+		if (separator == 0) return;
+		for (int i = 0; i < separator; i++) ImGui::Separator();
+	}
+
 public: // Variables
 	bool demoWindow = false;
 	bool outputWindow = false;

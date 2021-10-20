@@ -79,6 +79,7 @@ public: // Variables
 	int frameBarLimit = 80;
 	std::vector<float> msLog;
 	int msBarLimit = 80;
+	int fps = 60;
 
 private: // Variables
 
@@ -99,7 +100,7 @@ private: // Variables
 	uint32 prevLastSecFrameCount = 0;
 	float dt = 0.0f;
 
-	const uint32 frameDelay = 1000 / 60;
+	uint32 frameDelay = 1000 / 60;
 
 	int	cappedMs = -1;
 };
