@@ -14,52 +14,28 @@ ModuleRender::ModuleRender(Application* app, bool start_enabled) : Module(app, s
 	camera.h = SCREEN_HEIGHT;
 }
 
-// Destructor
 ModuleRender::~ModuleRender()
 {}
 
-// Called before render is available
 bool ModuleRender::Init()
 {
-	LOG("Creating Renderer context");
 	bool ret = true;
-	Uint32 flags = 0;
-
-	if(VSYNC == true)
-	{
-		flags |= SDL_RENDERER_PRESENTVSYNC;
-	}
-
-	renderer = SDL_CreateRenderer(app->window->window, -1, flags);
-	
-	if(renderer == NULL)
-	{
-		LOG("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
-		ret = false;
-	}
 
 	return ret;
 }
 
-// PreUpdate: clear buffer
 update_status ModuleRender::PreUpdate()
 {
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-	SDL_RenderClear(renderer);
 	return UPDATE_CONTINUE;
 }
 
-// Update: debug camera
 update_status ModuleRender::Update()
 {
 	return UPDATE_CONTINUE;
 }
 
-// PostUpdate present buffer to screen
 update_status ModuleRender::PostUpdate()
 {
-	SDL_RenderPresent(renderer);
-
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 
 	ImGui::Render();
@@ -80,26 +56,30 @@ update_status ModuleRender::PostUpdate()
 		SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
 	}
 
-	SDL_GL_SwapWindow(app->mainWindow);
+	SDL_GL_SwapWindow(app->window->mainWindow);
 
 	return UPDATE_CONTINUE;
 }
 
-// Called before quitting
 bool ModuleRender::CleanUp()
 {
 	LOG("Destroying renderer");
 
-	//Destroy window
-	if(renderer != NULL)
-	{
-		SDL_DestroyRenderer(renderer);
-	}
-
 	return true;
 }
 
-// Blit to screen
+void ModuleRender::SetVSync(bool vSync)
+{
+	if (vSync)
+	{
+		SDL_GL_SetSwapInterval(-1);
+	}
+	else if (!vSync)
+	{
+		SDL_GL_SetSwapInterval(0);
+	}
+}
+
 bool ModuleRender::DrawTexture(SDL_Texture* texture, int x, int y, SDL_Rect* section, float speed, double angle, int pivot_x, int pivot_y )
 {
 	bool ret = true;

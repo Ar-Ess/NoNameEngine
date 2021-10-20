@@ -7,10 +7,6 @@
 
 #include "Primitive.h"
 
-#include "../Source/External/ImGui/imgui.h"
-#include "../Source/External/ImGui/imgui_impl_sdl.h"
-#include "../Source/External/ImGui/imgui_impl_opengl2.h"
-
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
@@ -56,19 +52,13 @@ bool Application::Init()
 
 	PERF_START(ptimer);
 
+	InitImGui();
+
 	list<Module*>::iterator item;
 
-	LOG("Application Init --------------");
 	for (item = moduleList.begin(); item != moduleList.end(); ++item) 
 		ret = item._Ptr->_Myval->Init();
 
-	if (InitImGui() == false)
-	{
-		LOG("InitImGui exits with ERROR");
-		ret = false;
-	}
-
-	LOG("Application Start --------------");
 	for (item = moduleList.begin(); item != moduleList.end(); ++item) 
 		if (item._Ptr->_Myval->IsEnabled()) ret = item._Ptr->_Myval->Start();
 
@@ -98,59 +88,6 @@ bool Application::InitImGui()
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-
-
-	// Create window with graphics context
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-	SDL_WindowFlags wFlags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-	mainWindow = SDL_CreateWindow("Dear ImGui SDL2+OpenGL3 example", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, wFlags);
-	SDL_GLContext gl_context = SDL_GL_CreateContext(mainWindow);
-	SDL_GL_MakeCurrent(mainWindow, gl_context);
-	SDL_GL_SetSwapInterval(1); // Enable vsync
-
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
-	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
-	//io.ConfigViewportsNoAutoMerge = true;
-	//io.ConfigViewportsNoTaskBarIcon = true;
-
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-	//ImGui::StyleColorsClassic();
-
-	// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
-	ImGuiStyle& style = ImGui::GetStyle();
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-	{
-		style.WindowRounding = 0.0f;
-		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-	}
-
-	// Setup Platform/Renderer backends
-	ImGui_ImplSDL2_InitForOpenGL(mainWindow, gl_context);
-	ImGui_ImplOpenGL2_Init();
-
-	// Load Fonts
-	// - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
-	// - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
-	// - If the file cannot be loaded, the function will return NULL. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
-	// - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
-	// - Read 'docs/FONTS.md' for more instructions and details.
-	// - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-	//io.Fonts->AddFontDefault();
-	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
-	//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
-	//IM_ASSERT(font != NULL);
 
 	PERF_PEEK(ptimer);
 
@@ -290,6 +227,17 @@ bool Application::Load(string fName, FileContent fc)
 			frameBarLimit = json_object_get_number(json_object(file), "FrameBarLimit");
 			msBarLimit = json_object_get_number(json_object(file), "MsBarLimit");
 
+			scene->SetBrightness(json_object_get_number(json_object(file), "Brightness"));
+			scene->SetWinDimensions({ json_object_get_number(json_object(file), "Window Width"), json_object_get_number(json_object(file), "Window Height") });
+			scene->SetWinDimensionProportion(json_object_get_number(json_object(file), "Window Proportion Value"));
+
+			scene->SetWindowSettings(WindowSettings::FULL_SCREEN, json_object_get_boolean(json_object(file), "Full Screen"));
+			scene->SetWindowSettings(WindowSettings::FULL_DESKTOP, json_object_get_boolean(json_object(file), "Full Desktop"));
+			scene->SetWindowSettings(WindowSettings::RESIZABLE, json_object_get_boolean(json_object(file), "Window Resizable"));
+			scene->SetWindowSettings(WindowSettings::BORDERLESS, json_object_get_boolean(json_object(file), "Window Borderless"));
+			scene->SetWindowSettings(WindowSettings::V_SYNC, json_object_get_boolean(json_object(file), "VSync"));
+			scene->SetWindowSettings(WindowSettings::KEEP_PROPORTION, json_object_get_boolean(json_object(file), "Keep Proportion"));
+
 			break;
 		}
 		case FileContent::CONFIG_PREFERENCES:
@@ -297,6 +245,17 @@ bool Application::Load(string fName, FileContent fc)
 			fps = json_object_get_number(json_object(file), "FPS");
 			frameBarLimit = json_object_get_number(json_object(file), "FrameBarLimit");
 			msBarLimit = json_object_get_number(json_object(file), "MsBarLimit");
+
+			scene->SetBrightness(json_object_get_number(json_object(file), "Brightness"));
+			scene->SetWinDimensions({ json_object_get_number(json_object(file), "Window Width"), json_object_get_number(json_object(file), "Window Height") });
+			scene->SetWinDimensionProportion(json_object_get_number(json_object(file), "Window Proportion Value"));
+
+			scene->SetWindowSettings(WindowSettings::FULL_SCREEN, json_object_get_boolean(json_object(file), "Full Screen"));
+			scene->SetWindowSettings(WindowSettings::FULL_DESKTOP, json_object_get_boolean(json_object(file), "Full Desktop"));
+			scene->SetWindowSettings(WindowSettings::RESIZABLE, json_object_get_boolean(json_object(file), "Window Resizable"));
+			scene->SetWindowSettings(WindowSettings::BORDERLESS, json_object_get_boolean(json_object(file), "Window Borderless"));
+			scene->SetWindowSettings(WindowSettings::V_SYNC, json_object_get_boolean(json_object(file), "VSync"));
+			scene->SetWindowSettings(WindowSettings::KEEP_PROPORTION, json_object_get_boolean(json_object(file), "Keep Proportion"));
 
 			break;
 		}
@@ -341,6 +300,16 @@ bool Application::Save(string fName, FileContent fc)
 				"\nFPS: "
 				"\nFrameBarLimit: "
 				"\nMsBarLimit: "
+				"\nBrightness: "
+				"\nWindow Width: "
+				"\nWindow Height: "
+				"\nFull Screen: "
+				"\nFull Desktop: "
+				"\nWindow Resizable: "
+				"\nWindow Borderless: "
+				"\nVSync: "
+				"\nWindow Proportion Value: "
+				"\nKeep Proportion: "
 				"\n}"
 			);
 
@@ -362,6 +331,19 @@ bool Application::Save(string fName, FileContent fc)
 				json_object_set_number(json_object(file), "FrameBarLimit", frameBarLimit);
 				json_object_set_number(json_object(file), "MsBarLimit", msBarLimit);
 
+				// Window Configuration - Preferences
+				json_object_set_number(json_object(file), "Brightness", this->scene->GetBrightness());
+				json_object_set_number(json_object(file), "Window Width", this->scene->GetWinDimensions().x);
+				json_object_set_number(json_object(file), "Window Height", this->scene->GetWinDimensions().y);
+				json_object_set_number(json_object(file), "Window Proportion Value", this->scene->GetWinDimensionProportion());
+
+				json_object_set_boolean(json_object(file), "Full Screen", this->scene->GetWindowSettings(WindowSettings::FULL_SCREEN));
+				json_object_set_boolean(json_object(file), "Full Desktop", this->scene->GetWindowSettings(WindowSettings::FULL_DESKTOP));
+				json_object_set_boolean(json_object(file), "Window Resizable", this->scene->GetWindowSettings(WindowSettings::RESIZABLE));
+				json_object_set_boolean(json_object(file), "Window Borderless", this->scene->GetWindowSettings(WindowSettings::BORDERLESS));
+				json_object_set_boolean(json_object(file), "VSync", this->scene->GetWindowSettings(WindowSettings::V_SYNC));
+				json_object_set_boolean(json_object(file), "Keep Proportion", this->scene->GetWindowSettings(WindowSettings::KEEP_PROPORTION));
+
 				json_serialize_to_file(file, fName.c_str());
 
 				json_value_free(schema);
@@ -375,6 +357,16 @@ bool Application::Save(string fName, FileContent fc)
 				"\nFPS: "
 				"\nFrameBarLimit: "
 				"\nMsBarLimit: "
+				"\nBrightness: "
+				"\nWindow Width: "
+				"\nWindow Height: "
+				"\nFull Screen: "
+				"\nFull Desktop: "
+				"\nWindow Resizable: "
+				"\nWindow Borderless: "
+				"\nVSync: "
+				"\nWindow Proportion Value: "
+				"\nKeep Proportion: "
 				"\n}"
 			);
 
@@ -385,6 +377,19 @@ bool Application::Save(string fName, FileContent fc)
 				json_object_set_number(json_object(file), "FPS", fps);
 				json_object_set_number(json_object(file), "FrameBarLimit", frameBarLimit);
 				json_object_set_number(json_object(file), "MsBarLimit", msBarLimit);
+
+				json_object_set_number(json_object(file), "Brightness", this->scene->GetBrightness());
+				json_object_set_number(json_object(file), "Window Width", this->scene->GetWinDimensions().x);
+				json_object_set_number(json_object(file), "Window Height", this->scene->GetWinDimensions().y);
+				json_object_set_number(json_object(file), "Window Proportion Value", this->scene->GetWinDimensionProportion());
+
+				json_object_set_boolean(json_object(file), "Full Screen", this->scene->GetWindowSettings(WindowSettings::FULL_SCREEN));
+				json_object_set_boolean(json_object(file), "Full Desktop", this->scene->GetWindowSettings(WindowSettings::FULL_DESKTOP));
+				json_object_set_boolean(json_object(file), "Window Resizable", this->scene->GetWindowSettings(WindowSettings::RESIZABLE));
+				json_object_set_boolean(json_object(file), "Window Borderless", this->scene->GetWindowSettings(WindowSettings::BORDERLESS));
+				json_object_set_boolean(json_object(file), "VSync", this->scene->GetWindowSettings(WindowSettings::V_SYNC));
+				json_object_set_boolean(json_object(file), "Keep Proportion", this->scene->GetWindowSettings(WindowSettings::KEEP_PROPORTION));
+
 
 				json_serialize_to_file(file, fName.c_str());
 

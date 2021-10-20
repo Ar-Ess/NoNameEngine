@@ -1,5 +1,7 @@
 #pragma once
 #include "Application.h"
+#include "ModuleWindow.h"
+#include "ModuleRender.h"
 #include "Globals.h"
 #include <string>
 
@@ -15,6 +17,8 @@
 #else
 #include "External/SDL/include/SDL_opengl.h"
 #endif
+
+#define YELLOW {1.0f, 1.0f, 0.0f, 1.0f}
 
 class EditorScene
 {
@@ -32,6 +36,7 @@ private: // Functions
 	bool ShowOutputWindow(bool open);
 	bool ShowConfigWindow(bool open);
 
+	// Instantly browse on internet the link written as an argument
 	void LinkBrowser(string link)
 	{
 		ShellExecuteA(NULL, "open", link.c_str(), NULL, NULL, SW_SHOWNORMAL);
@@ -58,6 +63,17 @@ public: // Variables
 	bool configWindow = false;
 
 	bool aboutPopup = false;
+
+	float brightLevel = 1.0f;
+	bool wFullScreen = false;
+	bool wFullDesktop = false;
+	bool wResizable = false;
+	bool wBorderless = false;
+	bool wVSync = false;
+	bool wKeepProportion = false;
+
+	Point wSize = { SCREEN_WIDTH, SCREEN_HEIGHT };
+	int wSizeProportion = 100;
 
 	std::string projectName = "New Project";
 	std::string teamName = "Team Name";

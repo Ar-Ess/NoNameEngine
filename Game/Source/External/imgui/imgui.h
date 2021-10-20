@@ -268,6 +268,8 @@ struct ImVec2
     float                                   x, y;
     ImVec2()                                { x = y = 0.0f; }
     ImVec2(float _x, float _y)              { x = _x; y = _y; }
+    bool   operator== (ImVec2 b)            { return (x == b.x && y == b.y); }
+    bool   operator!= (ImVec2 b)            { return !(x == b.x && y == b.y); }
     float  operator[] (size_t idx) const    { IM_ASSERT(idx <= 1); return (&x)[idx]; }    // We very rarely use this [] operator, the assert overhead is fine.
     float& operator[] (size_t idx)          { IM_ASSERT(idx <= 1); return (&x)[idx]; }    // We very rarely use this [] operator, the assert overhead is fine.
 #ifdef IM_VEC2_CLASS_EXTRA

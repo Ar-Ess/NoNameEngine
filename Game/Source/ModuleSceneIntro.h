@@ -17,6 +17,16 @@ enum class Windows
 	CONFIG_W,
 };
 
+enum class WindowSettings
+{
+	FULL_SCREEN,
+	FULL_DESKTOP,
+	RESIZABLE,
+	BORDERLESS,
+	V_SYNC,
+	KEEP_PROPORTION
+};
+
 class ModuleScene : public Module
 {
 public:
@@ -75,6 +85,59 @@ public: // Getters & Setters
 		editor->teamName.clear();
 		editor->teamName = name;
 	}
+	float GetBrightness()
+	{
+		return editor->brightLevel;
+	}
+	void SetBrightness(float brightness)
+	{
+		editor->brightLevel = brightness;
+	}
+	bool GetWindowSettings(WindowSettings wS)
+	{
+		bool state = false;
+
+		switch (wS)
+		{
+		case WindowSettings::FULL_SCREEN: state = editor->wFullScreen; break;
+		case WindowSettings::FULL_DESKTOP: state = editor->wFullDesktop; break;
+		case WindowSettings::RESIZABLE: state = editor->wResizable; break;
+		case WindowSettings::BORDERLESS: state = editor->wBorderless; break;
+		case WindowSettings::V_SYNC: state = editor->wVSync; break;
+		case WindowSettings::KEEP_PROPORTION: state = editor->wKeepProportion; break;
+		}
+
+		return state;
+	}
+	void SetWindowSettings(WindowSettings wS, bool state)
+	{
+		switch (wS)
+		{
+		case WindowSettings::FULL_SCREEN: editor->wFullScreen = state; break;
+		case WindowSettings::FULL_DESKTOP: editor->wFullDesktop = state; break;
+		case WindowSettings::RESIZABLE: editor->wResizable = state; break;
+		case WindowSettings::BORDERLESS: editor->wBorderless = state; break;
+		case WindowSettings::V_SYNC: editor->wVSync = state; break;
+		case WindowSettings::KEEP_PROPORTION: editor->wKeepProportion = state; break;
+		}
+	}
+	Point GetWinDimensions()
+	{
+		return editor->wSize;
+	}
+	void SetWinDimensions(Point size)
+	{
+		editor->wSize = size;
+	}
+	int GetWinDimensionProportion()
+	{
+		return editor->wSizeProportion;
+	}
+	void SetWinDimensionProportion(int prop)
+	{
+		editor->wSizeProportion = prop;
+	}
+
 
 private:
 	Scenes scene = Scenes::NO_SCENE;

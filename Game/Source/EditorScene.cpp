@@ -25,13 +25,13 @@ bool EditorScene::Update()
 		ImGui_ImplSDL2_ProcessEvent(&event);
 		if (event.type == SDL_QUIT)
 			ret = false;
-		if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(app->mainWindow))
+		if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(app->window->mainWindow))
 			ret = false;
 	}
 
 	// Generate new frame
 	ImGui_ImplOpenGL2_NewFrame();
-	ImGui_ImplSDL2_NewFrame(app->mainWindow);
+	ImGui_ImplSDL2_NewFrame(app->window->mainWindow);
 	ImGui::NewFrame();
 
 	// GUI DEMO WINDOW
@@ -93,29 +93,6 @@ bool EditorScene::Update()
 	aboutPopup = ShowAboutWindow(aboutPopup);
 	outputWindow = ShowOutputWindow(outputWindow);
 	configWindow = ShowConfigWindow(configWindow);
-
-	/* 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
-	{
-		static float f = 0.0f;
-		static int counter = 0;
-
-		ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-		ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-		ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-		ImGui::Checkbox("Another Window", &show_another_window);
-
-		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-		ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-		if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-			counter++;
-		ImGui::SameLine();
-		ImGui::Text("counter = %d", counter);
-
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-		ImGui::End();
-	}*/
 
 	return ret;
 }
@@ -205,7 +182,7 @@ bool EditorScene::ShowConfigWindow(bool open)
 				sprintf_s(title, 25, "Framerate %.1f", framerate);
 				ImGui::Text("Framerate Graph");
 				ImGui::PlotHistogram("##framerate", &app->fpsLog[0], app->fpsLog.size(), 0, title, 0.0f, 100.0f, ImVec2(307, 100));
-				ImGui::SliderInt(" FRG", &app->frameBarLimit, 30, 80, "Bars: %d");
+				ImGui::SliderInt(" FBL", &app->frameBarLimit, 30, 80, "Bars: %d");
 
 				AddSpacing(0);
 
@@ -217,6 +194,84 @@ bool EditorScene::ShowConfigWindow(bool open)
 
 				AddSpacing(1);
 
+				AddSeparator(2);
+			}
+			if (ImGui::CollapsingHeader("Window"))
+			{
+				Point prev = wSize;
+				int prevProportion = wSizeProportion;
+
+				AddSpacing(0);
+				ImGui::Text("Brightness");
+				ImGui::SliderFloat("(Not working, app crash when color changes)", &brightLevel, 0.0f, 1.0f, "Value: %.3f");
+
+				AddSpacing(0);
+				if (ImGui::Checkbox("Keep Proportion", &wKeepProportion)) wKeepProportion = wKeepProportion;
+
+				if (!wKeepProportion)
+				{
+					AddSpacing(0);
+					ImGui::Text("Width");
+					ImGui::SliderInt("W", &wSize.x, 1, SCREEN_WIDTH, "%d");
+
+					AddSpacing(0);
+					ImGui::Text("Height");
+					ImGui::SliderInt("H", &wSize.y, 1, SCREEN_HEIGHT, "%d");
+
+					if (wSize != prev) SDL_SetWindowSize(app->window->mainWindow, (int)wSize.x, (int)wSize.y);
+				}
+				else
+				{
+					AddSpacing(0);
+					ImGui::Text("Width / Height");
+					ImGui::SliderInt("W", &wSizeProportion, 1, 100, "%d");
+
+					if (wSizeProportion != prevProportion) SDL_SetWindowSize(app->window->mainWindow, int(floor(SCREEN_WIDTH * wSizeProportion / 100)), int(floor(SCREEN_HEIGHT * wSizeProportion / 100)));
+				}
+
+				AddSpacing(1);
+				if (ImGui::Checkbox(" VSync", &wVSync)) app->renderer->SetVSync(wVSync);
+
+				AddSpacing(0);
+				if (ImGui::Checkbox(" Full Screen    ", &wFullScreen)) app->window->SetWinFullScreen(wFullScreen);
+				ImGui::SameLine();
+				if (ImGui::Checkbox(" Resizable", &wResizable)) app->window->SetWinResizable(wResizable);
+
+				AddSpacing(0);
+				if (ImGui::Checkbox(" Borderless     ", &wBorderless)) app->window->SetWinBorders(wBorderless);
+				ImGui::SameLine();
+				if (ImGui::Checkbox(" Full Desktop", &wFullDesktop)) app->window->SetWinFullScreen(wFullDesktop);
+
+				AddSpacing(1);
+			}
+			if (ImGui::CollapsingHeader("Hardware"))
+			{
+				AddSpacing(0);
+				SDL_version v;
+				SDL_GetVersion(&v);
+				ImGui::Text("SDL Version: "); ImGui::SameLine(); ImGui::TextColored(ImVec4(YELLOW), "%d.%d.%d", v.major, v.minor, v.patch);
+				AddSpacing(0);
+				AddSeparator(2);
+				AddSpacing(0);
+				ImGui::Text("CPUs: "); ImGui::SameLine(); ImGui::TextColored(ImVec4(YELLOW), "%d (Cache: %dkb)", SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
+				AddSpacing(0);
+				ImGui::Text("System RAM: "); ImGui::SameLine(); ImGui::TextColored(ImVec4(YELLOW), "%d", SDL_GetSystemRAM);
+				AddSpacing(0);
+				ImGui::Text("Caps: "); ImGui::SameLine(); 
+				{
+					if (SDL_Has3DNow()) ImGui::TextColored(ImVec4(YELLOW), "3DNow"); ImGui::SameLine();
+					if (SDL_HasAltiVec()) ImGui::TextColored(ImVec4(YELLOW), "AltiVec"); ImGui::SameLine();
+					if (SDL_HasAVX()) ImGui::TextColored(ImVec4(YELLOW), "AVX"); ImGui::SameLine();
+					if (SDL_HasAVX2()) ImGui::TextColored(ImVec4(YELLOW), "AVX2"); ImGui::SameLine();
+					if (SDL_HasMMX()) ImGui::TextColored(ImVec4(YELLOW), "MMX"); ImGui::SameLine();
+					if (SDL_HasRDTSC()) ImGui::TextColored(ImVec4(YELLOW), "RDTSC");
+					if (SDL_HasSSE()) ImGui::TextColored(ImVec4(YELLOW), "SSE"); ImGui::SameLine();
+					if (SDL_HasSSE2()) ImGui::TextColored(ImVec4(YELLOW), "SSE2"); ImGui::SameLine();
+					if (SDL_HasSSE3()) ImGui::TextColored(ImVec4(YELLOW), "SSE3"); ImGui::SameLine();
+					if (SDL_HasSSE41()) ImGui::TextColored(ImVec4(YELLOW), "SSE41"); ImGui::SameLine();
+					if (SDL_HasSSE42()) ImGui::TextColored(ImVec4(YELLOW), "SSE42");
+				}
+				AddSpacing(0);
 				AddSeparator(2);
 			}
 			ImGui::End();

@@ -5,6 +5,7 @@
 #include "External/SDL/include/SDL.h"
 
 class Application;
+struct SDL_Window;
 
 class ModuleWindow : public Module
 {
@@ -18,14 +19,13 @@ public:
 	bool Init();
 	bool CleanUp();
 
-	void SetTitle(const char* title);
+	void SetWinFullScreen(bool full);
+	void SetWinDFullScreen(bool full);
+	void SetWinResizable(bool resizable);
+	void SetWinBorders(bool border);
 
-public:
-	//The window we'll be rendering to
-	SDL_Window* window;
+	SDL_Window* mainWindow = nullptr;
 
-	//The surface contained by the window
-	SDL_Surface* screen_surface;
 };
 
 #endif // __ModuleWindow_H__

@@ -29,7 +29,6 @@ class ModuleWindow;
 class ModuleTextures;
 class ModuleInput;
 class ModuleScene;
-class SDL_Window;
 
 class Application
 {
@@ -66,7 +65,6 @@ public:
 		return dt;
 	}
 
-	SDL_Window* mainWindow = nullptr;
 
 private:
 

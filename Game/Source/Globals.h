@@ -27,6 +27,43 @@ enum update_status
 	UPDATE_ERROR
 };
 
+struct Point
+{
+	Point() {}
+	Point(int xx, int yy) { x = xx; y = yy; }
+	Point(float xx, float yy) { x = xx; y = yy; }
+	Point(double xx, double yy) { x = xx; y = yy; }
+
+	int x = 0, y = 0;
+
+	bool operator==(Point b) { return (x == b.x && y == b.y); }
+	bool operator==(int i) { return (x == i || y == i); }
+	bool operator!=(Point b) { return !(x == b.x && y == b.y); }
+	bool operator!=(int i) { return !(x == i && y == i); }
+
+	void operator+=(int i) { x += i; y += i; }
+	void operator-=(int i) { x -= i; y -= i; }
+	void operator*=(int i) { x *= i; y *= i; }
+	void operator/=(int i) { if (i == 0) return; x /= i; y /= i; }
+
+	void operator+=(Point i) { x += i.x; y += i.y; }
+	void operator-=(Point i) { x -= i.x; y -= i.y; }
+	void operator*=(Point i) { x *= i.x; y *= i.y; }
+	void operator/=(Point i) { if (i == 0) return; x /= i.x; y /= i.y; }
+
+	bool operator<(int i) { return (x < i && y < i); }
+	bool operator<=(int i) { return (x <= i && y <= i); }
+	bool operator>(int i) { return (x > i && y > i); }
+	bool operator>=(int i) { return (x >= i && y >= i); }
+
+	bool operator<(Point b) { return (x < b.x && y < b.y); }
+	bool operator<=(Point b) { return (x <= b.x && y <= b.y); }
+	bool operator>(Point b) { return (x > b.x && y > b.y); }
+	bool operator>=(Point b) { return (x >= b.x && y >= b.y); }
+
+
+};
+
 // Configuration -----------
 #define SCREEN_WIDTH 1024
 #define SCREEN_HEIGHT 768
@@ -36,4 +73,3 @@ enum update_status
 #define WIN_BORDERLESS false
 #define WIN_FULLSCREEN_DESKTOP false
 #define VSYNC true
-#define TITLE "2D Physics Playground"
