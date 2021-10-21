@@ -200,10 +200,12 @@ bool EditorScene::ShowConfigWindow(bool open)
 			{
 				Point prev = wSize;
 				int prevProportion = wSizeProportion;
+				float prevBright = brightLevel;
 
 				AddSpacing(0);
 				ImGui::Text("Brightness");
-				ImGui::SliderFloat("(Not working, app crash when color changes)", &brightLevel, 0.0f, 1.0f, "Value: %.3f");
+				ImGui::SliderFloat("B", &brightLevel, 0.0f, 1.0f, "Value: %.3f");
+				if (prevBright != brightLevel) app->window->SetWinBrightness(brightLevel);
 
 				AddSpacing(0);
 				if (ImGui::Checkbox("Keep Proportion", &wKeepProportion)) wKeepProportion = wKeepProportion;
@@ -218,7 +220,7 @@ bool EditorScene::ShowConfigWindow(bool open)
 					ImGui::Text("Height");
 					ImGui::SliderInt("H", &wSize.y, 1, SCREEN_HEIGHT, "%d");
 
-					if (wSize != prev) SDL_SetWindowSize(app->window->mainWindow, (int)wSize.x, (int)wSize.y);
+					if (wSize != prev) app->window->SetWinSize((int)wSize.x, (int)wSize.y);
 				}
 				else
 				{
@@ -226,7 +228,7 @@ bool EditorScene::ShowConfigWindow(bool open)
 					ImGui::Text("Width / Height");
 					ImGui::SliderInt("W", &wSizeProportion, 1, 100, "%d");
 
-					if (wSizeProportion != prevProportion) SDL_SetWindowSize(app->window->mainWindow, int(floor(SCREEN_WIDTH * wSizeProportion / 100)), int(floor(SCREEN_HEIGHT * wSizeProportion / 100)));
+					if (wSizeProportion != prevProportion) app->window->SetWinSize(int(floor(SCREEN_WIDTH * wSizeProportion / 100)), int(floor(SCREEN_HEIGHT * wSizeProportion / 100)));
 				}
 
 				AddSpacing(1);
@@ -235,7 +237,7 @@ bool EditorScene::ShowConfigWindow(bool open)
 				AddSpacing(0);
 				if (ImGui::Checkbox(" Full Screen    ", &wFullScreen)) app->window->SetWinFullScreen(wFullScreen);
 				ImGui::SameLine();
-				if (ImGui::Checkbox(" Resizable", &wResizable)) app->window->SetWinResizable(wResizable);
+				if (ImGui::Checkbox(" Resizable", &wResizable)) app->SaveRestartPropierties();
 
 				AddSpacing(0);
 				if (ImGui::Checkbox(" Borderless     ", &wBorderless)) app->window->SetWinBorders(wBorderless);

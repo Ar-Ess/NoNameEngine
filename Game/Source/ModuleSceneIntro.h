@@ -92,6 +92,7 @@ public: // Getters & Setters
 	void SetBrightness(float brightness)
 	{
 		editor->brightLevel = brightness;
+		app->window->SetWinBrightness(brightness);
 	}
 	bool GetWindowSettings(WindowSettings wS)
 	{
@@ -113,11 +114,11 @@ public: // Getters & Setters
 	{
 		switch (wS)
 		{
-		case WindowSettings::FULL_SCREEN: editor->wFullScreen = state; break;
-		case WindowSettings::FULL_DESKTOP: editor->wFullDesktop = state; break;
+		case WindowSettings::FULL_SCREEN: editor->wFullScreen = state; app->window->SetWinFullScreen(state); break;
+		case WindowSettings::FULL_DESKTOP: editor->wFullDesktop = state; app->window->SetWinDFullScreen(state); break;
 		case WindowSettings::RESIZABLE: editor->wResizable = state; break;
-		case WindowSettings::BORDERLESS: editor->wBorderless = state; break;
-		case WindowSettings::V_SYNC: editor->wVSync = state; break;
+		case WindowSettings::BORDERLESS: editor->wBorderless = state; app->window->SetWinBorders(state); break;
+		case WindowSettings::V_SYNC: editor->wVSync = state; app->renderer->SetVSync(state); break;
 		case WindowSettings::KEEP_PROPORTION: editor->wKeepProportion = state; break;
 		}
 	}
@@ -128,6 +129,7 @@ public: // Getters & Setters
 	void SetWinDimensions(Point size)
 	{
 		editor->wSize = size;
+		app->window->SetWinSize(size.x, size.y);
 	}
 	int GetWinDimensionProportion()
 	{
@@ -136,6 +138,7 @@ public: // Getters & Setters
 	void SetWinDimensionProportion(int prop)
 	{
 		editor->wSizeProportion = prop;
+		app->window->SetWinSize(int(floor(SCREEN_WIDTH * prop / 100)), int(floor(SCREEN_HEIGHT * prop / 100)));
 	}
 
 

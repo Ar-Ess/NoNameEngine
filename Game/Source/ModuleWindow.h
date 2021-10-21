@@ -21,8 +21,9 @@ public:
 
 	void SetWinFullScreen(bool full);
 	void SetWinDFullScreen(bool full);
-	void SetWinResizable(bool resizable);
 	void SetWinBorders(bool border);
+	void SetWinBrightness(float bright);
+	void SetWinSize(int w, int h);
 
 	SDL_Window* mainWindow = nullptr;
 

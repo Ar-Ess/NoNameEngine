@@ -56,6 +56,8 @@ public:
 	bool Load(string fileName, FileContent fileType);
 	// Do not add the extension when writing the file name
 	bool Save(string fileName, FileContent fileType);
+	bool SaveRestartPropierties();
+	bool LoadRestartPropierties();
 	uint32 GetFrameCount() const
 	{
 		return frameCount;

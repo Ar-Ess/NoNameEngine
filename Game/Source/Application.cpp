@@ -140,6 +140,8 @@ bool Application::CleanUp()
 {
 	bool ret = true;
 
+	window->SetWinBrightness(1.0f);
+
 	list<Module*>::iterator item;
 
 	LOG("Application CleanUp--------------");
@@ -233,7 +235,6 @@ bool Application::Load(string fName, FileContent fc)
 
 			scene->SetWindowSettings(WindowSettings::FULL_SCREEN, json_object_get_boolean(json_object(file), "Full Screen"));
 			scene->SetWindowSettings(WindowSettings::FULL_DESKTOP, json_object_get_boolean(json_object(file), "Full Desktop"));
-			scene->SetWindowSettings(WindowSettings::RESIZABLE, json_object_get_boolean(json_object(file), "Window Resizable"));
 			scene->SetWindowSettings(WindowSettings::BORDERLESS, json_object_get_boolean(json_object(file), "Window Borderless"));
 			scene->SetWindowSettings(WindowSettings::V_SYNC, json_object_get_boolean(json_object(file), "VSync"));
 			scene->SetWindowSettings(WindowSettings::KEEP_PROPORTION, json_object_get_boolean(json_object(file), "Keep Proportion"));
@@ -252,7 +253,6 @@ bool Application::Load(string fName, FileContent fc)
 
 			scene->SetWindowSettings(WindowSettings::FULL_SCREEN, json_object_get_boolean(json_object(file), "Full Screen"));
 			scene->SetWindowSettings(WindowSettings::FULL_DESKTOP, json_object_get_boolean(json_object(file), "Full Desktop"));
-			scene->SetWindowSettings(WindowSettings::RESIZABLE, json_object_get_boolean(json_object(file), "Window Resizable"));
 			scene->SetWindowSettings(WindowSettings::BORDERLESS, json_object_get_boolean(json_object(file), "Window Borderless"));
 			scene->SetWindowSettings(WindowSettings::V_SYNC, json_object_get_boolean(json_object(file), "VSync"));
 			scene->SetWindowSettings(WindowSettings::KEEP_PROPORTION, json_object_get_boolean(json_object(file), "Keep Proportion"));
@@ -402,6 +402,74 @@ bool Application::Save(string fName, FileContent fc)
 		json_value_free(file);
 		fileName.clear();
 	}
+
+	return ret;
+}
+
+bool Application::SaveRestartPropierties()
+{
+	bool ret = true;
+
+	JSON_Value* file = json_parse_file("NNE_Preferences_Default.json");
+
+	JSON_Value* schema = json_parse_string(
+		"{"
+		"\nFPS: "
+		"\nFrameBarLimit: "
+		"\nMsBarLimit: "
+		"\nBrightness: "
+		"\nWindow Width: "
+		"\nWindow Height: "
+		"\nFull Screen: "
+		"\nFull Desktop: "
+		"\nWindow Resizable: "
+		"\nWindow Borderless: "
+		"\nVSync: "
+		"\nWindow Proportion Value: "
+		"\nKeep Proportion: "
+		"\n}"
+	);
+
+	if (file == NULL || json_validate(schema, file) != JSONSuccess)
+	{
+		file = json_value_init_object();
+
+		json_object_set_number(json_object(file), "FPS", 60);
+		json_object_set_number(json_object(file), "FrameBarLimit", 80);
+		json_object_set_number(json_object(file), "MsBarLimit", 80);
+
+		json_object_set_number(json_object(file), "Brightness", 1);
+		json_object_set_number(json_object(file), "Window Width", 1024);
+		json_object_set_number(json_object(file), "Window Height", 768);
+		json_object_set_number(json_object(file), "Window Proportion Value", 100);
+
+		json_object_set_boolean(json_object(file), "Full Screen", false);
+		json_object_set_boolean(json_object(file), "Full Desktop", false);
+		json_object_set_boolean(json_object(file), "Window Resizable", this->scene->GetWindowSettings(WindowSettings::RESIZABLE));
+		json_object_set_boolean(json_object(file), "Window Borderless", false);
+		json_object_set_boolean(json_object(file), "VSync", true);
+		json_object_set_boolean(json_object(file), "Keep Proportion", false);
+
+		json_serialize_to_file(file, "NNE_Preferences_Default.json");
+
+		json_value_free(schema);
+	}
+
+	json_value_free(file);
+	fileName.clear();
+
+	return ret;
+}
+
+bool Application::LoadRestartPropierties()
+{
+	bool ret = true;
+
+	JSON_Value* file = json_parse_file("NNE_Preferences_Default.json");
+
+	scene->SetWindowSettings(WindowSettings::RESIZABLE, json_object_get_boolean(json_object(file), "Window Resizable"));
+
+	json_value_free(file);
 
 	return ret;
 }

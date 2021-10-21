@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "ModuleWindow.h"
 #include "External/SDL/include/SDL.h"
+#include "ModuleSceneIntro.h"
 
 #include "../Source/External/ImGui/imgui_impl_sdl.h"
 #include "../Source/External/ImGui/imgui_impl_opengl2.h"
@@ -19,11 +20,17 @@ bool ModuleWindow::Init()
 {
 	bool ret = true;
 
+	app->Load("NNE_Preferences_Default", FileContent::CONFIG_PREFERENCES);
+	app->LoadRestartPropierties();
+
 	// Create window with graphics context
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-	SDL_WindowFlags wFlags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+	SDL_WindowFlags wFlags;
+	if (!app->scene->GetWindowSettings(WindowSettings::RESIZABLE)) wFlags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI);
+	else wFlags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+
 	mainWindow = SDL_CreateWindow("No Name Engine - Project Editor", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, wFlags);
 	SDL_GLContext gl_context = SDL_GL_CreateContext(mainWindow);
 	SDL_GL_MakeCurrent(mainWindow, gl_context);
@@ -78,12 +85,17 @@ void ModuleWindow::SetWinDFullScreen(bool full)
 	else if (!full) SDL_SetWindowFullscreen(app->window->mainWindow, 0);
 }
 
-void ModuleWindow::SetWinResizable(bool resizable)
-{
-
-}
-
 void ModuleWindow::SetWinBorders(bool border)
 {
+	SDL_SetWindowBordered(mainWindow, (SDL_bool)!border);
+}
 
+void ModuleWindow::SetWinBrightness(float bright)
+{
+	SDL_SetWindowBrightness(mainWindow, bright);
+}
+
+void ModuleWindow::SetWinSize(int w, int h)
+{
+	SDL_SetWindowSize(app->window->mainWindow, w, h);
 }

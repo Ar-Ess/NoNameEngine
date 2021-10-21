@@ -8,6 +8,8 @@
 
 ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
+	// Create Scenes
+	editor = new EditorScene(app);
 }
 
 ModuleScene::~ModuleScene()
@@ -18,9 +20,6 @@ bool ModuleScene::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 	app->renderer->camera.x = app->renderer->camera.y = 0;
-
-	// Create Scenes
-	editor = new EditorScene(app);
 
 	// Set first state of the Engine
 	scene = Scenes::EDITOR;
