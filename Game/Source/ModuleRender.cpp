@@ -3,6 +3,7 @@
 #include "ModuleWindow.h"
 #include "ModuleRender.h"
 #include <math.h>
+#include "ModuleSceneIntro.h"
 
 #include "External/SDL/include/SDL.h"
 
@@ -40,7 +41,7 @@ update_status ModuleRender::PostUpdate()
 
 	ImGui::Render();
 	glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
-	glClearColor(backgroundColor.x * backgroundColor.w, backgroundColor.y * backgroundColor.w, backgroundColor.z * backgroundColor.w, backgroundColor.w);
+	glClearColor(0, 0, 0, 255);
 	glClear(GL_COLOR_BUFFER_BIT);
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 
@@ -54,6 +55,11 @@ update_status ModuleRender::PostUpdate()
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
 		SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
+	}
+
+	for (int i = 0; i < app->scene->primitives.size(); i++)
+	{
+		app->scene->primitives[i]->Render();
 	}
 
 	SDL_GL_SwapWindow(app->window->mainWindow);

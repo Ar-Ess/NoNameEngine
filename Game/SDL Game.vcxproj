@@ -75,6 +75,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h" />
+    <ClInclude Include="Source\Color.h" />
     <ClInclude Include="Source\Defs.h" />
     <ClInclude Include="Source\EditorScene.h" />
     <ClInclude Include="Source\External\imgui\imconfig.h" />
@@ -117,10 +118,14 @@
     <ClInclude Include="Source\External\rapidjson\stream.h" />
     <ClInclude Include="Source\External\rapidjson\stringbuffer.h" />
     <ClInclude Include="Source\External\rapidjson\writer.h" />
+    <ClInclude Include="Source\glmath.h" />
     <ClInclude Include="Source\Globals.h" />
+    <ClInclude Include="Source\Light.h" />
     <ClInclude Include="Source\Module.h" />
+    <ClInclude Include="Source\ModuleCamera3D.h" />
     <ClInclude Include="Source\ModuleInput.h" />
     <ClInclude Include="Source\ModuleRender.h" />
+    <ClInclude Include="Source\ModuleRenderer3D.h" />
     <ClInclude Include="Source\ModuleSceneIntro.h" />
     <ClInclude Include="Source\ModuleTextures.h" />
     <ClInclude Include="Source\ModuleWindow.h" />
@@ -130,6 +135,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp" />
+    <ClCompile Include="Source\Color.cpp" />
     <ClCompile Include="Source\EditorScene.cpp" />
     <ClCompile Include="Source\External\imgui\imgui.cpp" />
     <ClCompile Include="Source\External\imgui\imgui_demo.cpp" />
@@ -143,10 +149,14 @@
     <ClCompile Include="Source\External\json\json_value.cpp" />
     <ClCompile Include="Source\External\json\json_writer.cpp" />
     <ClCompile Include="Source\External\parson\Parson.cpp" />
+    <ClCompile Include="Source\glmath.cpp" />
+    <ClCompile Include="Source\Light.cpp" />
     <ClCompile Include="Source\log.cpp" />
     <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\ModuleCamera3D.cpp" />
     <ClCompile Include="Source\ModuleInput.cpp" />
     <ClCompile Include="Source\ModuleRender.cpp" />
+    <ClCompile Include="Source\ModuleRenderer3D.cpp" />
     <ClCompile Include="Source\ModuleSceneIntro.cpp" />
     <ClCompile Include="Source\ModuleTextures.cpp" />
     <ClCompile Include="Source\ModuleWindow.cpp" />

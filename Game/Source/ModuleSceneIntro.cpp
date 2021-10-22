@@ -1,6 +1,5 @@
 #include "Globals.h"
 #include "Application.h"
-#include "ModuleRender.h"
 #include "ModuleSceneIntro.h"
 #include "ModuleInput.h"
 #include "ModuleTextures.h"
@@ -19,10 +18,9 @@ bool ModuleScene::Start()
 {
 	LOG("Loading Intro assets");
 	bool ret = true;
-	app->renderer->camera.x = app->renderer->camera.y = 0;
+	//app->render->camera.x = app->render->camera.y = 0;
 
-	// Set first state of the Engine
-	scene = Scenes::EDITOR;
+	editor->Start();
 
 	return ret;
 }
@@ -71,7 +69,7 @@ bool ModuleScene::SetScene(Scenes newScene)
 
 		switch (newScene)
 		{
-		case Scenes::EDITOR: ret = editor->Start();; break;
+		case Scenes::EDITOR: ret = editor->Start(); break;
 		}
 
 		sceneChangeRequest = false;

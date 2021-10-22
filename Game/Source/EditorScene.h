@@ -10,6 +10,8 @@
 #include "../Source/External/ImGui/imgui_impl_opengl2.h"
 #include "../Source/External/ImGui/imgui_stdlib.h"
 
+#include "Primitive.h"
+
 #include <stdio.h>
 #include "External/SDL/include/SDL.h"
 #if defined(IMGUI_IMPL_OPENGL_ES2)
@@ -84,4 +86,8 @@ private: // Variables
 	Application* app = nullptr;
 	float framerate = 0.0f;
 	float milliseconds = 0.0f;
+
+	Plane p0 = { 0, 0, 1, 10};
+	Plane p1 = { 0, 1, 0, 10 };
+	Plane p2 = { 1, 0, 0, 10 };
 };

@@ -29,15 +29,18 @@ class ModuleWindow;
 class ModuleTextures;
 class ModuleInput;
 class ModuleScene;
+class ModuleCamera3D;
+class ModuleRenderer3D;
 
 class Application
 {
 public:
-	ModuleRender* renderer;
 	ModuleWindow* window;
 	ModuleTextures* textures;
 	ModuleInput* input;
 	ModuleScene* scene;
+	ModuleCamera3D* camera;
+	ModuleRenderer3D* render;
 
 private:
 

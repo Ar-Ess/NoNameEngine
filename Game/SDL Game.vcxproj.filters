@@ -191,6 +191,21 @@
     <ClInclude Include="Source\Defs.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Color.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\glmath.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ModuleCamera3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ModuleRenderer3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Light.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -263,6 +278,21 @@
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="Source\PerfTimer.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Color.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\glmath.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ModuleCamera3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ModuleRenderer3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Light.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
   </ItemGroup>

@@ -3,6 +3,11 @@
 #include "Globals.h"
 #include "EditorScene.h"
 #include <string>
+#include "Primitive.h"
+#include <vector>
+#include "ModuleRenderer3D.h"
+
+class Primitive;
 
 enum class Scenes
 {
@@ -118,7 +123,7 @@ public: // Getters & Setters
 		case WindowSettings::FULL_DESKTOP: editor->wFullDesktop = state; app->window->SetWinDFullScreen(state); break;
 		case WindowSettings::RESIZABLE: editor->wResizable = state; break;
 		case WindowSettings::BORDERLESS: editor->wBorderless = state; app->window->SetWinBorders(state); break;
-		case WindowSettings::V_SYNC: editor->wVSync = state; app->renderer->SetVSync(state); break;
+		case WindowSettings::V_SYNC: editor->wVSync = state; app->render->SetVSync(state); break;
 		case WindowSettings::KEEP_PROPORTION: editor->wKeepProportion = state; break;
 		}
 	}
@@ -141,9 +146,11 @@ public: // Getters & Setters
 		app->window->SetWinSize(int(floor(SCREEN_WIDTH * prop / 100)), int(floor(SCREEN_HEIGHT * prop / 100)));
 	}
 
+public:
+	vector<Primitive*> primitives;
 
 private:
-	Scenes scene = Scenes::NO_SCENE;
+	Scenes scene = Scenes::EDITOR;
 	Scenes prevScene = Scenes::NO_SCENE;
 	Scenes changeScene = Scenes::NO_SCENE;
 

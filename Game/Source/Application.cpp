@@ -4,6 +4,8 @@
 #include "ModuleTextures.h"
 #include "ModuleInput.h"
 #include "ModuleSceneIntro.h"
+#include "ModuleCamera3D.h"
+#include "ModuleRenderer3D.h"
 
 #include "Primitive.h"
 
@@ -23,20 +25,24 @@ Application::Application()
 {
 	PERF_START(ptimer);
 
-	renderer = new ModuleRender(this);
+	render = new ModuleRenderer3D(this);
 	window = new ModuleWindow(this);
 	textures = new ModuleTextures(this);
 	input = new ModuleInput(this);
 	scene = new ModuleScene(this);
+	camera = new ModuleCamera3D(this);
 
 	// Main Modules
 	AddModule(window);
-	AddModule(renderer);
+	AddModule(camera);
 	AddModule(textures);
 	AddModule(input);
 	
 	// Scenes
 	AddModule(scene);
+
+	// Last!
+	AddModule(render);
 
 	PERF_PEEK(ptimer);
 }

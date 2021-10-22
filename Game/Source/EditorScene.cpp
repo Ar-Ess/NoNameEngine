@@ -1,4 +1,5 @@
 #include "EditorScene.h"
+#include "ModuleSceneIntro.h"
 
 EditorScene::EditorScene(Application* App)
 {
@@ -11,6 +12,12 @@ EditorScene::~EditorScene()
 
 bool EditorScene::Start()
 {
+	app->scene->primitives.push_back(&p0);
+	app->scene->primitives.push_back(&p1);
+	app->scene->primitives.push_back(&p2);
+	
+	p0.axis = true;
+
 	return true;
 }
 
@@ -18,22 +25,7 @@ bool EditorScene::Update()
 {
 	bool ret = true;
 
-	// Quit when clicking window cross
-	SDL_Event event;
-	while (SDL_PollEvent(&event))
-	{
-		ImGui_ImplSDL2_ProcessEvent(&event);
-		if (event.type == SDL_QUIT)
-			ret = false;
-		if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(app->window->mainWindow))
-			ret = false;
-	}
-
-	// Generate new frame
-	ImGui_ImplOpenGL2_NewFrame();
-	ImGui_ImplSDL2_NewFrame(app->window->mainWindow);
-	ImGui::NewFrame();
-
+	
 	// GUI DEMO WINDOW
 	if (demoWindow) ImGui::ShowDemoWindow(&demoWindow);
 	
@@ -93,6 +85,8 @@ bool EditorScene::Update()
 	aboutPopup = ShowAboutWindow(aboutPopup);
 	outputWindow = ShowOutputWindow(outputWindow);
 	configWindow = ShowConfigWindow(configWindow);
+
+	
 
 	return ret;
 }
@@ -251,7 +245,7 @@ bool EditorScene::ShowConfigWindow(bool open)
 				}
 
 				AddSpacing(1);
-				if (ImGui::Checkbox(" VSync", &wVSync)) app->renderer->SetVSync(wVSync);
+				if (ImGui::Checkbox(" VSync", &wVSync)) app->render->SetVSync(wVSync);
 
 				AddSpacing(0);
 				if (ImGui::Checkbox(" Full Screen    ", &wFullScreen)) app->window->SetWinFullScreen(wFullScreen);
