@@ -12,11 +12,8 @@ EditorScene::~EditorScene()
 
 bool EditorScene::Start()
 {
-	app->scene->primitives.push_back(&p0);
-	app->scene->primitives.push_back(&p1);
-	app->scene->primitives.push_back(&p2);
-	
 	p0.axis = true;
+	app->scene->primitives.push_back(&p0);
 
 	return true;
 }
@@ -25,68 +22,11 @@ bool EditorScene::Update()
 {
 	bool ret = true;
 
-	
-	// GUI DEMO WINDOW
 	if (demoWindow) ImGui::ShowDemoWindow(&demoWindow);
-	
-	// MAIN MENU BAR
-	{
-		ImGui::BeginMainMenuBar();
-		{
-			if (ImGui::BeginMenu("File"))
-			{
-				if (ImGui::MenuItem("Save File")) 
-					app->Save("NNE_Project_Saving", FileContent::PROJECT);
-
-				if (ImGui::MenuItem("Load File")) 
-					app->Load("NNE_Project_Saving", FileContent::PROJECT);
-
-				if (ImGui::MenuItem("Configuration"))
-					configWindow = !configWindow;
-
-				if (ImGui::MenuItem("Exit")) 
-					ret = false;
-
-				ImGui::EndMenu();
-			}
-			if (ImGui::BeginMenu("View"))
-			{
-				if (ImGui::MenuItem("Output Log"))
-					outputWindow = !outputWindow;
-
-				ImGui::EndMenu();
-			}
-			if (ImGui::BeginMenu("Help"))
-			{
-				if (ImGui::MenuItem("Gui Demo"))
-					demoWindow = !demoWindow;
-
-				if (ImGui::MenuItem("Repository"))
-					LinkBrowser("https://github.com/BooStarGamer/Game-Engine-1.0v");
-
-				if (ImGui::MenuItem("Documentation"))
-					LinkBrowser("https://github.com/BooStarGamer/Game-Engine-1.0v/wiki");
-
-				if (ImGui::MenuItem("Download latest"))
-					LinkBrowser("https://github.com/BooStarGamer/Game-Engine-1.0v/releases");
-
-				if (ImGui::MenuItem("Report Bug"))
-					LinkBrowser("https://github.com/BooStarGamer/Game-Engine-1.0v/issues");
-
-				if (ImGui::MenuItem("About"))
-					aboutPopup = !aboutPopup;
-
-				ImGui::EndMenu();
-			}
-			ImGui::EndMainMenuBar();
-		}
-	}
-
+	ret = DrawMenuBar();
 	aboutPopup = ShowAboutWindow(aboutPopup);
 	outputWindow = ShowOutputWindow(outputWindow);
 	configWindow = ShowConfigWindow(configWindow);
-
-	
 
 	return ret;
 }
@@ -94,6 +34,63 @@ bool EditorScene::Update()
 bool EditorScene::CleanUp()
 {
 	bool ret = true;
+
+	return ret;
+}
+
+bool EditorScene::DrawMenuBar()
+{
+	bool ret = true;
+
+	ImGui::BeginMainMenuBar();
+	{
+		if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("Save File"))
+				app->Save("NNE_Project_Saving", FileContent::PROJECT);
+
+			if (ImGui::MenuItem("Load File"))
+				app->Load("NNE_Project_Saving", FileContent::PROJECT);
+
+			if (ImGui::MenuItem("Configuration"))
+				configWindow = !configWindow;
+
+			if (ImGui::MenuItem("Exit"))
+				ret = false;
+
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("View"))
+		{
+			if (ImGui::MenuItem("Output Log"))
+				outputWindow = !outputWindow;
+
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Help"))
+		{
+			if (ImGui::MenuItem("Gui Demo"))
+				demoWindow = !demoWindow;
+
+			if (ImGui::MenuItem("Repository"))
+				LinkBrowser("https://github.com/BooStarGamer/Game-Engine-1.0v");
+
+			if (ImGui::MenuItem("Documentation"))
+				LinkBrowser("https://github.com/BooStarGamer/Game-Engine-1.0v/wiki");
+
+			if (ImGui::MenuItem("Download latest"))
+				LinkBrowser("https://github.com/BooStarGamer/Game-Engine-1.0v/releases");
+
+			if (ImGui::MenuItem("Report Bug"))
+				LinkBrowser("https://github.com/BooStarGamer/Game-Engine-1.0v/issues");
+
+			if (ImGui::MenuItem("About"))
+				aboutPopup = !aboutPopup;
+
+			ImGui::EndMenu();
+		}
+		ImGui::EndMainMenuBar();
+	}
 
 	return ret;
 }

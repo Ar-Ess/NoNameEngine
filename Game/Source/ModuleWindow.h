@@ -26,6 +26,7 @@ public:
 	void SetWinSize(int w, int h);
 
 	SDL_Window* mainWindow = nullptr;
+	SDL_Surface* screen_surface = nullptr;
 
 };
 

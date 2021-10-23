@@ -9,7 +9,7 @@
 
 ModuleWindow::ModuleWindow(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
-
+	mainWindow = NULL;
 }
 
 ModuleWindow::~ModuleWindow()
@@ -60,11 +60,69 @@ bool ModuleWindow::Init()
 	}
 
 	// Setup Platform/Renderer backends
-	ImGui_ImplSDL2_InitForOpenGL(this->mainWindow, gl_context);
+	ImGui_ImplSDL2_InitForOpenGL(mainWindow, gl_context);
 	ImGui_ImplOpenGL2_Init();
 
 	return ret;
 }
+
+//bool ModuleWindow::Init()
+//{
+//	LOG("Init SDL window & surface");
+//	bool ret = true;
+//
+//	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+//	{
+//		LOG("SDL_VIDEO could not initialize! SDL_Error: %s\n", SDL_GetError());
+//		ret = false;
+//	}
+//	else
+//	{
+//		//Create window
+//		int width = SCREEN_WIDTH * SCREEN_SIZE;
+//		int height = SCREEN_HEIGHT * SCREEN_SIZE;
+//		Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
+//
+//		//Use OpenGL 2.1
+//		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+//		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+//
+//		if (WIN_FULLSCREEN == true)
+//		{
+//			flags |= SDL_WINDOW_FULLSCREEN;
+//		}
+//
+//		if (WIN_RESIZABLE == true)
+//		{
+//			flags |= SDL_WINDOW_RESIZABLE;
+//		}
+//
+//		if (WIN_BORDERLESS == true)
+//		{
+//			flags |= SDL_WINDOW_BORDERLESS;
+//		}
+//
+//		if (WIN_FULLSCREEN_DESKTOP == true)
+//		{
+//			flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+//		}
+//
+//		mainWindow = SDL_CreateWindow("Hey", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
+//
+//		if (mainWindow == NULL)
+//		{
+//			LOG("Window could not be created! SDL_Error: %s\n", SDL_GetError());
+//			ret = false;
+//		}
+//		else
+//		{
+//			//Get window surface
+//			screen_surface = SDL_GetWindowSurface(mainWindow);
+//		}
+//	}
+//
+//	return ret;
+//}
 
 bool ModuleWindow::CleanUp()
 {

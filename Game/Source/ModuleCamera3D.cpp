@@ -3,6 +3,7 @@
 #include "ModuleCamera3D.h"
 #include "ModuleInput.h"
 #include "External/SDL/include/SDL.h"
+#include "ModuleSceneIntro.h"
 
 ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -95,6 +96,8 @@ update_status ModuleCamera3D::Update()
 
 		Position = Reference + Z * length(Position);
 	}
+
+	LookAt(app->scene->primitives[0]->transform.translation());
 
 	// Recalculate matrix -------------
 	CalculateViewMatrix();

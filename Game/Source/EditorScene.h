@@ -34,6 +34,8 @@ public:
 	bool CleanUp();
 
 private: // Functions
+	bool DrawMenuBar();
+
 	bool ShowAboutWindow(bool open);
 	bool ShowOutputWindow(bool open);
 	bool ShowConfigWindow(bool open);
@@ -87,7 +89,5 @@ private: // Variables
 	float framerate = 0.0f;
 	float milliseconds = 0.0f;
 
-	Plane p0 = { 0, 0, 1, 10};
-	Plane p1 = { 0, 1, 0, 10 };
-	Plane p2 = { 1, 0, 0, 10 };
+	Plane p0 = { 0, 1, 0, 0};
 };

@@ -30,30 +30,15 @@
     <Filter Include="Scenes">
       <UniqueIdentifier>{2e53bde3-95bd-4f0e-99da-302533fd6613}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Modules">
+      <UniqueIdentifier>{6f1168af-656f-4906-b1fe-4009c9c6a8c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Globals.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Module.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ModuleInput.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ModuleRender.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ModuleSceneIntro.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ModuleTextures.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ModuleWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\External\imgui\imconfig.h">
@@ -197,14 +182,32 @@
     <ClInclude Include="Source\glmath.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Source\ModuleCamera3D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ModuleRenderer3D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Light.h">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ModuleWindow.h">
+      <Filter>Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Module.h">
+      <Filter>Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ModuleCamera3D.h">
+      <Filter>Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ModuleInput.h">
+      <Filter>Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ModuleRender.h">
+      <Filter>Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ModuleRenderer3D.h">
+      <Filter>Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ModuleSceneIntro.h">
+      <Filter>Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ModuleTextures.h">
+      <Filter>Modules</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -215,21 +218,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ModuleInput.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ModuleRender.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ModuleSceneIntro.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ModuleTextures.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ModuleWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\External\imgui\imgui_demo.cpp">
@@ -286,14 +274,29 @@
     <ClCompile Include="Source\glmath.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ModuleCamera3D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ModuleRenderer3D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Light.cpp">
       <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ModuleCamera3D.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ModuleInput.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ModuleRender.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ModuleRenderer3D.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ModuleSceneIntro.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ModuleTextures.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ModuleWindow.cpp">
+      <Filter>Modules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
