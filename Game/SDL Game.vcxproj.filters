@@ -5,10 +5,6 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
     <Filter Include="External">
       <UniqueIdentifier>{26fff0dc-a8d2-4349-b2fc-4d8afb192c19}</UniqueIdentifier>
     </Filter>
@@ -35,12 +31,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Application.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Globals.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\External\imgui\imconfig.h">
       <Filter>External\ImGui</Filter>
     </ClInclude>
@@ -61,9 +51,6 @@
     </ClInclude>
     <ClInclude Include="Source\Primitive.h">
       <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\imgui\imgui_impl_opengl2.h">
-      <Filter>External\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="Source\External\imgui\imgui.h">
       <Filter>External\ImGui</Filter>
@@ -209,6 +196,15 @@
     <ClInclude Include="Source\ModuleTextures.h">
       <Filter>Modules</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Application.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Globals.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\imgui\imgui_impl_opengl3.h">
+      <Filter>External\ImGui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -237,9 +233,6 @@
     </ClCompile>
     <ClCompile Include="Source\Primitive.cpp">
       <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\imgui\imgui_impl_opengl2.cpp">
-      <Filter>External\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="Source\External\imgui\imgui.cpp">
       <Filter>External\ImGui</Filter>
@@ -297,6 +290,9 @@
     </ClCompile>
     <ClCompile Include="Source\ModuleWindow.cpp">
       <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\imgui\imgui_impl_opengl3.cpp">
+      <Filter>External\ImGui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

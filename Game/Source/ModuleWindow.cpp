@@ -5,7 +5,7 @@
 #include "ModuleSceneIntro.h"
 
 #include "../Source/External/ImGui/imgui_impl_sdl.h"
-#include "../Source/External/ImGui/imgui_impl_opengl2.h"
+#include "../Source/External/ImGui/imgui_impl_opengl3.h"
 
 ModuleWindow::ModuleWindow(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -61,7 +61,7 @@ bool ModuleWindow::Init()
 
 	// Setup Platform/Renderer backends
 	ImGui_ImplSDL2_InitForOpenGL(mainWindow, gl_context);
-	ImGui_ImplOpenGL2_Init();
+	ImGui_ImplOpenGL3_Init();
 
 	return ret;
 }

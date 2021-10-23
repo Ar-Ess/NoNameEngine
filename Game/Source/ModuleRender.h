@@ -6,7 +6,7 @@
 
 #include "../Source/External/ImGui/imgui.h"
 #include "../Source/External/ImGui/imgui_impl_sdl.h"
-#include "../Source/External/ImGui/imgui_impl_opengl2.h"
+#include "../Source/External/ImGui/imgui_impl_opengl3.h"
 
 #include <stdio.h>
 #include "External/SDL/include/SDL.h"
