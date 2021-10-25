@@ -52,9 +52,6 @@ bool EditorScene::DrawMenuBar()
 			if (ImGui::MenuItem("Load File"))
 				app->Load("NNE_Project_Saving", FileContent::PROJECT);
 
-			if (ImGui::MenuItem("Configuration"))
-				configWindow = !configWindow;
-
 			if (ImGui::MenuItem("Exit"))
 				ret = false;
 
@@ -64,6 +61,9 @@ bool EditorScene::DrawMenuBar()
 		{
 			if (ImGui::MenuItem("Output Log"))
 				outputWindow = !outputWindow;
+
+			if (ImGui::MenuItem("Configuration"))
+				configWindow = !configWindow;
 
 			ImGui::EndMenu();
 		}
@@ -166,125 +166,166 @@ bool EditorScene::ShowConfigWindow(bool open)
 
 				ImGui::EndMenu();
 			}
-			if (ImGui::CollapsingHeader("Application"))
+			if (ImGui::BeginTabBar("#tabs"))
 			{
-				AddSpacing(0);
-				ImGui::Text("PROJECT INFORMATION");
-				AddSpacing(1);
-				ImGui::Text("Project Name");
-				ImGui::InputText("New Project", &projectName);
-				AddSpacing(0);
-				ImGui::Text("Developer Team");
-				ImGui::InputText("Team Name", &teamName);
-				AddSpacing(1);
+				if (ImGui::BeginTabItem("General"))
+				{
+					if (ImGui::CollapsingHeader("Application"))
+						{
+							AddSpacing(0);
+							ImGui::Text("PROJECT INFORMATION");
+							AddSpacing(1);
+							ImGui::Text("Project Name");
+							ImGui::InputText("New Project", &projectName);
+							AddSpacing(0);
+							ImGui::Text("Developer Team");
+							ImGui::InputText("Team Name", &teamName);
+							AddSpacing(1);
 
-				AddSeparator(2);
-				
-				AddSpacing(0);
-				ImGui::Text("ENGINE PERFORMANCE");
-				AddSpacing(1);
-				ImGui::Text("Framerate");
-				ImGui::SliderInt(" FPS", &app->fps, 5, 60, "FPS: %d");
-				AddSpacing(0);
+							AddSeparator(2);
 
-				char title[25];
-				framerate = app->fpsLog[app->fpsLog.size() - 2];
-				sprintf_s(title, 25, "Framerate %.1f", framerate);
-				ImGui::Text("Framerate Graph");
-				ImGui::PlotHistogram("##framerate", &app->fpsLog[0], app->fpsLog.size(), 0, title, 0.0f, 100.0f, ImVec2(307, 100));
-				ImGui::SliderInt(" FBL", &app->frameBarLimit, 30, 80, "Bars: %d");
+							AddSpacing(0);
+							ImGui::Text("ENGINE PERFORMANCE");
+							AddSpacing(1);
+							ImGui::Text("Framerate");
+							ImGui::SliderInt(" FPS", &app->fps, 5, 60, "FPS: %d");
+							AddSpacing(0);
 
-				AddSpacing(0);
+							char title[25];
+							framerate = app->fpsLog[app->fpsLog.size() - 2];
+							sprintf_s(title, 25, "Framerate %.1f", framerate);
+							ImGui::Text("Framerate Graph");
+							ImGui::PlotHistogram("##framerate", &app->fpsLog[0], app->fpsLog.size(), 0, title, 0.0f, 100.0f, ImVec2(307, 100));
+							ImGui::SliderInt(" FBL", &app->frameBarLimit, 30, 80, "Bars: %d");
 
-				milliseconds = app->msLog[app->msLog.size() - 2];
-				sprintf_s(title, 25, "Milliseconds %0.1f", milliseconds);
-				ImGui::Text("Milliseconds Graph");
-				ImGui::PlotHistogram("##milliseconds", &app->msLog[0], app->msLog.size(), 0, title, 0.0f, 40.0f, ImVec2(307, 100));
-				ImGui::SliderInt(" MSG", &app->msBarLimit, 30, 80, "Bars: %d");
+							AddSpacing(0);
 
-				AddSpacing(1);
+							milliseconds = app->msLog[app->msLog.size() - 2];
+							sprintf_s(title, 25, "Milliseconds %0.1f", milliseconds);
+							ImGui::Text("Milliseconds Graph");
+							ImGui::PlotHistogram("##milliseconds", &app->msLog[0], app->msLog.size(), 0, title, 0.0f, 40.0f, ImVec2(307, 100));
+							ImGui::SliderInt(" MSG", &app->msBarLimit, 30, 80, "Bars: %d");
 
-				AddSeparator(2);
-			}
-			if (ImGui::CollapsingHeader("Window"))
-			{
-				Point prev = wSize;
-				int prevProportion = wSizeProportion;
-				float prevBright = brightLevel;
+							AddSpacing(1);
 
-				AddSpacing(0);
-				ImGui::Text("Brightness");
-				ImGui::SliderFloat("B", &brightLevel, 0.0f, 1.0f, "Value: %.3f");
-				if (prevBright != brightLevel) app->window->SetWinBrightness(brightLevel);
+							AddSeparator(2);
+						}
+					if (ImGui::CollapsingHeader("Window"))
+						{
+							Point prev = wSize;
+							int prevProportion = wSizeProportion;
+							float prevBright = brightLevel;
 
-				AddSpacing(0);
-				if (ImGui::Checkbox("Keep Proportion", &wKeepProportion)) wKeepProportion = wKeepProportion;
+							AddSpacing(0);
+							ImGui::Text("Brightness");
+							ImGui::SliderFloat("B", &brightLevel, 0.0f, 1.0f, "Value: %.3f");
+							if (prevBright != brightLevel) app->window->SetWinBrightness(brightLevel);
 
-				if (!wKeepProportion)
+							AddSpacing(0);
+							if (ImGui::Checkbox("Keep Proportion", &wKeepProportion)) wKeepProportion = wKeepProportion;
+
+							if (!wKeepProportion)
+							{
+								AddSpacing(0);
+								ImGui::Text("Width");
+								ImGui::SliderInt("W", &wSize.x, 1, SCREEN_WIDTH, "%d");
+
+								AddSpacing(0);
+								ImGui::Text("Height");
+								ImGui::SliderInt("H", &wSize.y, 1, SCREEN_HEIGHT, "%d");
+
+								if (wSize != prev) app->window->SetWinSize((int)wSize.x, (int)wSize.y);
+							}
+							else
+							{
+								AddSpacing(0);
+								ImGui::Text("Width / Height");
+								ImGui::SliderInt("W", &wSizeProportion, 1, 100, "%d");
+
+								if (wSizeProportion != prevProportion) app->window->SetWinSize(int(floor(SCREEN_WIDTH * wSizeProportion / 100)), int(floor(SCREEN_HEIGHT * wSizeProportion / 100)));
+							}
+
+							AddSpacing(1);
+							if (ImGui::Checkbox(" VSync", &wVSync)) app->render->SetVSync(wVSync);
+
+							AddSpacing(0);
+							if (ImGui::Checkbox(" Full Screen    ", &wFullScreen)) app->window->SetWinFullScreen(wFullScreen);
+							ImGui::SameLine();
+							if (ImGui::Checkbox(" Resizable", &wResizable)) app->SaveRestartPropierties();
+
+							AddSpacing(0);
+							if (ImGui::Checkbox(" Borderless     ", &wBorderless)) app->window->SetWinBorders(wBorderless);
+							ImGui::SameLine();
+							if (ImGui::Checkbox(" Full Desktop", &wFullDesktop)) app->window->SetWinFullScreen(wFullDesktop);
+
+							AddSpacing(1);
+						}
+					if (ImGui::CollapsingHeader("Hardware"))
+						{
+							AddSpacing(0);
+							SDL_version v;
+							SDL_GetVersion(&v);
+							ImGui::Text("SDL Version: "); ImGui::SameLine(); ImGui::TextColored(ImVec4(YELLOW), "%d.%d.%d", v.major, v.minor, v.patch);
+							AddSpacing(0);
+							AddSeparator(2);
+							AddSpacing(0);
+							ImGui::Text("CPUs: "); ImGui::SameLine(); ImGui::TextColored(ImVec4(YELLOW), "%d (Cache: %dkb)", SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
+							AddSpacing(0);
+							ImGui::Text("System RAM: "); ImGui::SameLine(); ImGui::TextColored(ImVec4(YELLOW), "%d", SDL_GetSystemRAM);
+							AddSpacing(0);
+							ImGui::Text("Caps: "); ImGui::SameLine();
+							{
+								if (SDL_Has3DNow()) ImGui::TextColored(ImVec4(YELLOW), "3DNow"); ImGui::SameLine();
+								if (SDL_HasAltiVec()) ImGui::TextColored(ImVec4(YELLOW), "AltiVec"); ImGui::SameLine();
+								if (SDL_HasAVX()) ImGui::TextColored(ImVec4(YELLOW), "AVX"); ImGui::SameLine();
+								if (SDL_HasAVX2()) ImGui::TextColored(ImVec4(YELLOW), "AVX2"); ImGui::SameLine();
+								if (SDL_HasMMX()) ImGui::TextColored(ImVec4(YELLOW), "MMX"); ImGui::SameLine();
+								if (SDL_HasRDTSC()) ImGui::TextColored(ImVec4(YELLOW), "RDTSC");
+								if (SDL_HasSSE()) ImGui::TextColored(ImVec4(YELLOW), "SSE"); ImGui::SameLine();
+								if (SDL_HasSSE2()) ImGui::TextColored(ImVec4(YELLOW), "SSE2"); ImGui::SameLine();
+								if (SDL_HasSSE3()) ImGui::TextColored(ImVec4(YELLOW), "SSE3"); ImGui::SameLine();
+								if (SDL_HasSSE41()) ImGui::TextColored(ImVec4(YELLOW), "SSE41"); ImGui::SameLine();
+								if (SDL_HasSSE42()) ImGui::TextColored(ImVec4(YELLOW), "SSE42");
+							}
+							AddSpacing(0);
+							AddSeparator(2);
+						}
+
+					ImGui::EndTabItem();
+				}
+				if (ImGui::BeginTabItem("Geometry View"))
 				{
 					AddSpacing(0);
-					ImGui::Text("Width");
-					ImGui::SliderInt("W", &wSize.x, 1, SCREEN_WIDTH, "%d");
+					ImGui::Text("VIEW SETTINGS");
+					AddSpacing(1);
+
+					if (ImGui::Checkbox("Depth Test", &depthTest))
+						app->render->ToggleGeometryView(GeometryView::DEPTH_TEST, depthTest);
 
 					AddSpacing(0);
-					ImGui::Text("Height");
-					ImGui::SliderInt("H", &wSize.y, 1, SCREEN_HEIGHT, "%d");
 
-					if (wSize != prev) app->window->SetWinSize((int)wSize.x, (int)wSize.y);
-				}
-				else
-				{
+					if (ImGui::Checkbox("Cull Face", &cullFace))
+						app->render->ToggleGeometryView(GeometryView::CULL_FACE, cullFace);
+
 					AddSpacing(0);
-					ImGui::Text("Width / Height");
-					ImGui::SliderInt("W", &wSizeProportion, 1, 100, "%d");
 
-					if (wSizeProportion != prevProportion) app->window->SetWinSize(int(floor(SCREEN_WIDTH * wSizeProportion / 100)), int(floor(SCREEN_HEIGHT * wSizeProportion / 100)));
+					if (ImGui::Checkbox("Lighting", &lighting))
+						app->render->ToggleGeometryView(GeometryView::LIGHTING, lighting);
+
+					AddSpacing(0);
+
+					if (ImGui::Checkbox("Color Material", &colorMaterial))
+						app->render->ToggleGeometryView(GeometryView::COLOR_MATERIAL, colorMaterial);
+
+					AddSpacing(0);
+
+					if (ImGui::Checkbox("Texture 2D", &texture2D))
+						app->render->ToggleGeometryView(GeometryView::TEXTURE_2D, texture2D);
+
+					ImGui::EndTabItem();
 				}
 
-				AddSpacing(1);
-				if (ImGui::Checkbox(" VSync", &wVSync)) app->render->SetVSync(wVSync);
-
-				AddSpacing(0);
-				if (ImGui::Checkbox(" Full Screen    ", &wFullScreen)) app->window->SetWinFullScreen(wFullScreen);
-				ImGui::SameLine();
-				if (ImGui::Checkbox(" Resizable", &wResizable)) app->SaveRestartPropierties();
-
-				AddSpacing(0);
-				if (ImGui::Checkbox(" Borderless     ", &wBorderless)) app->window->SetWinBorders(wBorderless);
-				ImGui::SameLine();
-				if (ImGui::Checkbox(" Full Desktop", &wFullDesktop)) app->window->SetWinFullScreen(wFullDesktop);
-
-				AddSpacing(1);
-			}
-			if (ImGui::CollapsingHeader("Hardware"))
-			{
-				AddSpacing(0);
-				SDL_version v;
-				SDL_GetVersion(&v);
-				ImGui::Text("SDL Version: "); ImGui::SameLine(); ImGui::TextColored(ImVec4(YELLOW), "%d.%d.%d", v.major, v.minor, v.patch);
-				AddSpacing(0);
-				AddSeparator(2);
-				AddSpacing(0);
-				ImGui::Text("CPUs: "); ImGui::SameLine(); ImGui::TextColored(ImVec4(YELLOW), "%d (Cache: %dkb)", SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
-				AddSpacing(0);
-				ImGui::Text("System RAM: "); ImGui::SameLine(); ImGui::TextColored(ImVec4(YELLOW), "%d", SDL_GetSystemRAM);
-				AddSpacing(0);
-				ImGui::Text("Caps: "); ImGui::SameLine(); 
-				{
-					if (SDL_Has3DNow()) ImGui::TextColored(ImVec4(YELLOW), "3DNow"); ImGui::SameLine();
-					if (SDL_HasAltiVec()) ImGui::TextColored(ImVec4(YELLOW), "AltiVec"); ImGui::SameLine();
-					if (SDL_HasAVX()) ImGui::TextColored(ImVec4(YELLOW), "AVX"); ImGui::SameLine();
-					if (SDL_HasAVX2()) ImGui::TextColored(ImVec4(YELLOW), "AVX2"); ImGui::SameLine();
-					if (SDL_HasMMX()) ImGui::TextColored(ImVec4(YELLOW), "MMX"); ImGui::SameLine();
-					if (SDL_HasRDTSC()) ImGui::TextColored(ImVec4(YELLOW), "RDTSC");
-					if (SDL_HasSSE()) ImGui::TextColored(ImVec4(YELLOW), "SSE"); ImGui::SameLine();
-					if (SDL_HasSSE2()) ImGui::TextColored(ImVec4(YELLOW), "SSE2"); ImGui::SameLine();
-					if (SDL_HasSSE3()) ImGui::TextColored(ImVec4(YELLOW), "SSE3"); ImGui::SameLine();
-					if (SDL_HasSSE41()) ImGui::TextColored(ImVec4(YELLOW), "SSE41"); ImGui::SameLine();
-					if (SDL_HasSSE42()) ImGui::TextColored(ImVec4(YELLOW), "SSE42");
-				}
-				AddSpacing(0);
-				AddSeparator(2);
+				ImGui::EndTabBar();
 			}
 			ImGui::End();
 		}

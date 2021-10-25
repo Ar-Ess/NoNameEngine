@@ -124,7 +124,6 @@
     <ClInclude Include="Source\Module.h" />
     <ClInclude Include="Source\ModuleCamera3D.h" />
     <ClInclude Include="Source\ModuleInput.h" />
-    <ClInclude Include="Source\ModuleRender.h" />
     <ClInclude Include="Source\ModuleRenderer3D.h" />
     <ClInclude Include="Source\ModuleSceneIntro.h" />
     <ClInclude Include="Source\ModuleTextures.h" />
@@ -155,7 +154,6 @@
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\ModuleCamera3D.cpp" />
     <ClCompile Include="Source\ModuleInput.cpp" />
-    <ClCompile Include="Source\ModuleRender.cpp" />
     <ClCompile Include="Source\ModuleRenderer3D.cpp" />
     <ClCompile Include="Source\ModuleSceneIntro.cpp" />
     <ClCompile Include="Source\ModuleTextures.cpp" />

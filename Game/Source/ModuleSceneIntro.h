@@ -32,6 +32,8 @@ enum class WindowSettings
 	KEEP_PROPORTION
 };
 
+enum class GeometryView;
+
 class ModuleScene : public Module
 {
 public:
@@ -144,6 +146,34 @@ public: // Getters & Setters
 	{
 		editor->wSizeProportion = prop;
 		app->window->SetWinSize(int(floor(SCREEN_WIDTH * prop / 100)), int(floor(SCREEN_HEIGHT * prop / 100)));
+	}
+	bool GetGeometryView(GeometryView gV)
+	{
+		bool ret = false;
+
+		switch (gV)
+		{
+		case GeometryView::DEPTH_TEST: ret = editor->depthTest;
+		case GeometryView::CULL_FACE: ret = editor->cullFace;
+		case GeometryView::LIGHTING: ret = editor->lighting;
+		case GeometryView::COLOR_MATERIAL: ret = editor->colorMaterial;
+		case GeometryView::TEXTURE_2D: ret = editor->texture2D;
+		}
+
+		return ret;
+	}
+	void SetGeometryView(GeometryView gV, bool state)
+	{
+		switch (gV)
+		{
+		case GeometryView::DEPTH_TEST: editor->depthTest = state;
+		case GeometryView::CULL_FACE: editor->cullFace = state;
+		case GeometryView::LIGHTING: editor->lighting = state;
+		case GeometryView::COLOR_MATERIAL: editor->colorMaterial = state;
+		case GeometryView::TEXTURE_2D: editor->texture2D = state;
+		}
+
+		app->render->ToggleGeometryView(gV, state);
 	}
 
 public:

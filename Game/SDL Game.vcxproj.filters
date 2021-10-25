@@ -184,9 +184,6 @@
     <ClInclude Include="Source\ModuleInput.h">
       <Filter>Modules</Filter>
     </ClInclude>
-    <ClInclude Include="Source\ModuleRender.h">
-      <Filter>Modules</Filter>
-    </ClInclude>
     <ClInclude Include="Source\ModuleRenderer3D.h">
       <Filter>Modules</Filter>
     </ClInclude>
@@ -274,9 +271,6 @@
       <Filter>Modules</Filter>
     </ClCompile>
     <ClCompile Include="Source\ModuleInput.cpp">
-      <Filter>Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ModuleRender.cpp">
       <Filter>Modules</Filter>
     </ClCompile>
     <ClCompile Include="Source\ModuleRenderer3D.cpp">

@@ -1,6 +1,12 @@
 #pragma once
 
 #include "Globals.h"
+
+#include "External/glew/glew.h"
+#include "External/SDL/include/SDL_opengl.h"
+#include <gl/GL.h>
+#include <gl/GLU.h>
+
 #include "External/imgui/imgui.h"
 #include "External/json/json.h"
 #include "External/rapidjson/document.h"

@@ -8,14 +8,6 @@
 #include "../Source/External/ImGui/imgui_impl_sdl.h"
 #include "../Source/External/ImGui/imgui_impl_opengl3.h"
 
-#include <stdio.h>
-#include "External/SDL/include/SDL.h"
-#if defined(IMGUI_IMPL_OPENGL_ES2)
-#include <SDL_opengles2.h>
-#else
-#include "External/SDL/include/SDL_opengl.h"
-#endif
-
 class ModuleRender : public Module
 {
 public:

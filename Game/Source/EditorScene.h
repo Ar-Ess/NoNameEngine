@@ -76,6 +76,14 @@ public: // Variables
 	bool wVSync = false;
 	bool wKeepProportion = false;
 
+	// Geometry View
+	bool depthTest = false;
+	bool cullFace = false;
+	bool lighting = false;
+	bool colorMaterial = false;
+	bool texture2D = false;
+
+
 	Point wSize = { SCREEN_WIDTH, SCREEN_HEIGHT };
 	int wSizeProportion = 100;
 

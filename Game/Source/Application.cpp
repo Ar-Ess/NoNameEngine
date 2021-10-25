@@ -7,7 +7,7 @@
 #include "ModuleCamera3D.h"
 #include "ModuleRenderer3D.h"
 
-#include "Primitive.h"
+//#include "Primitive.h"
 
 #include <stdio.h>
 #include <iostream>
@@ -243,6 +243,12 @@ bool Application::Load(string fName, FileContent fc)
 			scene->SetWindowSettings(WindowSettings::V_SYNC, json_object_get_boolean(json_object(file), "VSync"));
 			scene->SetWindowSettings(WindowSettings::KEEP_PROPORTION, json_object_get_boolean(json_object(file), "Keep Proportion"));
 
+			scene->SetGeometryView(GeometryView::DEPTH_TEST, json_object_get_boolean(json_object(file), "Depth Test"));
+			scene->SetGeometryView(GeometryView::CULL_FACE, json_object_get_boolean(json_object(file), "Cull Face"));
+			scene->SetGeometryView(GeometryView::LIGHTING, json_object_get_boolean(json_object(file), "Lighting"));
+			scene->SetGeometryView(GeometryView::COLOR_MATERIAL, json_object_get_boolean(json_object(file), "Color Material"));
+			scene->SetGeometryView(GeometryView::TEXTURE_2D, json_object_get_boolean(json_object(file), "Texture 2D"));
+
 			break;
 		}
 		case FileContent::CONFIG_PREFERENCES:
@@ -260,6 +266,12 @@ bool Application::Load(string fName, FileContent fc)
 			scene->SetWindowSettings(WindowSettings::BORDERLESS, json_object_get_boolean(json_object(file), "Window Borderless"));
 			scene->SetWindowSettings(WindowSettings::V_SYNC, json_object_get_boolean(json_object(file), "VSync"));
 			scene->SetWindowSettings(WindowSettings::KEEP_PROPORTION, json_object_get_boolean(json_object(file), "Keep Proportion"));
+
+			scene->SetGeometryView(GeometryView::DEPTH_TEST, json_object_get_boolean(json_object(file), "Depth Test"));
+			scene->SetGeometryView(GeometryView::CULL_FACE, json_object_get_boolean(json_object(file), "Cull Face"));
+			scene->SetGeometryView(GeometryView::LIGHTING, json_object_get_boolean(json_object(file), "Lighting"));
+			scene->SetGeometryView(GeometryView::COLOR_MATERIAL, json_object_get_boolean(json_object(file), "Color Material"));
+			scene->SetGeometryView(GeometryView::TEXTURE_2D, json_object_get_boolean(json_object(file), "Texture 2D"));
 
 			break;
 		}
@@ -301,6 +313,7 @@ bool Application::Save(string fName, FileContent fc)
 				"\nTeam Name: "
 
 				// Config Preferences
+				//	 General  
 				"\nFPS: "
 				"\nFrameBarLimit: "
 				"\nMsBarLimit: "
@@ -314,6 +327,13 @@ bool Application::Save(string fName, FileContent fc)
 				"\nVSync: "
 				"\nWindow Proportion Value: "
 				"\nKeep Proportion: "
+
+				//	 Geometry View
+				"\nDepth Test: "
+				"\nCull Face: "
+				"\nLighting: "
+				"\nColor Material: "
+				"\nTexture 2D: "
 				"\n}"
 			);
 
@@ -336,6 +356,7 @@ bool Application::Save(string fName, FileContent fc)
 				json_object_set_number(json_object(file), "MsBarLimit", msBarLimit);
 
 				// Window Configuration - Preferences
+					// General
 				json_object_set_number(json_object(file), "Brightness", this->scene->GetBrightness());
 				json_object_set_number(json_object(file), "Window Width", this->scene->GetWinDimensions().x);
 				json_object_set_number(json_object(file), "Window Height", this->scene->GetWinDimensions().y);
@@ -348,6 +369,13 @@ bool Application::Save(string fName, FileContent fc)
 				json_object_set_boolean(json_object(file), "VSync", this->scene->GetWindowSettings(WindowSettings::V_SYNC));
 				json_object_set_boolean(json_object(file), "Keep Proportion", this->scene->GetWindowSettings(WindowSettings::KEEP_PROPORTION));
 
+				// Geometry View - Preferences
+				json_object_set_boolean(json_object(file), "Depth Test", this->scene->GetGeometryView(GeometryView::DEPTH_TEST));
+				json_object_set_boolean(json_object(file), "Cull Face", this->scene->GetGeometryView(GeometryView::CULL_FACE));
+				json_object_set_boolean(json_object(file), "Lighting", this->scene->GetGeometryView(GeometryView::LIGHTING));
+				json_object_set_boolean(json_object(file), "Color Material", this->scene->GetGeometryView(GeometryView::COLOR_MATERIAL));
+				json_object_set_boolean(json_object(file), "Texture 2D", this->scene->GetGeometryView(GeometryView::TEXTURE_2D));
+
 				json_serialize_to_file(file, fName.c_str());
 
 				json_value_free(schema);
@@ -358,6 +386,8 @@ bool Application::Save(string fName, FileContent fc)
 		{
 			JSON_Value* schema = json_parse_string(
 				"{"
+				// Config Preferences
+				//	 General  
 				"\nFPS: "
 				"\nFrameBarLimit: "
 				"\nMsBarLimit: "
@@ -371,6 +401,13 @@ bool Application::Save(string fName, FileContent fc)
 				"\nVSync: "
 				"\nWindow Proportion Value: "
 				"\nKeep Proportion: "
+
+				//	 Geometry View
+				"\nDepth Test: "
+				"\nCull Face: "
+				"\nLighting: "
+				"\nColor Material: "
+				"\nTexture 2D: "
 				"\n}"
 			);
 
@@ -394,6 +431,11 @@ bool Application::Save(string fName, FileContent fc)
 				json_object_set_boolean(json_object(file), "VSync", this->scene->GetWindowSettings(WindowSettings::V_SYNC));
 				json_object_set_boolean(json_object(file), "Keep Proportion", this->scene->GetWindowSettings(WindowSettings::KEEP_PROPORTION));
 
+				json_object_set_boolean(json_object(file), "Depth Test", this->scene->GetGeometryView(GeometryView::DEPTH_TEST));
+				json_object_set_boolean(json_object(file), "Cull Face", this->scene->GetGeometryView(GeometryView::CULL_FACE));
+				json_object_set_boolean(json_object(file), "Lighting", this->scene->GetGeometryView(GeometryView::LIGHTING));
+				json_object_set_boolean(json_object(file), "Color Material", this->scene->GetGeometryView(GeometryView::COLOR_MATERIAL));
+				json_object_set_boolean(json_object(file), "Texture 2D", this->scene->GetGeometryView(GeometryView::TEXTURE_2D));
 
 				json_serialize_to_file(file, fName.c_str());
 
@@ -406,7 +448,6 @@ bool Application::Save(string fName, FileContent fc)
 		json_value_free(file);
 		fileName.clear();
 	}
-
 	return ret;
 }
 
@@ -453,6 +494,12 @@ bool Application::SaveRestartPropierties()
 		json_object_set_boolean(json_object(file), "Window Borderless", false);
 		json_object_set_boolean(json_object(file), "VSync", true);
 		json_object_set_boolean(json_object(file), "Keep Proportion", false);
+
+		json_object_set_boolean(json_object(file), "Depth Test", false);
+		json_object_set_boolean(json_object(file), "Cull Face", false);
+		json_object_set_boolean(json_object(file), "Lighting", true);
+		json_object_set_boolean(json_object(file), "Color Material", true);
+		json_object_set_boolean(json_object(file), "Texture 2D", true);
 
 		json_serialize_to_file(file, "NNE_Preferences_Default.json");
 

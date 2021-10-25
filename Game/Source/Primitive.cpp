@@ -1,7 +1,8 @@
+#include "External/glew/glew.h"
+#include "External/SDL/include/SDL_opengl.h"
+#include <gl/GL.h>
 
 #include "Globals.h"
-#include "External/glew/glew.h"
-#include <gl/GL.h>
 #include "Primitive.h"
 
 #pragma comment (lib, "Source/External/glew/glew32.lib")
