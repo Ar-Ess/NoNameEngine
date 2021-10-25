@@ -48,6 +48,12 @@ public:
 		return mouse_z;
 	}
 
+	// Getting horitzontal mouse moving from mouse wheel (-1, 0, 1)
+	int GetMouseZH() const
+	{
+		return mouse_w;
+	}
+
 	int GetMouseXMotion() const
 	{
 		return mouse_x_motion;
@@ -59,11 +65,12 @@ public:
 	}
 
 private:
-	KEY_STATE* keyboard;
+	KEY_STATE* keyboard = nullptr;
 	KEY_STATE mouse_buttons[MAX_MOUSE_BUTTONS];
 	int mouse_x;
 	int mouse_y;
 	int mouse_z;
+	int mouse_w;
 	int mouse_x_motion;
 	int mouse_y_motion;
 	//int mouse_z_motion;

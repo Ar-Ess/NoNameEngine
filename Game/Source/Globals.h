@@ -64,6 +64,43 @@ struct Point
 
 };
 
+struct Point3D
+{
+	Point3D() {}
+	Point3D(int xx, int yy, int zz) { x = xx; y = yy; z = zz; }
+	Point3D(float xx, float yy, float zz) { x = xx; y = yy; z = zz; }
+	Point3D(double xx, double yy, double zz) { x = xx; y = yy; z = zz; }
+
+	float x = 0, y = 0, z = 0;
+
+	bool operator==(Point3D b) { return (x == b.x && y == b.y && z == b.z); }
+	bool operator==(int i) { return (x == i || y == i || z == i); }
+	bool operator!=(Point3D b) { return !(x == b.x && y == b.y && z == b.z); }
+	bool operator!=(int i) { return !(x == i && y == i && z == i); }
+
+	void operator+=(int i) { x += i; y += i; z += i; }
+	void operator-=(int i) { x -= i; y -= i; z -= i; }
+	void operator*=(int i) { x *= i; y *= i; z *= i; }
+	void operator/=(int i) { if (i == 0) return; x /= i; y /= i; z /= i;}
+
+	void operator+=(Point3D i) { x += i.x; y += i.y; z += i.z; }
+	void operator-=(Point3D i) { x -= i.x; y -= i.y; z -= i.z; }
+	void operator*=(Point3D i) { x *= i.x; y *= i.y; z *= i.z; }
+	void operator/=(Point3D i) { if (i == 0) return; x /= i.x; y /= i.y; z /= i.z; }
+
+	bool operator<(int i) { return (x < i && y < i && z < i); }
+	bool operator<=(int i) { return (x <= i && y <= i && z <= i); }
+	bool operator>(int i) { return (x > i && y > i && z > i); }
+	bool operator>=(int i) { return (x >= i && y >= i && z >= i); }
+
+	bool operator<(Point3D b) { return (x < b.x && y < b.y && z < b.z); }
+	bool operator<=(Point3D b) { return (x <= b.x && y <= b.y && z <= b.z); }
+	bool operator>(Point3D b) { return (x > b.x && y > b.y && z > b.z); }
+	bool operator>=(Point3D b) { return (x >= b.x && y >= b.y && z >= b.z); }
+
+
+};
+
 // Configuration -----------
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720

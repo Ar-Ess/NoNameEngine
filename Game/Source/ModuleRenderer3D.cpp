@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "ModuleRenderer3D.h"
 #include "ModuleCamera3D.h"
+#include "Shapes3D.h"
 
 #include "ModuleWindow.h"
 #include <math.h>
@@ -148,7 +149,19 @@ bool ModuleRenderer3D::Draw()
 {
 	bool ret = true;
 
-	ret = LevelDraw();
+	// Line Test
+	//glLineWidth(2.0f);
+	//glBegin(GL_LINES);
+	//glVertex3f(0.f, 0.f, 0.f);
+	//glVertex3f(0.f, 10.f, 0.f);
+	//glEnd();
+	//glLineWidth(1.0f);
+
+	// Cube Test
+	Cube3D c1({ 0, 0, 0 }, 2);
+	c1.Draw();
+
+	ret = GeometryDraw();
 	ret = GuiDraw();
 	
 	return ret;
@@ -182,7 +195,7 @@ bool ModuleRenderer3D::GuiDraw()
 	return true;
 }
 
-bool ModuleRenderer3D::LevelDraw()
+bool ModuleRenderer3D::GeometryDraw()
 {
 	lights[0].SetPos(app->camera->Position.x, app->camera->Position.y, app->camera->Position.z);
 

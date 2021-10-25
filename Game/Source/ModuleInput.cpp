@@ -94,6 +94,7 @@ update_status ModuleInput::PreUpdate()
 		{
 			case SDL_MOUSEWHEEL:
 			mouse_z = e.wheel.y;
+			mouse_w = e.wheel.x;
 			break;
 
 			case SDL_MOUSEMOTION:

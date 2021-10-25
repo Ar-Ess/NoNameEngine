@@ -36,7 +36,7 @@ public:
 	bool Draw();
 	bool DebugDraw();
 	bool GuiDraw();
-	bool LevelDraw();
+	bool GeometryDraw();
 	bool CleanUp();
 
 	void OnResize(int width, int height);
