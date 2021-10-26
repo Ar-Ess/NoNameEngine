@@ -13,6 +13,14 @@
 
 struct Light;
 
+enum class BasicShapes
+{
+	CUBE = 1,
+	PYRAMID,
+	SPHERE,
+	LINE
+};
+
 enum class GeometryView
 {
 	DEPTH_TEST,

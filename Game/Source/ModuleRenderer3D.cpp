@@ -42,8 +42,14 @@ bool ModuleRenderer3D::Init()
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 
+		GLenum error = glewInit();
+		if (error != GLEW_OK)
+		{
+			ret = false;
+		}
+
 		//Check for error
-		GLenum error = glGetError();
+		error = glGetError();
 		if(error != GL_NO_ERROR)
 		{
 			//LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
@@ -149,39 +155,14 @@ bool ModuleRenderer3D::Draw()
 {
 	bool ret = true;
 
-	//// Line Test
-	//Line3D l1({ -5, 0, 2 }, {-2, 5, 3}, 10);
-	//l1.Draw();
+	Cube3D c1({ 0, 0, 0 }, 1);
+	c1.Draw();
 
-	//// Cube Test
-	//Cube3D c1({ 0, 0, 0 }, 2);
-	//c1.Draw();
+	Cube3D c2({ 5, 0, 0 }, 1);
+	c2.DrawDirectMode();
 
-	//// Piramid Test
-	//Pyramid3D p1({5, 0, 0}, 1.0f, 2);
-	//p1.Draw();
-
-	// Sphere Test
-	Sphere3D s1({0, 0, 0});
+	Sphere3D s1({-5, 0, 0}, 2);
 	s1.Draw();
-
-	// Vertex Arrays Text
-
-	//bool i = true;
-	//uint my_id = 0;
-	//if (i)
-	//{
-	//	i = !i;
-	//	glGenBuffers(1, (GLuint*)&(my_id));
-	//	glBindBuffer(GL_ARRAY_BUFFER, my_id);
-	//	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8 * 3, c1.GetVertexs(), GL_STATIC_DRAW);
-	//}
-	//glEnableClientState(GL_VERTEX_ARRAY);
-	//glBindBuffer(GL_ARRAY_BUFFER, my_id);
-	//glVertexPointer(3, GL_FLOAT, 0, NULL);
-	//// … bind and use other buffers
-	//glDrawArrays(GL_TRIANGLES, 0, 8);
-	//glDisableClientState(GL_VERTEX_ARRAY);
 
 	ret = GeometryDraw();
 	ret = GuiDraw();
