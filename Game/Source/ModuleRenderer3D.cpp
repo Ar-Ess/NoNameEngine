@@ -149,17 +149,39 @@ bool ModuleRenderer3D::Draw()
 {
 	bool ret = true;
 
-	// Line Test
-	//glLineWidth(2.0f);
-	//glBegin(GL_LINES);
-	//glVertex3f(0.f, 0.f, 0.f);
-	//glVertex3f(0.f, 10.f, 0.f);
-	//glEnd();
-	//glLineWidth(1.0f);
+	//// Line Test
+	//Line3D l1({ -5, 0, 2 }, {-2, 5, 3}, 10);
+	//l1.Draw();
 
-	// Cube Test
-	Cube3D c1({ 0, 0, 0 }, 2);
-	c1.Draw();
+	//// Cube Test
+	//Cube3D c1({ 0, 0, 0 }, 2);
+	//c1.Draw();
+
+	//// Piramid Test
+	//Pyramid3D p1({5, 0, 0}, 1.0f, 2);
+	//p1.Draw();
+
+	// Sphere Test
+	Sphere3D s1({0, 0, 0});
+	s1.Draw();
+
+	// Vertex Arrays Text
+
+	//bool i = true;
+	//uint my_id = 0;
+	//if (i)
+	//{
+	//	i = !i;
+	//	glGenBuffers(1, (GLuint*)&(my_id));
+	//	glBindBuffer(GL_ARRAY_BUFFER, my_id);
+	//	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8 * 3, c1.GetVertexs(), GL_STATIC_DRAW);
+	//}
+	//glEnableClientState(GL_VERTEX_ARRAY);
+	//glBindBuffer(GL_ARRAY_BUFFER, my_id);
+	//glVertexPointer(3, GL_FLOAT, 0, NULL);
+	//// … bind and use other buffers
+	//glDrawArrays(GL_TRIANGLES, 0, 8);
+	//glDisableClientState(GL_VERTEX_ARRAY);
 
 	ret = GeometryDraw();
 	ret = GuiDraw();

@@ -53,8 +53,16 @@ update_status ModuleCamera3D::Update()
 
 	if (wheelZV != 0)
 	{
-		if (wheelZV > 0) newPos -= Z * speed;
-		if (wheelZV < 0) newPos += Z * speed;
+		if (app->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
+		{
+			if (wheelZV > 0) newPos -= Z * speed;
+			if (wheelZV < 0) newPos += Z * speed;
+		}
+		else
+		{
+			if (wheelZV > 0) newPos += Y * speed;
+			if (wheelZV < 0) newPos -= Y * speed;
+		}
 
 	}
 
@@ -75,7 +83,7 @@ update_status ModuleCamera3D::Update()
 		int dx = -app->input->GetMouseXMotion();
 		int dy = -app->input->GetMouseYMotion();
 
-		float Sensitivity = 0.25f;
+		float Sensitivity = 1.0f;
 
 		Position -= Reference;
 
