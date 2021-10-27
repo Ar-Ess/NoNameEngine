@@ -155,15 +155,6 @@ bool ModuleRenderer3D::Draw()
 {
 	bool ret = true;
 
-	Cube3D c1({ 0, 0, 0 }, 1);
-	c1.Draw();
-
-	Cube3D c2({ 5, 0, 0 }, 1);
-	c2.DrawDirectMode();
-
-	Sphere3D s1({-5, 0, 0}, 2);
-	s1.Draw();
-
 	ret = GeometryDraw();
 	ret = GuiDraw();
 	

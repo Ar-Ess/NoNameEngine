@@ -8,25 +8,6 @@
 #pragma comment (lib, "Source/External/glew/glew32.lib")    /* link OpenGL Utility lib     */
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 
-
-class Rotation
-{
-public:
-
-	Rotation(float anglex, float planeXx, float planeYx, float planeZx)
-	{
-		angle = anglex;
-		planeX = planeXx;
-		planeY = planeYx;
-		planeZ = planeZx;
-	}
-
-	float angle = 0.0f;
-	float planeX = 0;
-	float planeY = 0;
-	float planeZ = 0;
-};
-
 class Cube3D
 {
 public:
@@ -48,7 +29,6 @@ public:
 				v[i] += pos;
 			}
 		}
-
 	}
 
 	void Draw()
@@ -66,6 +46,8 @@ public:
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(index), index, GL_STATIC_DRAW);
 
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+
+		glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
 	}
 
 	void DrawDirectMode()
@@ -129,64 +111,6 @@ public:
 
 		glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
 	}
-
-	//void Draw()
-	//{
-	//	if (selected)
-	//	{
-	//		Reset();
-	//		for (int i = 0; i < 8; i++)
-	//		{
-	//			v[i] *= scale;
-	//			v[i] += position;
-	//		}
-	//	}
-	//	glBegin(GL_TRIANGLES);
-	//	// front face =================
-	//	glVertex3f(v[1].x, v[1].y, v[1].z); // v1
-	//	glVertex3f(v[2].x, v[2].y, v[2].z); // v2
-	//	glVertex3f(v[3].x, v[3].y, v[3].z); // v3
-	//	glVertex3f(v[3].x, v[3].y, v[3].z); // v3
-	//	glVertex3f(v[0].x, v[0].y, v[0].z); // v0
-	//	glVertex3f(v[1].x, v[1].y, v[1].z); // v1
-	//	// right face =================
-	//	glVertex3f(v[2].x, v[2].y, v[2].z); // v2
-	//	glVertex3f(v[6].x, v[6].y, v[6].z); // v6
-	//	glVertex3f(v[7].x, v[7].y, v[7].z); // v7
-	//	glVertex3f(v[7].x, v[7].y, v[7].z); // v7
-	//	glVertex3f(v[3].x, v[3].y, v[3].z); // v3
-	//	glVertex3f(v[2].x, v[2].y, v[2].z); // v2
-	//	// top face ===================
-	//	glVertex3f(v[5].x, v[5].y, v[5].z); // v5
-	//	glVertex3f(v[6].x, v[6].y, v[6].z); // v6
-	//	glVertex3f(v[2].x, v[2].y, v[2].z); // v2
-	//	glVertex3f(v[2].x, v[2].y, v[2].z); // v2
-	//	glVertex3f(v[1].x, v[1].y, v[1].z); // v1
-	//	glVertex3f(v[5].x, v[5].y, v[5].z); // v5
-	//	// bottom face ===================
-	//	glVertex3f(v[0].x, v[0].y, v[0].z); // v0
-	//	glVertex3f(v[3].x, v[3].y, v[3].z); // v3
-	//	glVertex3f(v[7].x, v[7].y, v[7].z); // v7
-	//	glVertex3f(v[7].x, v[7].y, v[7].z); // v7
-	//	glVertex3f(v[4].x, v[4].y, v[4].z); // v4
-	//	glVertex3f(v[0].x, v[0].y, v[0].z); // v0
-	//	// left face ===================
-	//	glVertex3f(v[5].x, v[5].y, v[5].z); // v5
-	//	glVertex3f(v[1].x, v[1].y, v[1].z); // v1
-	//	glVertex3f(v[0].x, v[0].y, v[0].z); // v0
-	//	glVertex3f(v[0].x, v[0].y, v[0].z); // v0
-	//	glVertex3f(v[4].x, v[4].y, v[4].z); // v4
-	//	glVertex3f(v[5].x, v[5].y, v[5].z); // v5
-	//	// back face ===================
-	//	glVertex3f(v[5].x, v[5].y, v[5].z); // v5
-	//	glVertex3f(v[4].x, v[4].y, v[4].z); // v4
-	//	glVertex3f(v[7].x, v[7].y, v[7].z); // v7
-	//	glVertex3f(v[7].x, v[7].y, v[7].z); // v7
-	//	glVertex3f(v[6].x, v[6].y, v[6].z); // v6
-	//	glVertex3f(v[5].x, v[5].y, v[5].z); // v5
-	//	glEnd();
-	//	glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
-	//}
 
 private:
 	GLushort index[36] = { 
@@ -270,14 +194,40 @@ public:
 
 		v[4].y *= height;
 
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < 15; i++)
 		{
-			v[i] *= s;
-			v[i] += pos;
+			float p[3] = { pos.x, pos.y, pos.z };
+			vertex[i] *= s;
+			vertex[i] += p[i % 3];
+
+			if (i < 5)
+			{
+				v[i] *= s;
+				v[i] += pos;
+			}
 		}
 	}
 
 	void Draw()
+	{
+		glGenBuffers(1, &vBuffer);
+		glGenBuffers(1, &iBuffer);
+
+		glBindBuffer(GL_ARRAY_BUFFER, vBuffer);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertex), vertex, GL_STATIC_DRAW);
+
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iBuffer);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(index), index, GL_STATIC_DRAW);
+
+		glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_SHORT, 0);
+
+		glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
+	}
+
+	void DrawDirectMode()
 	{
 		if (selected)
 		{
@@ -345,6 +295,23 @@ public:
 	}
 
 private:
+	GLushort index[18] = {
+	0, 4, 1,
+	1, 4, 2,
+	2, 4, 3,
+	3, 4, 0,
+	3, 0, 2,
+	0, 1, 2
+	};
+	GLfloat vertex[15] = {
+	0.0f,0.0f,0.0f, // 0
+	1.0f,0.0f,0.0f, // 1
+	1.0f,0.0f,1.0f, // 2
+	0.0f,0.0f,1.0f, // 3
+	0.5f,1.0f,0.5f }; // 4
+	uint vBuffer = 0;
+	uint iBuffer = 0;
+
 	Point3D position = { 0.0f, 0.0f, 0.0f };
 	float scale = 1;
 	float height = 1;
@@ -357,76 +324,99 @@ private:
 class Sphere3D
 {
 public:
-	Sphere3D(Point3D pos = {0, 0, 0}, float radius = 1, unsigned int rings = 12, unsigned int sectors = 24)
+	Sphere3D(Point3D pos = { 0.0f, 0.0f, 0.0f }, float radius = 1, unsigned int rings = 3, unsigned int sectors = 6)
 	{
 		float const R = 1. / (float)(rings - 1);
 		float const S = 1. / (float)(sectors - 1);
-		int r, s;
 
-		vertices.resize(rings * sectors * 3);
-		normals.resize(rings * sectors * 3);
-		texcoords.resize(rings * sectors * 2);
-		std::vector<GLfloat>::iterator v = vertices.begin();
-		std::vector<GLfloat>::iterator n = normals.begin();
-		std::vector<GLfloat>::iterator t = texcoords.begin();
-		for (r = 0; r < rings; r++) for (s = 0; s < sectors; s++) {
-			float const y = sin(-M_PI_2 + M_PI * r * R);
-			float const x = cos(2 * M_PI * s * S) * sin(M_PI * r * R);
-			float const z = sin(2 * M_PI * s * S) * sin(M_PI * r * R);
+		for (int r = 0; r < rings; ++r) {
+			for (int s = 0; s < sectors; ++s) {
 
-			*t++ = s * S;
-			*t++ = r * R;
+				float y = sin(-M_PI_2 + M_PI * r * R);
+				float x = cos(2 * M_PI * s * S) * sin(M_PI * r * R);
+				float z = sin(2 * M_PI * s * S) * sin(M_PI * r * R);
 
-			*v++ = x * radius;
-			*v++ = y * radius;
-			*v++ = z * radius;
+				if (x < 0.001f) x = 0.0f;
+				if (y < 0.001f) y = 0.0f;
+				if (z < 0.001f) z = 0.0f;
 
-			*n++ = x;
-			*n++ = y;
-			*n++ = z;
+				//push_back(vec2(s * S, r * R));
+				vertex.push_back(x * radius);
+				vertex.push_back(y * radius);
+				vertex.push_back(z * radius);
+
+				if (r < rings - 1) push_indices(sectors, r, s);
+			}
 		}
 
-		indices.resize(rings * sectors * 4);
-		std::vector<GLushort>::iterator i = indices.begin();
-		for (r = 0; r < rings; r++) for (s = 0; s < sectors; s++) {
-			*i++ = r * sectors + s;
-			*i++ = r * sectors + (s + 1);
-			*i++ = (r + 1) * sectors + (s + 1);
-			*i++ = (r + 1) * sectors + s;
+		for (int i = 0; i < (rings * sectors * 3); i++)
+		{
+			if (pos == 0) break;
+			float p[3] = { pos.x, pos.y, pos.z };
+			vertex[i] += p[i % 3];
 		}
 	}
 
 	void Draw()
 	{
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-		glTranslatef(position.x, position.y, position.z);
+		float a[12] = {};
+		float i[12] = {};
+		std::copy(vertex.begin(), vertex.end(), a);
+		std::copy(index.begin(), index.end(), i);
 
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glEnableClientState(GL_NORMAL_ARRAY);
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glGenBuffers(1, &vBuffer);
+		glGenBuffers(1, &iBuffer);
 
-		glVertexPointer(3, GL_FLOAT, 0, &vertices[0]);
-		glNormalPointer(GL_FLOAT, 0, &normals[0]);
-		glTexCoordPointer(2, GL_FLOAT, 0, &texcoords[0]);
-		glDrawElements(GL_QUADS, indices.size(), GL_UNSIGNED_SHORT, &indices[0]);
-		glPopMatrix();
-	}
+		glBindBuffer(GL_ARRAY_BUFFER, vBuffer);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertex.size(), &a, GL_STATIC_DRAW);
 
-	vector<GLfloat> GetVertexs()
-	{
-		return vertices;
-	}
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-	int GetNumVertex()
-	{
-		return vertices.size();
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iBuffer);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * index.size(), &i, GL_STATIC_DRAW);
+
+		glDrawElements(GL_TRIANGLES, vertex.size(), GL_UNSIGNED_SHORT, 0);
+
+		//glEnableClientState(GL_VERTEX_ARRAY);
+		////glEnableClientState(GL_NORMAL_ARRAY);
+		////glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+		//glVertexPointer(3, GL_FLOAT, 0, &vertex[0]);
+		////glNormalPointer(GL_FLOAT, 0, &normals[0]);
+		////glTexCoordPointer(2, GL_FLOAT, 0, &texcoords[0]);
+		//glDrawElements(GL_TRIANGLES, index.size(), GL_UNSIGNED_SHORT, &index[0]);
+
+		//glDisableClientState(GL_VERTEX_ARRAY);
 	}
 
 private:
-	std::vector<GLfloat> vertices;
+	void push_indices(int sectors, int r, int s) 
+	{
+
+		int curRow = r * sectors;
+		int nextRow = (r + 1) * sectors;
+		int nextS = (s + 1) % sectors;
+
+		index.push_back(curRow + s);
+		index.push_back(nextRow + s);
+		index.push_back(nextRow + nextS);
+
+		index.push_back(curRow + s);
+		index.push_back(nextRow + nextS);
+		index.push_back(curRow + nextS);
+	}
+
+private:
+
+	std::vector<GLfloat> vertex;
 	std::vector<GLfloat> normals;
-	std::vector<GLfloat> texcoords;
-	std::vector<GLushort> indices;
-	Point3D position = {0, 0, 0};
+	std::vector<vec2> texcoords;
+	std::vector<GLushort> index;
+
+	Point3D position = {0.0f, 0.0f, 0.0f};
+
+	uint vBuffer = 0;
+	uint iBuffer = 0;
 };
+

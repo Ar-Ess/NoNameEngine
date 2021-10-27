@@ -101,6 +101,24 @@ struct Point3D
 
 };
 
+class Rotation
+{
+public:
+
+	Rotation(float anglex, float planeXx, float planeYx, float planeZx)
+	{
+		angle = anglex;
+		planeX = planeXx;
+		planeY = planeYx;
+		planeZ = planeZx;
+	}
+
+	float angle = 0.0f;
+	float planeX = 0;
+	float planeY = 0;
+	float planeZ = 0;
+};
+
 // Configuration -----------
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
