@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="External">
       <UniqueIdentifier>{26fff0dc-a8d2-4349-b2fc-4d8afb192c19}</UniqueIdentifier>
     </Filter>
@@ -29,6 +25,15 @@
     <Filter Include="Modules">
       <UniqueIdentifier>{6f1168af-656f-4906-b1fe-4009c9c6a8c5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils\Loaders">
+      <UniqueIdentifier>{f1504a1b-6333-448e-af6e-ff85923807f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\Geometry">
+      <UniqueIdentifier>{7911a2f3-d89a-4120-9266-eab5ad084328}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\Time">
+      <UniqueIdentifier>{870fba25-dbf5-40e9-8c45-dea7fbe51f2d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\External\imgui\imconfig.h">
@@ -48,9 +53,6 @@
     </ClInclude>
     <ClInclude Include="Source\External\imgui\imstb_truetype.h">
       <Filter>External\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Primitive.h">
-      <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Source\External\imgui\imgui.h">
       <Filter>External\ImGui</Filter>
@@ -154,22 +156,7 @@
     <ClInclude Include="Source\External\imgui\imgui_stdlib.h">
       <Filter>External\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Timer.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\PerfTimer.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Defs.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Color.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\glmath.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Light.h">
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Source\ModuleWindow.h">
@@ -193,29 +180,41 @@
     <ClInclude Include="Source\ModuleTextures.h">
       <Filter>Modules</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Application.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Globals.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\External\imgui\imgui_impl_opengl3.h">
       <Filter>External\ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Application.h">
+      <Filter>Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Globals.h">
+      <Filter>Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LoaderFBX.h">
+      <Filter>Utils\Loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Primitive.h">
+      <Filter>Utils\Geometry</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Shapes3D.h">
-      <Filter>Utils</Filter>
+      <Filter>Utils\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Light.h">
+      <Filter>Utils\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\glmath.h">
+      <Filter>Utils\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Color.h">
+      <Filter>Utils\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PerfTimer.h">
+      <Filter>Utils\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Timer.h">
+      <Filter>Utils\Time</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Application.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\log.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\External\imgui\imgui_demo.cpp">
       <Filter>External\ImGui</Filter>
     </ClCompile>
@@ -230,9 +229,6 @@
     </ClCompile>
     <ClCompile Include="Source\External\imgui\imgui_widgets.cpp">
       <Filter>External\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Primitive.cpp">
-      <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="Source\External\imgui\imgui.cpp">
       <Filter>External\ImGui</Filter>
@@ -255,21 +251,6 @@
     <ClCompile Include="Source\External\imgui\imgui_stdlib.cpp">
       <Filter>External\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Timer.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\PerfTimer.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Color.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\glmath.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Light.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
     <ClCompile Include="Source\ModuleCamera3D.cpp">
       <Filter>Modules</Filter>
     </ClCompile>
@@ -290,6 +271,36 @@
     </ClCompile>
     <ClCompile Include="Source\External\imgui\imgui_impl_opengl3.cpp">
       <Filter>External\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\log.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Main.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LoaderFBX.cpp">
+      <Filter>Utils\Loaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Primitive.cpp">
+      <Filter>Utils\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Light.cpp">
+      <Filter>Utils\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\glmath.cpp">
+      <Filter>Utils\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Color.cpp">
+      <Filter>Utils\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PerfTimer.cpp">
+      <Filter>Utils\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Timer.cpp">
+      <Filter>Utils\Time</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

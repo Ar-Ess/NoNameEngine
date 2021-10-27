@@ -83,7 +83,7 @@ update_status ModuleCamera3D::Update()
 		int dx = -app->input->GetMouseXMotion();
 		int dy = -app->input->GetMouseYMotion();
 
-		float Sensitivity = 1.0f;
+		float Sensitivity = 0.25f;
 
 		Position -= Reference;
 
@@ -113,7 +113,7 @@ update_status ModuleCamera3D::Update()
 		Position = Reference + Z * length(Position);
 	}
 
-	LookAt(app->scene->primitives[0]->transform.translation());
+	LookAt({0, 0, 0});
 
 	// Recalculate matrix -------------
 	CalculateViewMatrix();
