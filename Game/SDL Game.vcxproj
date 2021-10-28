@@ -121,7 +121,8 @@
     <ClInclude Include="Source\glmath.h" />
     <ClInclude Include="Source\Globals.h" />
     <ClInclude Include="Source\Light.h" />
-    <ClInclude Include="Source\LoaderFBX.h" />
+    <ClInclude Include="Source\Mesh.h" />
+    <ClInclude Include="Source\Model.h" />
     <ClInclude Include="Source\Module.h" />
     <ClInclude Include="Source\ModuleCamera3D.h" />
     <ClInclude Include="Source\ModuleInput.h" />
@@ -152,9 +153,9 @@
     <ClCompile Include="Source\External\parson\Parson.cpp" />
     <ClCompile Include="Source\glmath.cpp" />
     <ClCompile Include="Source\Light.cpp" />
-    <ClCompile Include="Source\LoaderFBX.cpp" />
     <ClCompile Include="Source\log.cpp" />
     <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\Model.cpp" />
     <ClCompile Include="Source\ModuleCamera3D.cpp" />
     <ClCompile Include="Source\ModuleInput.cpp" />
     <ClCompile Include="Source\ModuleRenderer3D.cpp" />

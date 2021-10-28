@@ -6,8 +6,10 @@
 #include "Primitive.h"
 #include <vector>
 #include "ModuleRenderer3D.h"
+#include "Model.h"
 
 class Primitive;
+class Model;
 
 enum class Scenes
 {
@@ -178,6 +180,7 @@ public: // Getters & Setters
 
 public:
 	vector<Primitive*> primitives;
+	vector<Model*> models;
 
 private:
 	Scenes scene = Scenes::EDITOR;

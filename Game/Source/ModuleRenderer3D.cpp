@@ -201,6 +201,11 @@ bool ModuleRenderer3D::GeometryDraw()
 		app->scene->primitives[i]->Render();
 	}
 
+	for (int i = 0; i < app->scene->models.size(); i++)
+	{
+		app->scene->models[i]->Draw();
+	}
+
 	return true;
 }
 

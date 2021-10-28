@@ -15,6 +15,10 @@ bool EditorScene::Start()
 	p0.axis = true;
 	app->scene->primitives.push_back(&p0);
 
+	Model* m = new Model();
+	m->LoadModel("warrior.FBX");
+	app->scene->models.push_back(m);
+
 	return true;
 }
 
