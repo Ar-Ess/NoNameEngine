@@ -228,11 +228,11 @@ bool EditorScene::ShowConfigWindow(bool open)
 							{
 								AddSpacing(0);
 								ImGui::Text("Width");
-								ImGui::SliderInt("W", &wSize.x, 1, SCREEN_WIDTH, "%d");
+								ImGui::SliderInt("W", (int*)&wSize.x, 1, SCREEN_WIDTH, "%d");
 
 								AddSpacing(0);
 								ImGui::Text("Height");
-								ImGui::SliderInt("H", &wSize.y, 1, SCREEN_HEIGHT, "%d");
+								ImGui::SliderInt("H", (int*)&wSize.y, 1, SCREEN_HEIGHT, "%d");
 
 								if (wSize != prev) app->window->SetWinSize((int)wSize.x, (int)wSize.y);
 							}

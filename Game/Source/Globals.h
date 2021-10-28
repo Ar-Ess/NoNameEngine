@@ -30,11 +30,11 @@ enum update_status
 struct Point
 {
 	Point() {}
-	Point(int xx, int yy) { x = xx; y = yy; }
+	Point(int xx, int yy) { x = float(xx); y = float(yy); }
 	Point(float xx, float yy) { x = xx; y = yy; }
 	Point(double xx, double yy) { x = xx; y = yy; }
 
-	int x = 0, y = 0;
+	float x = 0, y = 0;
 
 	bool operator==(Point b) { return (x == b.x && y == b.y); }
 	bool operator==(int i) { return (x == i || y == i); }

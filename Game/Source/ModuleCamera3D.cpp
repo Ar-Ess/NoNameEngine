@@ -45,15 +45,13 @@ update_status ModuleCamera3D::Update()
 
 	vec3 newPos(0,0,0);
 	float speed = 2.0f;
-	if(app->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
-		speed = 5.0f;
 
 	int wheelZV = app->input->GetMouseZ();
 	int wheelZH = app->input->GetMouseZH();
 
 	if (wheelZV != 0)
 	{
-		if (app->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
+		if (app->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT || app->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		{
 			if (wheelZV > 0) newPos -= Z * speed;
 			if (wheelZV < 0) newPos += Z * speed;

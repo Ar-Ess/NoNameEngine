@@ -420,3 +420,66 @@ private:
 	uint iBuffer = 0;
 };
 
+class Cylinder3D
+{
+public:
+	Cylinder3D(Point3D pos = { 0.0f, 0.0f, 0.0f }, int numSegment = 6, float h = 1.0f, float r = 1.0f, Rotation rot = {0, 0, 0, 0})
+	{
+		position = pos;
+		segments = numSegment;
+		height = h;
+		radius = r;
+	}
+
+	void DrawDirectMode()
+	{
+		glBegin(GL_TRIANGLES);
+
+		for (int ii = 0; ii < segments; ii++)
+		{
+			float theta1 = 2.0f * PI * float(ii) / float(segments); //get the current angle
+
+			int index = ii + 1;
+			if (ii == (segments - 1))
+			{
+				index = 0;
+			}
+
+			float theta2 = 2.0f * PI * float(index) / float(segments); //get the current angle
+
+			Point pos1 = { radius * cosf(theta1), radius * sinf(theta1) }; // {x, z}
+			Point pos2 = { radius * cosf(theta2), radius * sinf(theta2) }; // {x, z}
+			
+			glVertex3f(pos1.x + position.x, position.y, pos1.y + position.z);
+			glVertex3f(pos2.x + position.x, position.y, pos2.y + position.z);
+			glVertex3f(0 + position.x, position.y, 0 + position.z);
+
+			glVertex3f(position.x, position.y + height, position.z);
+			glVertex3f(pos2.x + position.x, position.y + height, pos2.y + position.z);
+			glVertex3f(pos1.x + position.x, position.y + height, pos1.y + position.z);
+
+			glVertex3f(pos1.x + position.x, position.y, pos1.y + position.z);
+			glVertex3f(pos2.x + position.x, position.y + height, pos2.y + position.z);
+			glVertex3f(pos2.x + position.x, position.y, pos2.y + position.z);
+
+			glVertex3f(pos1.x + position.x, position.y + height, pos1.y + position.z);
+			glVertex3f(pos2.x + position.x, position.y + height, pos2.y + position.z);
+			glVertex3f(pos1.x + position.x, position.y, pos1.y + position.z);
+
+
+		}
+		glEnd();
+
+		glRotatef(rotation.angle, rotation.planeX, rotation.planeY,rotation.planeZ);
+	}
+
+private:
+
+	Point3D position = { 0.0f, 0.0f, 0.0f };
+	float radius = 1;
+	float height = 1;
+	int segments = 0;
+	Rotation rotation = { 0, 0, 0, 0 };
+	bool selected = false;
+};
+
