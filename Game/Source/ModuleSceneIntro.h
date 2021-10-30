@@ -3,12 +3,12 @@
 #include "Globals.h"
 #include "EditorScene.h"
 #include <string>
-#include "Primitive.h"
+#include "Shapes3D.h"
 #include <vector>
 #include "ModuleRenderer3D.h"
 #include "Model.h"
 
-class Primitive;
+class Shape3D;
 class Model;
 
 enum class Scenes
@@ -179,7 +179,7 @@ public: // Getters & Setters
 	}
 
 public:
-	vector<Primitive*> primitives;
+	vector<Shape3D*> shapes;
 	vector<Model*> models;
 
 private:

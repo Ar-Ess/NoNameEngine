@@ -10,7 +10,7 @@
 #include "../Source/External/ImGui/imgui_impl_opengl3.h"
 #include "../Source/External/ImGui/imgui_stdlib.h"
 
-#include "Primitive.h"
+#include "Shapes3D.h"
 
 #include <stdio.h>
 #include "External/SDL/include/SDL.h"
@@ -21,6 +21,11 @@
 #endif
 
 #define YELLOW {1.0f, 1.0f, 0.0f, 1.0f}
+
+class Plane3D;
+class Cube3D;
+class Cylinder3D;
+class Pyramid3D;
 
 class EditorScene
 {
@@ -97,5 +102,5 @@ private: // Variables
 	float framerate = 0.0f;
 	float milliseconds = 0.0f;
 
-	Plane p0 = { 0, 1, 0, 0};
+	Plane3D p = {};
 };

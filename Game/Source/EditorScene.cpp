@@ -12,8 +12,12 @@ EditorScene::~EditorScene()
 
 bool EditorScene::Start()
 {
-	p0.axis = true;
-	app->scene->primitives.push_back(&p0);
+	p.axis = true;
+	app->scene->shapes.push_back(&p);
+
+	//Cube3D c = { {2, 0, 2} };
+	//c.axis = true;
+	//app->scene->shapes.push_back(&c);
 
 	Model* m = new Model();
 	m->LoadModel("warrior.FBX");

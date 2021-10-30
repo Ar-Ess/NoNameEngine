@@ -72,12 +72,21 @@ bool Model::LoadModel(const char* path_file)
 bool Model::Draw()
 {
     bool ret = true;
-    for (int i = 0; i < meshes.size(); i++)
-    {
-        Mesh* m = meshes[i];
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->GetIndexID());
-        glDrawElements(GL_TRIANGLES, m->GetIndexNumber(), GL_UNSIGNED_INT, NULL);
-    }
+
+    Mesh* m = meshes[0];
+
+    //for (int i = 0; i < meshes.size(); i++)
+    //{
+    //    Mesh* m = meshes[i];
+    //    glEnableClientState(GL_VERTEX_ARRAY);
+    //    glVertexPointer(3, GL_FLOAT, 0, m->GetVertexPtr());
+    //    glDrawArrays(GL_TRIANGLES, 0, m->GetVertexNumber());
+    //    glBindBuffer(GL_ARRAY_BUFFER, m->GetVertexID());
+    //    glVertexPointer(3, GL_FLOAT, 0, m->GetVertexPtr());
+    //    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->GetIndexID());
+    //    glDrawElements(GL_TRIANGLES, m->GetIndexNumber(), GL_UNSIGNED_INT, m->GetIndexPtr());
+    //    glDisableClientState(GL_VERTEX_ARRAY);
+    //}
 
     return ret;
 }

@@ -33,9 +33,29 @@ public:
 		return indexID;
 	}
 
+	float GetVertexID()
+	{
+		return vertexID;
+	}
+
 	uint GetIndexNumber()
 	{
 		return indexNum;
+	}
+
+	float GetVertexNumber()
+	{
+		return vertexNum;
+	}
+
+	uint* GetIndexPtr()
+	{
+		return index;
+	}
+
+	float* GetVertexPtr()
+	{
+		return vertex;
 	}
 
 private:

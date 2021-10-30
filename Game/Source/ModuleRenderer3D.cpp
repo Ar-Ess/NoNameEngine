@@ -196,9 +196,9 @@ bool ModuleRenderer3D::GeometryDraw()
 	for (uint i = 0; i < MAX_LIGHTS; ++i)
 		lights[i].Render();
 
-	for (int i = 0; i < app->scene->primitives.size(); i++)
+	for (int i = 0; i < app->scene->shapes.size(); i++)
 	{
-		app->scene->primitives[i]->Render();
+		app->scene->shapes[i]->Draw();
 	}
 
 	for (int i = 0; i < app->scene->models.size(); i++)
