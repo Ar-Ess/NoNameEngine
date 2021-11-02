@@ -28,7 +28,7 @@ private:
 
 public:
 	
-	vec3 X, Y, Z, Position, Reference;
+	vec3 X, Y, Z, position, reference;
 
 private:
 

@@ -191,7 +191,7 @@ bool ModuleRenderer3D::GuiDraw()
 
 bool ModuleRenderer3D::GeometryDraw()
 {
-	lights[0].SetPos(app->camera->Position.x, app->camera->Position.y, app->camera->Position.z);
+	lights[0].SetPos(app->camera->position.x, app->camera->position.y, app->camera->position.z);
 
 	for (uint i = 0; i < MAX_LIGHTS; ++i)
 		lights[i].Render();
