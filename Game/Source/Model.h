@@ -3,6 +3,7 @@
 
 #include "Globals.h"
 #include "Mesh.h"
+#include "Shapes3D.h"
 #include <vector>
 #include <string>
 
@@ -27,9 +28,11 @@ public:
 	bool LoadModel(const char* path);
 
 	bool Draw();
+	void DrawEdges(Mesh* m);
 
 private:
 	vector<Mesh*> meshes;
+	bool edges = true;
 
 };
 

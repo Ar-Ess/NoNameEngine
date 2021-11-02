@@ -12,8 +12,9 @@ EditorScene::~EditorScene()
 
 bool EditorScene::Start()
 {
-	p.axis = true;
-	app->scene->shapes.push_back(&p);
+	Plane3D* p = new Plane3D({ 0, 0, 0 }, {0, 1, 0});
+	p->axis = true;
+	app->scene->shapes.push_back(p);
 
 	//Cube3D c = { {2, 0, 2} };
 	//c.axis = true;

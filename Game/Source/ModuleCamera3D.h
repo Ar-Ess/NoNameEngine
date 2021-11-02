@@ -17,6 +17,10 @@ public:
 	void LookAt(const vec3 &Spot);
 	void Move(const vec3 &Movement);
 	float* GetViewMatrix();
+	Point3D GetLookPoint()
+	{
+		return lookPoint;
+	}
 
 private:
 
@@ -29,4 +33,5 @@ public:
 private:
 
 	mat4x4 ViewMatrix, ViewMatrixInverse;
+	Point3D lookPoint = {};
 };

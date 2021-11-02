@@ -200,20 +200,19 @@ private:
 						{ 1.0f, 0.0f, 1.0f }, { 1.0f, 1.0f, 1.0f }, { 0.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } };
 };
 
-class Line3D
+class Line3D : public Shape3D
 {
 public:
-	Line3D(Point3D vertex0, Point3D vertex1, float lineWidthx = 1)
+	Line3D(Point3D vertex0, Point3D vertex1, float lineWidthx = 1) : Shape3D(vertex0, lineWidthx, {0, 0, 0, 0})
 	{
 		v[0] = vertex0;
 		v[1] = vertex1;
-		lineWidth = lineWidthx;
 	}
 
 	void Draw()
 	{
 		glColor3f(255, 255, 255);
-		glLineWidth(lineWidth);
+		glLineWidth(scale);
 		glBegin(GL_LINES);
 		glVertex3f(v[0].x, v[0].y, v[0].z);
 		glVertex3f(v[1].x, v[1].y, v[1].z);
@@ -232,7 +231,6 @@ public:
 
 private:
 	Point3D v[2] = {};
-	float lineWidth = 1;
 };
 
 class Pyramid3D : public Shape3D
@@ -362,105 +360,6 @@ private:
 	Point3D v[5] = { { 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 1.0f }, 
 					 { 0.0f, 0.0f, 1.0f }, { 0.5f, 1.0f, 0.5f } };
 };
-
-//class Sphere3D
-//{
-//public:
-//	Sphere3D(Point3D pos = { 0.0f, 0.0f, 0.0f }, float radius = 1, unsigned int rings = 3, unsigned int sectors = 6)
-//	{
-//		float const R = 1. / (float)(rings - 1);
-//		float const S = 1. / (float)(sectors - 1);
-//
-//		for (int r = 0; r < rings; ++r) {
-//			for (int s = 0; s < sectors; ++s) {
-//
-//				float y = sin(-M_PI_2 + M_PI * r * R);
-//				float x = cos(2 * M_PI * s * S) * sin(M_PI * r * R);
-//				float z = sin(2 * M_PI * s * S) * sin(M_PI * r * R);
-//
-//				if (x < 0.001f) x = 0.0f;
-//				if (y < 0.001f) y = 0.0f;
-//				if (z < 0.001f) z = 0.0f;
-//
-//				//push_back(vec2(s * S, r * R));
-//				vertex.push_back(x * radius);
-//				vertex.push_back(y * radius);
-//				vertex.push_back(z * radius);
-//
-//				if (r < rings - 1) push_indices(sectors, r, s);
-//			}
-//		}
-//
-//		for (int i = 0; i < (rings * sectors * 3); i++)
-//		{
-//			if (pos == 0) break;
-//			float p[3] = { pos.x, pos.y, pos.z };
-//			vertex[i] += p[i % 3];
-//		}
-//	}
-//
-//	void Draw()
-//	{
-//		float a[12] = {};
-//		float i[12] = {};
-//		std::copy(vertex.begin(), vertex.end(), a);
-//		std::copy(index.begin(), index.end(), i);
-//
-//		glGenBuffers(1, &vBuffer);
-//		glGenBuffers(1, &iBuffer);
-//
-//		glBindBuffer(GL_ARRAY_BUFFER, vBuffer);
-//		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertex.size(), &a, GL_STATIC_DRAW);
-//
-//		glEnableVertexAttribArray(0);
-//		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-//
-//		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iBuffer);
-//		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * index.size(), &i, GL_STATIC_DRAW);
-//
-//		glDrawElements(GL_TRIANGLES, vertex.size(), GL_UNSIGNED_SHORT, 0);
-//
-//		//glEnableClientState(GL_VERTEX_ARRAY);
-//		////glEnableClientState(GL_NORMAL_ARRAY);
-//		////glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-//
-//		//glVertexPointer(3, GL_FLOAT, 0, &vertex[0]);
-//		////glNormalPointer(GL_FLOAT, 0, &normals[0]);
-//		////glTexCoordPointer(2, GL_FLOAT, 0, &texcoords[0]);
-//		//glDrawElements(GL_TRIANGLES, index.size(), GL_UNSIGNED_SHORT, &index[0]);
-//
-//		//glDisableClientState(GL_VERTEX_ARRAY);
-//	}
-//
-//private:
-//	void push_indices(int sectors, int r, int s) 
-//	{
-//
-//		int curRow = r * sectors;
-//		int nextRow = (r + 1) * sectors;
-//		int nextS = (s + 1) % sectors;
-//
-//		index.push_back(curRow + s);
-//		index.push_back(nextRow + s);
-//		index.push_back(nextRow + nextS);
-//
-//		index.push_back(curRow + s);
-//		index.push_back(nextRow + nextS);
-//		index.push_back(curRow + nextS);
-//	}
-//
-//private:
-//
-//	std::vector<GLfloat> vertex;
-//	std::vector<GLfloat> normals;
-//	std::vector<vec2> texcoords;
-//	std::vector<GLushort> index;
-//
-//	Point3D position = {0.0f, 0.0f, 0.0f};
-//
-//	uint vBuffer = 0;
-//	uint iBuffer = 0;
-//};
 
 class Cylinder3D : public Shape3D
 {

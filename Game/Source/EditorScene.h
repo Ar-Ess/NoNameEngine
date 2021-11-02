@@ -101,6 +101,4 @@ private: // Variables
 	Application* app = nullptr;
 	float framerate = 0.0f;
 	float milliseconds = 0.0f;
-
-	Plane3D p = {};
 };

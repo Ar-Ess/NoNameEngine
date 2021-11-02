@@ -44,6 +44,7 @@ update_status ModuleCamera3D::Update()
 	// Now we can make this movememnt frame rate independant!
 
 	vec3 newPos(0,0,0);
+	Point3D newPosition = {0, 0, 0};
 	float speed = 2.0f;
 
 	int wheelZV = app->input->GetMouseZ();
@@ -71,6 +72,17 @@ update_status ModuleCamera3D::Update()
 
 	}
 
+	if (app->input->GetKey(SDL_SCANCODE_R) == KEY_REPEAT) newPosition.y += speed;
+	if (app->input->GetKey(SDL_SCANCODE_F) == KEY_REPEAT) newPosition.y -= speed;
+
+	if (app->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) newPos.x -= speed;
+	if (app->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) newPos.x += speed;
+
+	if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) newPos.z -= speed;
+	if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) newPos.z += speed;
+
+
+	lookPoint = newPosition;
 	Position += newPos;
 	Reference += newPos;
 
@@ -111,7 +123,7 @@ update_status ModuleCamera3D::Update()
 		Position = Reference + Z * length(Position);
 	}
 
-	LookAt({0, 0, 0});
+	LookAt(lookPoint);
 
 	// Recalculate matrix -------------
 	CalculateViewMatrix();

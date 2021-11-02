@@ -76,7 +76,6 @@ public:
 		return dt;
 	}
 
-
 private:
 
 	void AddModule(Module* mod);
