@@ -2,7 +2,7 @@
 
 using namespace std;
 
-Model::Model()
+Model::Model(Point3D pos, float s, Rotation rot) : Shape3D(pos, s, rot)
 {
     struct aiLogStream stream;
     stream = aiGetPredefinedLogStream(aiDefaultLogStream_DEBUGGER, nullptr);

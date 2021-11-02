@@ -7,7 +7,6 @@
 #define _USE_MATH_DEFINES
 
 #include <math.h>
-#include "Globals.h"
 
 // ----------------------------------------------------------------------------------------------------------------------------
 
@@ -175,8 +174,6 @@ public:
 	vec3(const vec2 &u, float z) : x(u.x), y(u.y), z(z)
 	{}
 	vec3(const vec3 &u) : x(u.x), y(u.y), z(u.z)
-	{}
-	vec3(Point3D p) : x(p.x), y(p.y), z(p.z)
 	{}
 	void Set(float x, float y, float z)
 	{

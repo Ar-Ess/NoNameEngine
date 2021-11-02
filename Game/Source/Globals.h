@@ -2,6 +2,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <string>
+#include "glmath.h"
 
 #define LOG(format, ...) log(__FILE__, __LINE__, format, __VA_ARGS__);
 
@@ -19,6 +20,7 @@ int GetOutputSize();
 #define RADTODEG 57.295779513082320876f
 
 typedef unsigned int uint;
+class vec3;
 
 enum update_status
 {
@@ -70,6 +72,7 @@ struct Point3D
 	Point3D(int xx, int yy, int zz) { x = xx; y = yy; z = zz; }
 	Point3D(float xx, float yy, float zz) { x = xx; y = yy; z = zz; }
 	Point3D(double xx, double yy, double zz) { x = xx; y = yy; z = zz; }
+	Point3D(vec3 p) { x = p.x; y = p.y; z = p.z; }
 
 	float x = 0, y = 0, z = 0;
 

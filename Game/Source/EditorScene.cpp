@@ -22,7 +22,7 @@ bool EditorScene::Start()
 
 	Model* m = new Model();
 	m->LoadModel("warrior.FBX");
-	app->scene->models.push_back(m);
+	app->scene->shapes.push_back(m);
 
 	return true;
 }

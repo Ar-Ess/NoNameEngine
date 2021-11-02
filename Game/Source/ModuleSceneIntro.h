@@ -180,7 +180,6 @@ public: // Getters & Setters
 
 public:
 	vector<Shape3D*> shapes;
-	vector<Model*> models;
 
 private:
 	Scenes scene = Scenes::EDITOR;

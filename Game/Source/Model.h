@@ -17,11 +17,11 @@ class Mesh;
 
 using namespace std;
 
-class  Model
+class Model : public Shape3D
 {
 public:
 
-	Model();
+	Model(Point3D pos = { 0, 0, 0 }, float s = 1.0f, Rotation rot = {0, 0, 0, 0});
 
 	~Model();
 
@@ -33,7 +33,6 @@ public:
 private:
 	vector<Mesh*> meshes;
 	bool edges = true;
-
 };
 
 #endif // !__MODEL_H__

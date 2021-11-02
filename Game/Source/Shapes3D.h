@@ -13,7 +13,7 @@ struct Point3D;
 class Shape3D
 {
 public:
-	virtual void Draw() {}
+	virtual bool Draw() { return true; }
 
 	bool axis = false;
 
@@ -86,7 +86,7 @@ public:
 		}
 	}
 
-	void Draw()
+	bool Draw()
 	{
 		glColor3f(255, 255, 255);
 
@@ -107,6 +107,8 @@ public:
 		glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
 
 		if (axis) DrawAxis();
+
+		return true;
 	}
 
 	void DrawDirectMode()
@@ -209,7 +211,7 @@ public:
 		v[1] = vertex1;
 	}
 
-	void Draw()
+	bool Draw()
 	{
 		glColor3f(255, 255, 255);
 		glLineWidth(scale);
@@ -217,6 +219,8 @@ public:
 		glVertex3f(v[0].x, v[0].y, v[0].z);
 		glVertex3f(v[1].x, v[1].y, v[1].z);
 		glEnd();
+
+		return true;
 	}
 
 	Point3D* GetVertexs()
@@ -257,7 +261,7 @@ public:
 		}
 	}
 
-	void Draw()
+	bool Draw()
 	{
 		glColor3f(255, 255, 255);
 
@@ -278,6 +282,8 @@ public:
 		glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
 
 		if (axis) DrawAxis();
+
+		return true;
 	}
 
 	void DrawDirectMode()
@@ -371,7 +377,7 @@ public:
 		radius = r;
 	}
 
-	void Draw()
+	bool Draw()
 	{
 		glColor3f(255, 255, 255);
 
@@ -415,6 +421,8 @@ public:
 		glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
 
 		if (axis) DrawAxis();
+
+		return true;
 	}
 
 private:
@@ -432,7 +440,7 @@ public:
 		normal = n;
 	}
 
-	void Draw()
+	bool Draw()
 	{
 		glColor3f(255, 255, 255);
 
@@ -453,6 +461,8 @@ public:
 		glEnd();
 
 		if (axis) DrawAxis();
+
+		return true;
 	}
 
 private:
