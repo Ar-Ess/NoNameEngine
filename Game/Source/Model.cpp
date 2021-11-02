@@ -89,6 +89,10 @@ bool Model::Draw()
     glEnableClientState(GL_NORMAL_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
+    glTranslatef(position.x, position.y, position.z);
+
+    glScalef(scale, scale, scale);
+
     for (int i = 0; i < meshes.size(); i++)
     {
         glColor3f(255, 255, 255);
