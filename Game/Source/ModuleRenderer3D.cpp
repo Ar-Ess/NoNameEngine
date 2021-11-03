@@ -201,6 +201,7 @@ bool ModuleRenderer3D::GeometryDraw()
 		app->scene->shapes[i]->Draw();
 	}
 
+	// Hello
 	return true;
 }
 
