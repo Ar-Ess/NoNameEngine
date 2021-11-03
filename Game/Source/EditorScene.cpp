@@ -21,8 +21,8 @@ bool EditorScene::Start()
 	//app->scene->shapes.push_back(&c);
 
 	Model* m = new Model({-20, 10, -30}, 0.5f);
-	//m->LoadModel("BakerHouse.fbx");
-	m->LoadModel("warrior.FBX");
+	m->LoadModel("BakerHouse.fbx");
+	//m->LoadModel("warrior.FBX");
 	app->scene->shapes.push_back(m);
 
 	return true;

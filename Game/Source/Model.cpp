@@ -83,11 +83,9 @@ bool Model::Draw()
 {
     bool ret = true;
 
-    Mesh* m = meshes[0];
-
     glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    /*glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);*/
 
     glTranslatef(position.x, position.y, position.z);
 
@@ -118,8 +116,8 @@ bool Model::Draw()
     }
 
     glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    /*glDisableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);*/
 
     return ret;
 }

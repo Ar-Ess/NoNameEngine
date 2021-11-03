@@ -34,13 +34,15 @@ Application::Application()
 
 	// Main Modules
 	AddModule(window);
-	AddModule(render);
 	AddModule(camera);
 	AddModule(textures);
 	AddModule(input);
 	
 	// Scenes
 	AddModule(scene);
+
+	// Render
+	AddModule(render);
 
 	PERF_PEEK(ptimer);
 }

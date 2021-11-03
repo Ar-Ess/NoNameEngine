@@ -40,12 +40,15 @@ update_status ModuleCamera3D::Update()
 
 	vec3 newPos(0, 0, 0);
 	vec3 newPosition(0, 0, 0);
-	float speed = 2.0f;
+	float speed = 0.5f;
 	int wheelZV = app->input->GetMouseZ();
 	int wheelZH = app->input->GetMouseZH();
-	bool shift = (app->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT || app->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT);
+	int dx = -app->input->GetMouseXMotion();
+	int dy = -app->input->GetMouseYMotion();
+	bool shift = (app->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT);
+	float sens = 0.2f;
 
-	// Wheel movement
+	// Trackpad movement
 	if (wheelZV != 0)
 	{
 		if (shift)
@@ -64,9 +67,32 @@ update_status ModuleCamera3D::Update()
 	{
 		if (wheelZH > 0) newPos += X * speed;
 		if (wheelZH < 0) newPos -= X * speed;
-
 	}
 
+	// Mouse movement
+	if (app->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
+	{
+		if (dx != 0 && !shift)
+		{
+			if (dx > 0) newPos += X * speed * sens;
+			if (dx < 0) newPos -= X * speed * sens;
+
+		}
+		if (dy != 0)
+		{
+			if (shift)
+			{
+				if (dy > 0) newPosition += Z * speed * sens;
+				if (dy < 0) newPosition -= Z * speed * sens;
+			}
+			else
+			{
+				if (dy > 0) newPos -= Y * speed * sens;
+				if (dy < 0) newPos += Y * speed * sens;
+			}
+		}
+	}
+	
 	// Arrow movement
 	if (app->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
 	{
@@ -93,40 +119,40 @@ update_status ModuleCamera3D::Update()
 	lookPoint += newPosition;
 
 	// Mouse motion
-	if (app->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
+	/*if (app->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
 	{
 		int dx = -app->input->GetMouseXMotion();
 		int dy = -app->input->GetMouseYMotion();
+		bool move = (dx != 0 || dy != 0);
 
-		float Sensitivity = 0.25f;
-
-		position -= reference;
-
-		if (dx != 0)
+		if (move)
 		{
-			float DeltaX = (float)dx * Sensitivity;
-
-			X = rotate(X, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-			Y = rotate(Y, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-			Z = rotate(Z, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-		}
-
-		if (dy != 0)
-		{
-			float DeltaY = (float)dy * Sensitivity;
-
-			Y = rotate(Y, DeltaY, X);
-			Z = rotate(Z, DeltaY, X);
-
-			if (Y.y < 0.0f)
+			position -= reference;
+			if (dx != 0)
 			{
-				Z = vec3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
-				Y = cross(Z, X);
-			}
-		}
+				float DeltaX = (float)dx * Sensitivity;
 
-		position = reference + Z * length(position);
+				X = rotate(X, DeltaX, vec3(0.0f, 1.0f, 0.0f));
+				Y = rotate(Y, DeltaX, vec3(0.0f, 1.0f, 0.0f));
+				Z = rotate(Z, DeltaX, vec3(0.0f, 1.0f, 0.0f));
+			}
+			if (dy != 0)
+			{
+				float DeltaY = (float)dy * Sensitivity;
+
+				Y = rotate(Y, DeltaY, X);
+				Z = rotate(Z, DeltaY, X);
+
+				if (Y.y < 0.0f)
+				{
+					Z = vec3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
+					Y = cross(Z, X);
+				}
+			}
+			position = reference + Z * length(position);
+		}
 	}
+	*/
 
 	// Recalculate matrix
 	LookAt(vec3{ lookPoint.x, lookPoint.y, lookPoint.z });
