@@ -21,8 +21,8 @@ bool EditorScene::Start()
 	//app->scene->shapes.push_back(&c);
 
 	Model* m = new Model({0, 5, -20}, 0.5f);
-	m->LoadModel("BakerHouse.fbx");
-	//m->LoadModel("warrior.FBX");
+	m->LoadModel("Assets/Models/BakerHouse.fbx", "Assets/Textures/baker_house_texture.png");
+	//m->LoadModel("Assets/Models/warrior.FBX");
 	app->scene->shapes.push_back(m);
 
 	return true;

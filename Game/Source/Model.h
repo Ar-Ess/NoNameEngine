@@ -25,7 +25,8 @@ public:
 
 	~Model();
 
-	bool LoadModel(const char* path, const char* pathTex = "Assets/Textures/default_texture.jpg", bool addDirectory = true);
+	bool LoadModel(const char* pathFile, const char* pathTex = "Assets/Textures/default_texture.jpg");
+	bool LoadTexture(const char* pathTex = "Assets/Textures/default_texture.jpg");
 
 	bool Draw();
 	void DrawEdges(Mesh* m);
