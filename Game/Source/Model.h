@@ -25,7 +25,7 @@ public:
 
 	~Model();
 
-	bool LoadModel(const char* path);
+	bool LoadModel(const char* path, bool addDirectory = true);
 
 	bool Draw();
 	void DrawEdges(Mesh* m);

@@ -13,12 +13,20 @@ Model::~Model()
 {
 }
 
-bool Model::LoadModel(const char* path_file)
+bool Model::LoadModel(const char* pathFile, bool addDirectory)
 {
     bool ret = true;
 
-    string path = "Assets/Models/";
-    path += path_file;
+    string path;
+    if (addDirectory)
+    {
+        path = "Assets/Models/";
+        path += pathFile;
+    }
+    else
+    {
+        path = pathFile;
+    }
 
     const aiScene* scene = aiImportFile(path.c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
 

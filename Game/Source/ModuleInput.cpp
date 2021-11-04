@@ -3,6 +3,8 @@
 #include "ModuleInput.h"
 #include "External/SDL/include/SDL.h"
 #include "ModuleRenderer3D.h"
+#include "ModuleWindow.h"
+#include "ModuleSceneIntro.h"
 
 #define MAX_KEYS 300
 
@@ -13,13 +15,11 @@ ModuleInput::ModuleInput(Application* app, bool start_enabled) : Module(app, sta
 	memset(mouse_buttons, KEY_IDLE, sizeof(KEY_STATE) * MAX_MOUSE_BUTTONS);
 }
 
-// Destructor
 ModuleInput::~ModuleInput()
 {
 	delete[] keyboard;
 }
 
-// Called before render is available
 bool ModuleInput::Init()
 {
 	LOG("Init SDL input event system");
@@ -35,11 +35,11 @@ bool ModuleInput::Init()
 	return ret;
 }
 
-// Called every draw update
 update_status ModuleInput::PreUpdate()
 {
 	SDL_PumpEvents();
 
+	// KEYBOAR INPUT
 	const Uint8* keys = SDL_GetKeyboardState(NULL);
 	
 	for(int i = 0; i < MAX_KEYS; ++i)
@@ -60,6 +60,7 @@ update_status ModuleInput::PreUpdate()
 		}
 	}
 
+	// MOUSE INPUT
 	Uint32 buttons = SDL_GetMouseState(&mouse_x, &mouse_y);
 
 	mouse_x /= SCREEN_SIZE;
@@ -88,42 +89,59 @@ update_status ModuleInput::PreUpdate()
 
 	bool quit = false;
 	SDL_Event e;
-	while(SDL_PollEvent(&e))
+	SDL_EventState(SDL_DROPFILE, SDL_ENABLE);
+	while (SDL_PollEvent(&e))
 	{
-		switch(e.type)
+		switch (e.type)
 		{
-			case SDL_MOUSEWHEEL:
+		case SDL_MOUSEWHEEL:
+		{
 			mouse_z = e.wheel.y;
 			mouse_w = e.wheel.x;
 			break;
+		}
 
-			case SDL_MOUSEMOTION:
+		case SDL_MOUSEMOTION:
+		{
 			mouse_x = e.motion.x / SCREEN_SIZE;
 			mouse_y = e.motion.y / SCREEN_SIZE;
 
 			mouse_x_motion = e.motion.xrel / SCREEN_SIZE;
 			mouse_y_motion = e.motion.yrel / SCREEN_SIZE;
 			break;
+		}
 
-			case SDL_QUIT:
-			quit = true;
+		case SDL_DROPFILE:
+		{
+			char* droppedFileDir = e.drop.file;
+			/*quit = SDL_ShowSimpleMessageBox(
+				SDL_MESSAGEBOX_INFORMATION,
+				"File dropped on window",
+				droppedFileDir,
+				app->window->mainWindow
+			);*/
+			app->scene->LoadDropModel(droppedFileDir);
+			SDL_free(droppedFileDir);
 			break;
+		}
 
-			case SDL_WINDOWEVENT:
-			{
-				if(e.window.event == SDL_WINDOWEVENT_RESIZED)
-					app->render->OnResize(e.window.data1, e.window.data2);
-			}
+		case SDL_QUIT: quit = true; break;
+
+		case SDL_WINDOWEVENT:
+		{
+			if (e.window.event == SDL_WINDOWEVENT_RESIZED)
+				app->render->OnResize(e.window.data1, e.window.data2);
+		}
 		}
 	}
 
-	if(quit == true || keyboard[SDL_SCANCODE_ESCAPE] == KEY_UP)
+	if(quit || keyboard[SDL_SCANCODE_ESCAPE] == KEY_UP)
 		return UPDATE_STOP;
 
 	return UPDATE_CONTINUE;
 }
 
-// Called before quitting
+
 bool ModuleInput::CleanUp()
 {
 	LOG("Quitting SDL input event subsystem");

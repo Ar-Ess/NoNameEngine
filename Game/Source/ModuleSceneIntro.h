@@ -177,6 +177,12 @@ public: // Getters & Setters
 
 		app->render->ToggleGeometryView(gV, state);
 	}
+	void LoadDropModel(const char* path) 
+	{
+		Model* m = new Model({0, 0, 0});
+		m->LoadModel(path, false);
+		shapes.push_back(m);
+	}
 
 public:
 	vector<Shape3D*> shapes;

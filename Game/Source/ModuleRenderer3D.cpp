@@ -191,6 +191,7 @@ bool ModuleRenderer3D::GuiDraw()
 
 bool ModuleRenderer3D::GeometryDraw()
 {
+	bool ret = true;
 	lights[0].SetPos(app->camera->position.x, app->camera->position.y, app->camera->position.z);
 
 	for (uint i = 0; i < MAX_LIGHTS; ++i)
@@ -198,10 +199,10 @@ bool ModuleRenderer3D::GeometryDraw()
 
 	for (int i = 0; i < app->scene->shapes.size(); i++)
 	{
-		app->scene->shapes[i]->Draw();
+		ret = app->scene->shapes[i]->Draw();
 	}
 
-	return true;
+	return ret;
 }
 
 bool ModuleRenderer3D::CleanUp()
