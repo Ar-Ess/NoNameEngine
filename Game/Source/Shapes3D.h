@@ -10,23 +10,41 @@
 
 struct Point3D;
 
+enum ShapeType
+{
+	NULL3D,
+	CUBE3D,
+	LINE3D,
+	PYRAMID3D,
+	CYLINDER3D,
+	PLANE3D,
+	SPHERE3D,
+	MODEL3D,
+};
+
 class Shape3D
 {
 public:
 	virtual bool Draw() { return true; }
+
+	ShapeType GetShapeType()
+	{
+		return type;
+	}
 
 	bool axis = false;
 	bool edges = true;
 	bool normals = false;
 
 protected:
-	Shape3D(Point3D pos, float s, Rotation rot)
+	Shape3D(Point3D pos, float s, Rotation rot, ShapeType sT)
 	{
 		position = pos;
 		rotation = rot;
 		scale = s;
 		axis = false;
 		selected = false;
+		type = sT;
 	}
 
 	void DrawAxis()
@@ -67,12 +85,13 @@ protected:
 	Rotation rotation = { 0, 0, 0, 0};
 	float scale = 1;
 	bool selected = false;
+	ShapeType type = NULL3D;
 };
 
 class Cube3D : public Shape3D
 {
 public:
-	Cube3D(Point3D pos = {0.0f, 0.0f, 0.0f}, float s = 1, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot)
+	Cube3D(Point3D pos = {0.0f, 0.0f, 0.0f}, float s = 1, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, CUBE3D)
 	{
 		for (int i = 0; i < 24; i++)
 		{
@@ -207,7 +226,7 @@ private:
 class Line3D : public Shape3D
 {
 public:
-	Line3D(Point3D vertex0, Point3D vertex1, float lineWidthx = 1) : Shape3D(vertex0, lineWidthx, {0, 0, 0, 0})
+	Line3D(Point3D vertex0, Point3D vertex1, float lineWidthx = 1) : Shape3D(vertex0, lineWidthx, {0, 0, 0, 0}, LINE3D)
 	{
 		v[0] = vertex0;
 		v[1] = vertex1;
@@ -243,7 +262,7 @@ class Pyramid3D : public Shape3D
 {
 public:
 
-	Pyramid3D(Point3D pos = { 0.0f, 0.0f, 0.0f }, float h = 1.0f, float s = 1.0f, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot)
+	Pyramid3D(Point3D pos = { 0.0f, 0.0f, 0.0f }, float h = 1.0f, float s = 1.0f, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, PYRAMID3D)
 	{
 		height = h;
 
@@ -372,7 +391,7 @@ private:
 class Cylinder3D : public Shape3D
 {
 public:
-	Cylinder3D(Point3D pos = { 0.0f, 0.0f, 0.0f }, int numSegment = 6, float h = 1.0f, float r = 1.0f, float s = 1.0f, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot)
+	Cylinder3D(Point3D pos = { 0.0f, 0.0f, 0.0f }, int numSegment = 6, float h = 1.0f, float r = 1.0f, float s = 1.0f, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, CYLINDER3D)
 	{
 		segments = numSegment;
 		height = h;
@@ -437,7 +456,7 @@ private:
 class Plane3D : public Shape3D
 {
 public:
-	Plane3D(Point3D pos = { 0, 0, 0 }, Point3D n = { 0, 1, 0 }, float s = 4, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, (s * 50), rot)
+	Plane3D(Point3D pos = { 0, 0, 0 }, Point3D n = { 0, 1, 0 }, float s = 4, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, (s * 50), rot, PLANE3D)
 	{
 		normal = n;
 	}

@@ -120,7 +120,26 @@ update_status ModuleInput::PreUpdate()
 				droppedFileDir,
 				app->window->mainWindow
 			);*/
-			app->scene->LoadDropModel(droppedFileDir);
+			
+			string format(e.drop.file);
+			int fSize = format.size() - 4;
+			for (int i = 0; i < fSize; i++) format.erase(format.begin());
+			format.shrink_to_fit();
+			string FBX = ".FBX";
+			string fbx = ".fbx";
+
+			if (SameString(format, FBX) || SameString(format, fbx))
+			{
+				app->scene->LoadDropModel(droppedFileDir);
+			}
+			else
+			{
+				app->scene->LoadDropTexture(droppedFileDir);
+			}
+
+			format.clear();
+			FBX.clear();
+			fbx.clear();
 			SDL_free(droppedFileDir);
 			break;
 		}

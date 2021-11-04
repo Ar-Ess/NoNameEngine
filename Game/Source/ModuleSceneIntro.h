@@ -6,10 +6,12 @@
 #include "Shapes3D.h"
 #include <vector>
 #include "ModuleRenderer3D.h"
+#include "ModuleInput.h"
 #include "Model.h"
 
 class Shape3D;
 class Model;
+class ModuleInput;
 
 enum class Scenes
 {
@@ -57,6 +59,28 @@ public:
 	bool CleanUpScene(Scenes scene);
 
 	bool CleanUp();
+
+private: // Private functions
+	friend class ModuleInput;
+
+	void LoadDropModel(const char* path)
+	{
+		Model* m = new Model({ 0, 0, 0 });
+		m->LoadModel(path);
+		shapes.push_back(m);
+	}
+
+	void LoadDropTexture(const char* path)
+	{
+		for (int i = 0; i < shapes.size(); i++)
+		{
+			if (shapes[i]->GetShapeType() == MODEL3D)
+			{
+				Model* m = (Model*)shapes[i];
+				m->LoadTexture(path);
+			}
+		}
+	}
 
 public: // Getters & Setters
 
@@ -182,12 +206,6 @@ public: // Getters & Setters
 		}
 
 		app->render->ToggleGeometryView(gV, state);
-	}
-	void LoadDropModel(const char* path) 
-	{
-		Model* m = new Model({0, 0, 0});
-		m->LoadModel(path, false);
-		shapes.push_back(m);
 	}
 	void SetGeometryInfo(GeometryInfo gI)
 	{

@@ -12,6 +12,8 @@ void log(const char file[], int line, const char* format, ...);
 
 std::string GetOutputText(int index);
 
+bool SameString(std::string a, std::string b);
+
 int GetOutputSize();
 
 #define CAP(n) ((n <= 0.0f) ? n=0.0f : (n >= 1.0f) ? n=1.0f : n=n)

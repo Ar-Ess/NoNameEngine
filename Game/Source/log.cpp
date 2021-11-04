@@ -9,6 +9,17 @@ std::string GetOutputText(int index)
 	return outputLog[index];
 }
 
+bool SameString(std::string a, std::string b)
+{
+	bool ret = true;
+
+	if (a.size() != b.size()) return false;
+
+	for (int i = 0; i < a.size(); i++) ret = (a[i] == b[i]);
+
+	return ret;
+}
+
 int GetOutputSize()
 {
 	return outputLog.size();
