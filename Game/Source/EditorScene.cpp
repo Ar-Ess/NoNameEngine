@@ -20,7 +20,7 @@ bool EditorScene::Start()
 	//c.axis = true;
 	//app->scene->shapes.push_back(&c);
 
-	Model* m = new Model({0, 5, -20}, 0.5f);
+	Model* m = new Model({0, 5, -20}, 1);
 	m->LoadModel("Assets/Models/BakerHouse.fbx", "Assets/Textures/baker_house_texture.png");
 	//m->LoadModel("Assets/Models/warrior.FBX");
 	app->scene->shapes.push_back(m);

@@ -490,3 +490,19 @@ private:
 
 	Point3D normal = { 0.0f, 0.0f, 0.0f };
 };
+
+//class Sphere3D : public Shape3D
+//{
+//public:
+//	Sphere3D(Point3D pos = { 0, 0, 0 }, float s = 4, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, SPHERE3D)
+//	{
+//	}
+//
+//	bool Draw()
+//	{
+//		return true;
+//	}
+//
+//private:
+//
+//};
