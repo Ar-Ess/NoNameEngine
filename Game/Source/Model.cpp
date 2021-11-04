@@ -41,7 +41,7 @@ bool Model::LoadModel(const char* pathFile, bool addDirectory)
 
     for (int i = 0; i < scene->mNumMeshes; i++)
     {
-        // Variables
+        // VARIABLES
         if (&scene->mMeshes[i] == nullptr)
         {
             ret = false;
@@ -52,12 +52,15 @@ bool Model::LoadModel(const char* pathFile, bool addDirectory)
         uint numIndex = 0;
         uint* index = nullptr;
         uint numVertex = aiMesh->mNumVertices;
+        uint numNormal = numVertex;
         float* vertex = new float[numVertex * 3];
-        //Variables
+        float* normal = new float[numNormal * 3];
 
+        // VERTEX
         memcpy(vertex, aiMesh->mVertices, sizeof(float) * numVertex * 3);
-        LOG("New mesh with %d vertices", numVertex);
+        LOG("Mesh %d with %d vertices", i, numVertex);
 
+        // INDEX
         if (aiMesh->HasFaces())
         {
             numIndex = aiMesh->mNumFaces * 3;
@@ -77,7 +80,12 @@ bool Model::LoadModel(const char* pathFile, bool addDirectory)
             }
         }
 
-        Mesh* m = new Mesh(vertex, numVertex, index, numIndex);
+        // NORMAL
+        memcpy(normal, aiMesh->mNormals, sizeof(float) * numNormal * 3);
+        LOG("Mesh %d with %d normals", i, numNormal);
+
+        // SETTING MESH
+        Mesh* m = new Mesh(vertex, numVertex, index, numIndex, normal, numNormal);
         meshes.push_back(m);
     }
 
@@ -92,8 +100,8 @@ bool Model::Draw()
     bool ret = true;
 
     glEnableClientState(GL_VERTEX_ARRAY);
-    /*glEnableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);*/
+    glEnableClientState(GL_NORMAL_ARRAY);
+    //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
     glTranslatef(position.x, position.y, position.z);
 
@@ -103,13 +111,15 @@ bool Model::Draw()
     {
         glColor3f(255, 255, 255);
         Mesh* m = meshes[i];
+
         //vertex
-        glBindBuffer(GL_ARRAY_BUFFER, m->GetVertexID());
+        glBindBuffer(GL_ARRAY_BUFFER, m->GetId(VERTEX));
         glVertexPointer(3, GL_FLOAT, 0, NULL);
 
-        ////normals
-        //glBindBuffer(GL_ARRAY_BUFFER, normalsIDs_OfMesh_i);
-        //glNormalPointer(GL_FLOAT, 0, NULL);
+        //normals
+        glBindBuffer(GL_ARRAY_BUFFER, m->GetId(NORMAL));
+        glNormalPointer(GL_FLOAT, 0, NULL);
+
         ////coord
         //glBindBuffer(GL_ARRAY_BUFFER, textCoordIDs_OfMesh_i);
         //glTexCoordPointer(2, GL_FLOAT, 0, NULL);
@@ -117,15 +127,16 @@ bool Model::Draw()
         //glBindTexture(GL_TEXTURE_2D, 0);
         //glBindTexture(GL_TEXTURE_2D, textureID);//only one texture for all scene
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->GetIndexID());
-        glDrawElements(GL_TRIANGLES, m->GetIndexNumber(), GL_UNSIGNED_INT, NULL);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->GetId(INDEX));
+        glDrawElements(GL_TRIANGLES, m->GetNum(INDEX), GL_UNSIGNED_INT, NULL);
 
         if (edges) DrawEdges(m);
+        //if (normals) DrawNormals(m);
     }
 
     glDisableClientState(GL_VERTEX_ARRAY);
-    /*glDisableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);*/
+    glDisableClientState(GL_NORMAL_ARRAY);
+    //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
     return ret;
 }
@@ -134,11 +145,24 @@ void Model::DrawEdges(Mesh* m)
 {
     glColor3f(255, 0, 0);
     //vertex
-    glBindBuffer(GL_ARRAY_BUFFER, m->GetVertexID());
+    glBindBuffer(GL_ARRAY_BUFFER, m->GetId(VERTEX));
     glVertexPointer(3, GL_FLOAT, 0, NULL);
 
     glLineWidth(1.5f);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->GetIndexID());
-    glDrawElements(GL_LINES, m->GetIndexNumber(), GL_UNSIGNED_INT, NULL);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->GetId(INDEX));
+    glDrawElements(GL_LINES, m->GetNum(INDEX), GL_UNSIGNED_INT, NULL);
+}
+
+void Model::DrawNormals(Mesh* m)
+{
+    glColor3f(0, 0, 255);
+    //vertex
+    glBindBuffer(GL_ARRAY_BUFFER, m->GetId(NORMAL));
+    glVertexPointer(3, GL_FLOAT, 0, NULL);
+
+    glLineWidth(1.5f);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->GetId(INDEX));
+    glDrawElements(GL_LINES, m->GetNum(INDEX), GL_UNSIGNED_INT, NULL);
 }

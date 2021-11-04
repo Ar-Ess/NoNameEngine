@@ -29,10 +29,12 @@ public:
 
 	bool Draw();
 	void DrawEdges(Mesh* m);
+	void DrawNormals(Mesh* m);
 
 private:
 	vector<Mesh*> meshes;
 	bool edges = true;
+	bool normals = true;
 };
 
 #endif // !__MODEL_H__
