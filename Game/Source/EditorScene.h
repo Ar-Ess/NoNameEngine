@@ -88,6 +88,10 @@ public: // Variables
 	bool colorMaterial = false;
 	bool texture2D = false;
 
+	// Geometry Info
+	bool edges = true;
+	bool normals = false;
+
 
 	Point wSize = { SCREEN_WIDTH, SCREEN_HEIGHT };
 	int wSizeProportion = 100;

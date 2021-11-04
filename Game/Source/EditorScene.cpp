@@ -75,6 +75,22 @@ bool EditorScene::DrawMenuBar()
 			if (ImGui::MenuItem("Configuration"))
 				configWindow = !configWindow;
 
+			if (ImGui::BeginMenu("Geometry"))
+			{
+				if (ImGui::MenuItem("Edges"))
+				{
+					edges = !edges;
+					app->scene->SetGeometryInfo(EDGES);
+				}
+
+				if (ImGui::MenuItem("Normals"))
+				{
+					normals = !normals;
+					app->scene->SetGeometryInfo(NORMALS);
+				}
+				ImGui::EndMenu();
+			}
+
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Help"))

@@ -37,6 +37,7 @@ bool ModuleCamera3D::CleanUp()
 
 update_status ModuleCamera3D::Update()
 {
+	if (app->scene->GetWindowState(Windows::CONFIG_W) || app->scene->GetWindowState(Windows::DEMO_W)) return UPDATE_CONTINUE;
 
 	vec3 newPos(0, 0, 0);
 	vec3 newPosition(0, 0, 0);
@@ -92,7 +93,7 @@ update_status ModuleCamera3D::Update()
 			}
 		}
 	}
-	
+
 	// Arrow movement
 	if (app->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
 	{
@@ -161,7 +162,6 @@ update_status ModuleCamera3D::Update()
 	return UPDATE_CONTINUE;
 }
 
-// -----------------------------------------------------------------
 void ModuleCamera3D::Look(const vec3 &Position, const vec3 &Reference, bool RotateAroundReference)
 {
 	this->position = Position;
@@ -180,7 +180,6 @@ void ModuleCamera3D::Look(const vec3 &Position, const vec3 &Reference, bool Rota
 	CalculateViewMatrix();
 }
 
-// -----------------------------------------------------------------
 void ModuleCamera3D::LookAt( const vec3 &Spot)
 {
 	reference = Spot;
@@ -192,7 +191,6 @@ void ModuleCamera3D::LookAt( const vec3 &Spot)
 	CalculateViewMatrix();
 }
 
-// -----------------------------------------------------------------
 void ModuleCamera3D::Move(const vec3 &Movement)
 {
 	position += Movement;
@@ -201,13 +199,11 @@ void ModuleCamera3D::Move(const vec3 &Movement)
 	CalculateViewMatrix();
 }
 
-// -----------------------------------------------------------------
 float* ModuleCamera3D::GetViewMatrix()
 {
 	return &ViewMatrix;
 }
 
-// -----------------------------------------------------------------
 void ModuleCamera3D::CalculateViewMatrix()
 {
 	ViewMatrix = mat4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -dot(X, position), -dot(Y, position), -dot(Z, position), 1.0f);

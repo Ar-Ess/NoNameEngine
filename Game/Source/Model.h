@@ -25,7 +25,7 @@ public:
 
 	~Model();
 
-	bool LoadModel(const char* path, bool addDirectory = true);
+	bool LoadModel(const char* path, const char* pathTex = "Assets/Textures/default_texture.jpg", bool addDirectory = true);
 
 	bool Draw();
 	void DrawEdges(Mesh* m);
@@ -33,8 +33,6 @@ public:
 
 private:
 	vector<Mesh*> meshes;
-	bool edges = true;
-	bool normals = true;
 };
 
 #endif // !__MODEL_H__

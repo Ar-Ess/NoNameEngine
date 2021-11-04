@@ -24,6 +24,27 @@ public:
 		normalNum = numOfNormal;
 		normal = normalBuffer;
 
+		uint count = 0;
+		bool sum = true;
+		for (uint i = 0; i < (normalNum * 2); i++)
+		{
+			float* iterN = normal;
+			float* iterV = vertex;
+
+			if (count == 3)
+			{
+				sum = !sum;
+				count = 0;
+				if (!sum) iterV -= 3;
+			}
+
+			iterN += i;
+			iterV += i;
+			*iterN += *iterV;
+
+			count++;
+		}
+
 		glGenBuffers(1, &vertexID);
 		glGenBuffers(1, &indexID);
 		glGenBuffers(1, &normalID);
@@ -96,6 +117,14 @@ private:
 	uint normalID = 0;
 	uint normalNum = 0;
 	float* normal = nullptr;
+
+	uint textureID = 0;
+	Point dimensions = {0, 0};
+	int compPerPixel = 0;
+	unsigned char* pixels = nullptr;
+	GLint internalFormat = GL_RGBA;
+	uint textureNum = 0;
+	float* texture = nullptr;
 
 };
 #endif // !__MESH_H__

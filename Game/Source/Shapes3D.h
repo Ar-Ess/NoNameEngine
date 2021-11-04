@@ -16,6 +16,8 @@ public:
 	virtual bool Draw() { return true; }
 
 	bool axis = false;
+	bool edges = true;
+	bool normals = false;
 
 protected:
 	Shape3D(Point3D pos, float s, Rotation rot)

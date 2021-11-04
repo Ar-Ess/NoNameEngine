@@ -36,6 +36,12 @@ enum class WindowSettings
 
 enum class GeometryView;
 
+enum GeometryInfo
+{
+	EDGES,
+	NORMALS
+};
+
 class ModuleScene : public Module
 {
 public:
@@ -182,6 +188,17 @@ public: // Getters & Setters
 		Model* m = new Model({0, 0, 0});
 		m->LoadModel(path, false);
 		shapes.push_back(m);
+	}
+	void SetGeometryInfo(GeometryInfo gI)
+	{
+		for (int i = 0; i < shapes.size(); i++)
+		{
+			switch (gI)
+			{
+			case EDGES: shapes[i]->edges = editor->edges; break;
+			case NORMALS: shapes[i]->normals = editor->normals; break;
+			}
+		}
 	}
 
 public:

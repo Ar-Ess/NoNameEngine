@@ -34,6 +34,9 @@
     <Filter Include="Utils\Others">
       <UniqueIdentifier>{0fd830b9-63ec-478f-83ec-46c6dfab7492}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External\STB">
+      <UniqueIdentifier>{bec67902-ded1-4874-bde1-512fb7543a11}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\External\imgui\imconfig.h">
@@ -215,6 +218,9 @@
     </ClInclude>
     <ClInclude Include="Source\Defs.h">
       <Filter>Utils\Others</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\stb_image.h">
+      <Filter>External\STB</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

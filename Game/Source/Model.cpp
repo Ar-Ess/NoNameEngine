@@ -1,4 +1,5 @@
 #include "Model.h"
+#include "stb_image.h"
 
 using namespace std;
 
@@ -13,7 +14,7 @@ Model::~Model()
 {
 }
 
-bool Model::LoadModel(const char* pathFile, bool addDirectory)
+bool Model::LoadModel(const char* pathFile, const char* pathTex, bool addDirectory)
 {
     bool ret = true;
 
@@ -84,6 +85,15 @@ bool Model::LoadModel(const char* pathFile, bool addDirectory)
         memcpy(normal, aiMesh->mNormals, sizeof(float) * numNormal * 3);
         LOG("Mesh %d with %d normals", i, numNormal);
 
+        //// TEXTURE
+        //GLuint textureID;
+        //int height;
+        //int width;
+        //int compPerPixel;
+        //unsigned char* pixels = stbi_load(pathTex, &width, &height, &compPerPixel, STBI_rgb);
+        //GLint internalFormat = GL_RGBA;
+        //if (compPerPixel == 3) internalFormat = GL_RGB;
+
         // SETTING MESH
         Mesh* m = new Mesh(vertex, numVertex, index, numIndex, normal, numNormal);
         meshes.push_back(m);
@@ -131,7 +141,7 @@ bool Model::Draw()
         glDrawElements(GL_TRIANGLES, m->GetNum(INDEX), GL_UNSIGNED_INT, NULL);
 
         if (edges) DrawEdges(m);
-        //if (normals) DrawNormals(m);
+        if (normals) DrawNormals(m);
     }
 
     glDisableClientState(GL_VERTEX_ARRAY);
@@ -156,12 +166,13 @@ void Model::DrawEdges(Mesh* m)
 
 void Model::DrawNormals(Mesh* m)
 {
+
     glColor3f(0, 0, 255);
     //vertex
     glBindBuffer(GL_ARRAY_BUFFER, m->GetId(NORMAL));
     glVertexPointer(3, GL_FLOAT, 0, NULL);
 
-    glLineWidth(1.5f);
+    glLineWidth(1.0f);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->GetId(INDEX));
     glDrawElements(GL_LINES, m->GetNum(INDEX), GL_UNSIGNED_INT, NULL);
