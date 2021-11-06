@@ -1,5 +1,7 @@
 #include "EditorScene.h"
 #include "ModuleSceneIntro.h"
+#include "ModuleInput.h"
+#include "ModuleCamera3D.h"
 
 EditorScene::EditorScene(Application* App)
 {
@@ -60,6 +62,9 @@ bool EditorScene::DrawMenuBar()
 
 			if (ImGui::MenuItem("Load File"))
 				app->Load("NNE_Project_Saving", FileContent::PROJECT);
+
+			if (ImGui::MenuItem("Configuration"))
+				configWindow = !configWindow;
 
 			if (ImGui::MenuItem("Exit"))
 				ret = false;
@@ -127,9 +132,6 @@ bool EditorScene::DrawMenuBar()
 			if (ImGui::MenuItem("Output Log"))
 				outputWindow = !outputWindow;
 
-			if (ImGui::MenuItem("Configuration"))
-				configWindow = !configWindow;
-
 			if (ImGui::BeginMenu("Geometry"))
 			{
 				if (ImGui::MenuItem("Edges"))
@@ -195,7 +197,18 @@ bool EditorScene::ShowAboutWindow(bool open)
 			{
 				LinkBrowser("https://github.com/Kerali");
 			}
-			ImGui::Text("\nMIT License\n\nCopyright (c) 2021 Marti Buxeda and Victor Jara\n\n");
+
+			ImGui::Text("\n3rd Party Libraries used:\n");
+			ImGui::BulletText("SDL 2.0.16");
+			ImGui::BulletText("Glew 2.2.0");
+			ImGui::BulletText("ImGui v1.85");
+			ImGui::BulletText("OpenGL 2.0.6");
+			ImGui::BulletText("Assimp 5.0.1");
+			ImGui::BulletText("JSON 1.9.4");
+			ImGui::BulletText("Parson 1.2.1");
+			ImGui::BulletText("STB Image v2.27");
+
+			ImGui::Text("\n\nMIT License\n\nCopyright (c) 2021 Marti Buxeda and Victor Jara\n\n");
 			
 			ImGui::Text("Permission is hereby granted, free of charge, to any person obtaining a copy \nof this software and associated documentation files(the 'Software'), to deal \nin the Software without restriction, including without limitation the rights \nto use, copy, modify, merge, publish, distribute, sublicense, and /or sell \ncopies of the Software, and to permit persons to whom the Software is \nfurnished to do so, subject to the following conditions :\n ");
 			ImGui::Text("The above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\n");
@@ -293,55 +306,75 @@ bool EditorScene::ShowConfigWindow(bool open)
 							AddSeparator(2);
 						}
 					if (ImGui::CollapsingHeader("Window"))
+					{
+						Point prev = wSize;
+						int prevProportion = wSizeProportion;
+						float prevBright = brightLevel;
+
+						AddSpacing(0);
+						ImGui::Text("Brightness");
+						ImGui::SliderFloat("B", &brightLevel, 0.0f, 1.0f, "Value: %.3f");
+						if (prevBright != brightLevel) app->window->SetWinBrightness(brightLevel);
+
+						AddSpacing(0);
+						if (ImGui::Checkbox("Keep Proportion", &wKeepProportion)) wKeepProportion = wKeepProportion;
+
+						if (!wKeepProportion)
 						{
-							Point prev = wSize;
-							int prevProportion = wSizeProportion;
-							float prevBright = brightLevel;
+							AddSpacing(0);
+							ImGui::Text("Width");
+							ImGui::SliderInt("W", (int*)&wSize.x, 1, SCREEN_WIDTH, "%d");
 
 							AddSpacing(0);
-							ImGui::Text("Brightness");
-							ImGui::SliderFloat("B", &brightLevel, 0.0f, 1.0f, "Value: %.3f");
-							if (prevBright != brightLevel) app->window->SetWinBrightness(brightLevel);
+							ImGui::Text("Height");
+							ImGui::SliderInt("H", (int*)&wSize.y, 1, SCREEN_HEIGHT, "%d");
 
-							AddSpacing(0);
-							if (ImGui::Checkbox("Keep Proportion", &wKeepProportion)) wKeepProportion = wKeepProportion;
-
-							if (!wKeepProportion)
-							{
-								AddSpacing(0);
-								ImGui::Text("Width");
-								ImGui::SliderInt("W", (int*)&wSize.x, 1, SCREEN_WIDTH, "%d");
-
-								AddSpacing(0);
-								ImGui::Text("Height");
-								ImGui::SliderInt("H", (int*)&wSize.y, 1, SCREEN_HEIGHT, "%d");
-
-								if (wSize != prev) app->window->SetWinSize((int)wSize.x, (int)wSize.y);
-							}
-							else
-							{
-								AddSpacing(0);
-								ImGui::Text("Width / Height");
-								ImGui::SliderInt("W", &wSizeProportion, 1, 100, "%d");
-
-								if (wSizeProportion != prevProportion) app->window->SetWinSize(int(floor(SCREEN_WIDTH * wSizeProportion / 100)), int(floor(SCREEN_HEIGHT * wSizeProportion / 100)));
-							}
-
-							AddSpacing(1);
-							if (ImGui::Checkbox(" VSync", &wVSync)) app->render->SetVSync(wVSync);
-
-							AddSpacing(0);
-							if (ImGui::Checkbox(" Full Screen    ", &wFullScreen)) app->window->SetWinFullScreen(wFullScreen);
-							ImGui::SameLine();
-							if (ImGui::Checkbox(" Resizable", &wResizable)) app->SaveRestartPropierties();
-
-							AddSpacing(0);
-							if (ImGui::Checkbox(" Borderless     ", &wBorderless)) app->window->SetWinBorders(wBorderless);
-							ImGui::SameLine();
-							if (ImGui::Checkbox(" Full Desktop", &wFullDesktop)) app->window->SetWinFullScreen(wFullDesktop);
-
-							AddSpacing(1);
+							if (wSize != prev) app->window->SetWinSize((int)wSize.x, (int)wSize.y);
 						}
+						else
+						{
+							AddSpacing(0);
+							ImGui::Text("Width / Height");
+							ImGui::SliderInt("W", &wSizeProportion, 1, 100, "%d");
+
+							if (wSizeProportion != prevProportion) app->window->SetWinSize(int(floor(SCREEN_WIDTH * wSizeProportion / 100)), int(floor(SCREEN_HEIGHT * wSizeProportion / 100)));
+						}
+
+						AddSpacing(1);
+						if (ImGui::Checkbox(" VSync", &wVSync)) app->render->SetVSync(wVSync);
+
+						AddSpacing(0);
+						if (ImGui::Checkbox(" Full Screen    ", &wFullScreen)) app->window->SetWinFullScreen(wFullScreen);
+						ImGui::SameLine();
+						if (ImGui::Checkbox(" Resizable", &wResizable)) app->SaveRestartPropierties();
+
+						AddSpacing(0);
+						if (ImGui::Checkbox(" Borderless     ", &wBorderless)) app->window->SetWinBorders(wBorderless);
+						ImGui::SameLine();
+						if (ImGui::Checkbox(" Full Desktop", &wFullDesktop)) app->window->SetWinFullScreen(wFullDesktop);
+
+						AddSpacing(1);
+					}
+					if (ImGui::CollapsingHeader("Input"))
+					{
+						AddSpacing(0);
+						ImGui::Text("Mouse Position: %d %d", app->input->GetMouseX(), app->input->GetMouseY());
+						AddSpacing(0);
+						ImGui::Text("Mouse Speed: %d %d", app->input->GetMouseXMotion(), app->input->GetMouseYMotion());
+						AddSpacing(0);
+						ImGui::Text("Mouse Wheel: %d %d", app->input->GetMouseWheel(), app->input->GetMouseZH());
+						AddSpacing(1);
+					}
+					if (ImGui::CollapsingHeader("Camera"))
+					{
+						AddSpacing(0);
+						float* speed = app->camera->GetSpeed();
+						ImGui::SliderFloat("Speed", speed, 0.1f, 1.0f);
+						AddSpacing(0);
+						float* sens = app->camera->GetSensitivity();
+						ImGui::SliderFloat("Sensitivity", sens, 0.1f, 0.5f);
+						AddSpacing(1);
+					}
 					if (ImGui::CollapsingHeader("Hardware"))
 						{
 							AddSpacing(0);

@@ -21,6 +21,14 @@ public:
 	{
 		return lookPoint;
 	}
+	float* GetSpeed()
+	{
+		return &speed;
+	}
+	float* GetSensitivity()
+	{
+		return &sens;
+	}
 
 private:
 
@@ -29,6 +37,8 @@ private:
 public:
 	
 	vec3 X, Y, Z, position, reference;
+	float speed = 0.5f;
+	float sens = 0.3f;
 
 private:
 

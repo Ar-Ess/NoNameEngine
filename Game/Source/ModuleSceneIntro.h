@@ -24,6 +24,7 @@ enum class Windows
 	OUTPUT_W,
 	DEMO_W,
 	CONFIG_W,
+	ABOUT_W
 };
 
 enum class WindowSettings
@@ -93,6 +94,7 @@ public: // Getters & Setters
 		case Windows::OUTPUT_W: state = editor->outputWindow; break;
 		case Windows::CONFIG_W: state = editor->configWindow; break;
 		case Windows::DEMO_W: state = editor->demoWindow; break;
+		case Windows::ABOUT_W: state = editor->aboutPopup; break;
 		}
 
 		return state;

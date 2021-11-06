@@ -632,6 +632,30 @@ public:
 
 	bool Draw()
 	{
+		glColor3f(0, 0, 0);
+
+		glLineWidth(1.0f);
+
+		glBegin(GL_QUADS);
+
+		float d = scale;
+		float p = scale;
+
+		glVertex3f(position.x - p, position.y, position.z - p);
+		glVertex3f(position.x - p, position.y, position.z + p);
+		glVertex3f(position.x + p, position.y, position.z + p);
+		glVertex3f(position.x + p, position.y, position.z - p);
+
+		glEnd();
+
+		if (axis) DrawAxis();
+		if (edges) DrawEdges();
+
+		return true;
+	}
+
+	bool DrawEdges()
+	{
 		glColor3f(255, 255, 255);
 
 		glLineWidth(1.0f);
@@ -649,8 +673,6 @@ public:
 		}
 
 		glEnd();
-
-		if (axis) DrawAxis();
 
 		return true;
 	}

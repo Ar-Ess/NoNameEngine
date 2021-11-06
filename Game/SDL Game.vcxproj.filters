@@ -13,9 +13,6 @@
     <Filter Include="External\JSON">
       <UniqueIdentifier>{86e0c9c7-41c7-4b1d-9d68-2badfd379d32}</UniqueIdentifier>
     </Filter>
-    <Filter Include="External\RapidJSON">
-      <UniqueIdentifier>{f8dbf3dc-ee88-4d67-8f4b-d2e9e70d14a5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="External\Parson">
       <UniqueIdentifier>{5508529d-7126-4be6-88cb-c2832293fb47}</UniqueIdentifier>
     </Filter>
@@ -92,63 +89,6 @@
     </ClInclude>
     <ClInclude Include="Source\External\json\writer.h">
       <Filter>External\JSON</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\rapidjson\allocators.h">
-      <Filter>External\RapidJSON</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\rapidjson\document.h">
-      <Filter>External\RapidJSON</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\rapidjson\encodedstream.h">
-      <Filter>External\RapidJSON</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\rapidjson\encodings.h">
-      <Filter>External\RapidJSON</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\rapidjson\filereadstream.h">
-      <Filter>External\RapidJSON</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\rapidjson\filewritestream.h">
-      <Filter>External\RapidJSON</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\rapidjson\fwd.h">
-      <Filter>External\RapidJSON</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\rapidjson\istreamwrapper.h">
-      <Filter>External\RapidJSON</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\rapidjson\memorybuffer.h">
-      <Filter>External\RapidJSON</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\rapidjson\memorystream.h">
-      <Filter>External\RapidJSON</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\rapidjson\ostreamwrapper.h">
-      <Filter>External\RapidJSON</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\rapidjson\pointer.h">
-      <Filter>External\RapidJSON</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\rapidjson\prettywriter.h">
-      <Filter>External\RapidJSON</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\rapidjson\rapidjson.h">
-      <Filter>External\RapidJSON</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\rapidjson\reader.h">
-      <Filter>External\RapidJSON</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\rapidjson\schema.h">
-      <Filter>External\RapidJSON</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\rapidjson\stream.h">
-      <Filter>External\RapidJSON</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\rapidjson\stringbuffer.h">
-      <Filter>External\RapidJSON</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\rapidjson\writer.h">
-      <Filter>External\RapidJSON</Filter>
     </ClInclude>
     <ClInclude Include="Source\External\parson\Parson.h">
       <Filter>External\Parson</Filter>
