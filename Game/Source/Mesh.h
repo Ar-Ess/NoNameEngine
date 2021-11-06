@@ -94,7 +94,17 @@ public:
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tID.width, tID.height, 0, tID.internalFormat, GL_UNSIGNED_BYTE, tID.pixels);
 	}
 
-	~Mesh() {}
+	~Mesh() 
+	{
+		delete index;
+		index = nullptr;
+		delete vertex;
+		vertex = nullptr;
+		delete normal;
+		normal = nullptr;
+		delete texture;
+		texture = nullptr;
+	}
 
 	uint GetId(MeshData md)
 	{

@@ -12,18 +12,17 @@ EditorScene::~EditorScene()
 
 bool EditorScene::Start()
 {
-	Plane3D* p = new Plane3D({ 0, 0, 0 }, {0, 1, 0});
+	Plane3D* p = new Plane3D();
 	p->axis = true;
 	app->scene->shapes.push_back(p);
 
-	//Cube3D c = { {2, 0, 2} };
-	//c.axis = true;
-	//app->scene->shapes.push_back(&c);
+	//Cube3D* c = new Cube3D();
+	//c->axis = true;
+	//app->scene->shapes.push_back(c);
 
-	Model* m = new Model({0, 5, -20}, 1);
-	m->LoadModel("Assets/Models/BakerHouse.fbx", "Assets/Textures/baker_house_texture.png");
-	//m->LoadModel("Assets/Models/warrior.FBX");
-	app->scene->shapes.push_back(m);
+	//Model* m = new Model({0, 5, -20}, 1);
+	//m->LoadModel("Assets/Models/BakerHouse.fbx", "Assets/Textures/baker_house_texture.png");
+	//app->scene->shapes.push_back(m);
 
 	return true;
 }
@@ -65,6 +64,62 @@ bool EditorScene::DrawMenuBar()
 			if (ImGui::MenuItem("Exit"))
 				ret = false;
 
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Edit"))
+		{
+			if (ImGui::MenuItem("Delete Model"))
+				PopShape();
+
+			if (ImGui::MenuItem("Delete All Models"))
+				PopAllShapes();
+
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Create"))
+		{
+			if (ImGui::BeginMenu("Primitives"))
+			{
+				if (ImGui::MenuItem("Cube"))
+					CreatePrimitive(CUBE3D);
+
+				if (ImGui::MenuItem("Line"))
+					CreatePrimitive(LINE3D);
+
+				if (ImGui::MenuItem("Pyramid"))
+					CreatePrimitive(PYRAMID3D);
+
+				if (ImGui::MenuItem("Cylinder"))
+					CreatePrimitive(CYLINDER3D);
+
+				if (ImGui::MenuItem("Plane"))
+					CreatePrimitive(PLANE3D);
+
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Test Models"))
+			{
+				if (ImGui::MenuItem("Cube"))
+				{
+					Model* m = new Model({ 0, 0, 0 }, 1.0f);
+					m->LoadModel("Assets/Models/cube.fbx");
+					PushShape3D(m);
+				}
+				if (ImGui::MenuItem("Warrior"))
+				{
+					Model* m = new Model({ 0, 0, 0 }, 1.0f);
+					m->LoadModel("Assets/Models/warrior.FBX");
+					PushShape3D(m);
+				}
+				if (ImGui::MenuItem("Baker House"))
+				{
+					Model* m = new Model({ 0, 0, 0 }, 1.0f);
+					m->LoadModel("Assets/Models/BakerHouse.fbx", "Assets/Textures/baker_house_texture.png");
+					PushShape3D(m);
+				}
+
+				ImGui::EndMenu();
+			}
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("View"))
@@ -145,6 +200,7 @@ bool EditorScene::ShowAboutWindow(bool open)
 			ImGui::Text("Permission is hereby granted, free of charge, to any person obtaining a copy \nof this software and associated documentation files(the 'Software'), to deal \nin the Software without restriction, including without limitation the rights \nto use, copy, modify, merge, publish, distribute, sublicense, and /or sell \ncopies of the Software, and to permit persons to whom the Software is \nfurnished to do so, subject to the following conditions :\n ");
 			ImGui::Text("The above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\n");
 			ImGui::Text("THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n\n");
+			
 			if (ImGui::Button("Close"))
 			{
 				open = false;
@@ -358,4 +414,75 @@ bool EditorScene::ShowConfigWindow(bool open)
 	}
 
 	return open;
+}
+
+void EditorScene::CreatePrimitive(ShapeType sT)
+{
+	ModuleScene* s = app->scene;
+	switch (sT)
+	{
+	case CUBE3D:
+	{
+		s->shapes.push_back(new Cube3D()); break;
+	}
+	case LINE3D:
+	{
+		s->shapes.push_back(new Line3D()); break;
+	}
+	case PYRAMID3D:
+	{
+		s->shapes.push_back(new Pyramid3D()); break;
+	}
+	case CYLINDER3D:
+	{
+		s->shapes.push_back(new Cylinder3D()); break;
+	}
+	case PLANE3D:
+	{
+		s->shapes.push_back(new Plane3D()); break;
+	}
+	case SPHERE3D:
+	{
+		/*s->shapes.push_back(new Sphere3D({}));*/ break;
+	}
+	}
+}
+
+void EditorScene::PushShape3D(Shape3D* s3D)
+{
+	app->scene->shapes.push_back(s3D);
+}
+
+void EditorScene::PopShape()
+{
+	ModuleScene* s = app->scene;
+	if (s->shapes.size() > 1)
+	{
+		s->shapes.at(1)->~Shape3D();
+		s->shapes.erase(s->shapes.begin() + 1);
+	}
+	else
+	{
+		SDL_ShowSimpleMessageBox(
+			SDL_MESSAGEBOX_INFORMATION,
+			"Shapes Error",
+			"\nCan not delete a Model\nNo shape left in the scene",
+			app->window->mainWindow
+		);
+	}
+}
+
+void EditorScene::PopAllShapes()
+{
+	ModuleScene* s = app->scene;
+	if (s->shapes.size() > 1) s->shapes.erase(s->shapes.begin() + 1);
+	else
+	{
+		SDL_ShowSimpleMessageBox(
+			SDL_MESSAGEBOX_INFORMATION,
+			"Shapes Error",
+			"\nCan not delete a Model\nNo shape left in the scene",
+			app->window->mainWindow
+		);
+	}
 }

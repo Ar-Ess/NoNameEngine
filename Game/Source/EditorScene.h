@@ -66,6 +66,18 @@ private: // Functions
 		for (int i = 0; i < separator; i++) ImGui::Separator();
 	}
 
+	// Create a default primitive
+	void CreatePrimitive(ShapeType sT);
+
+	// Push Back of a Shape3D
+	void PushShape3D(Shape3D* s3D);
+
+	// Pop First of a Shape3D
+	void PopShape();
+
+	// Pop All Shapes on scene
+	void PopAllShapes();
+
 public: // Variables
 	bool demoWindow = false;
 	bool outputWindow = false;

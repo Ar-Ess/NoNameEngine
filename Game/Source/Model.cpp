@@ -13,6 +13,13 @@ Model::Model(Point3D pos, float s, Rotation rot) : Shape3D(pos, s, rot, MODEL3D)
 
 Model::~Model()
 {
+    for (int i = 0; i < meshes.size(); i++)
+    {
+        meshes[i]->~Mesh();
+        delete meshes[i];
+    }
+
+    meshes.clear();
 }
 
 bool Model::LoadModel(const char* pathFile, const char* pathTex)

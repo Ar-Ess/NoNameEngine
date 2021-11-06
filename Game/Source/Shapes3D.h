@@ -25,6 +25,9 @@ enum ShapeType
 class Shape3D
 {
 public:
+
+	virtual ~Shape3D() {}
+
 	virtual bool Draw() { return true; }
 
 	ShapeType GetShapeType()
@@ -109,6 +112,9 @@ public:
 
 	bool Draw()
 	{
+		DrawDirectMode();
+		return true;
+
 		glColor3f(255, 255, 255);
 
 		glGenBuffers(1, &vBuffer);
@@ -134,6 +140,7 @@ public:
 
 	void DrawDirectMode()
 	{
+		glColor3f(255, 255, 255);
 		glBegin(GL_TRIANGLES);
 		// front face =================
 		glVertex3f(v[1].x, v[1].y, v[1].z); // v1
@@ -192,6 +199,73 @@ public:
 		glEnd();
 
 		glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
+
+		if (edges) DrawEdges();
+	}
+
+	bool DrawEdges()
+	{
+		glColor3f(255, 0, 0);
+		glBegin(GL_LINES);
+		// front face =================
+		glVertex3f(v[1].x, v[1].y, v[1].z); // v1
+		glVertex3f(v[0].x, v[0].y, v[0].z); // v0
+		glVertex3f(v[3].x, v[3].y, v[3].z); // v3
+
+		glVertex3f(v[3].x, v[3].y, v[3].z); // v3
+		glVertex3f(v[2].x, v[2].y, v[2].z); // v2
+		glVertex3f(v[1].x, v[1].y, v[1].z); // v1
+
+		// right face =================
+		glVertex3f(v[0].x, v[0].y, v[0].z); // v0
+		glVertex3f(v[5].x, v[5].y, v[5].z); // v5
+		glVertex3f(v[4].x, v[4].y, v[4].z); // v4
+
+		glVertex3f(v[4].x, v[4].y, v[4].z); // v4
+		glVertex3f(v[3].x, v[3].y, v[3].z); // v3
+		glVertex3f(v[0].x, v[0].y, v[0].z); // v0
+
+		// top face ===================
+		glVertex3f(v[6].x, v[6].y, v[6].z); // v6
+		glVertex3f(v[5].x, v[5].y, v[5].z); // v5
+		glVertex3f(v[0].x, v[0].y, v[0].z); // v0
+
+		glVertex3f(v[0].x, v[0].y, v[0].z); // v0
+		glVertex3f(v[1].x, v[1].y, v[1].z); // v1
+		glVertex3f(v[6].x, v[6].y, v[6].z); // v6
+
+		// bottom face ===================
+		glVertex3f(v[2].x, v[2].y, v[2].z); // v2
+		glVertex3f(v[3].x, v[3].y, v[3].z); // v3
+		glVertex3f(v[4].x, v[4].y, v[4].z); // v4
+
+		glVertex3f(v[4].x, v[4].y, v[4].z); // v4
+		glVertex3f(v[7].x, v[7].y, v[7].z); // v7
+		glVertex3f(v[2].x, v[2].y, v[2].z); // v2
+
+		// left face ===================
+		glVertex3f(v[6].x, v[6].y, v[6].z); // v6
+		glVertex3f(v[1].x, v[1].y, v[1].z); // v1
+		glVertex3f(v[2].x, v[2].y, v[2].z); // v2
+
+		glVertex3f(v[2].x, v[2].y, v[2].z); // v2
+		glVertex3f(v[7].x, v[7].y, v[7].z); // v7
+		glVertex3f(v[6].x, v[6].y, v[6].z); // v6
+
+		// back face ===================
+		glVertex3f(v[6].x, v[6].y, v[6].z); // v6
+		glVertex3f(v[7].x, v[7].y, v[7].z); // v7
+		glVertex3f(v[4].x, v[4].y, v[4].z); // v4
+
+		glVertex3f(v[4].x, v[4].y, v[4].z); // v4
+		glVertex3f(v[5].x, v[5].y, v[5].z); // v5
+		glVertex3f(v[6].x, v[6].y, v[6].z); // v6
+
+		glEnd();
+
+		glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
+
+		return true;
 	}
 
 private:
@@ -226,7 +300,7 @@ private:
 class Line3D : public Shape3D
 {
 public:
-	Line3D(Point3D vertex0, Point3D vertex1, float lineWidthx = 1) : Shape3D(vertex0, lineWidthx, {0, 0, 0, 0}, LINE3D)
+	Line3D(Point3D vertex0 = { 0, 0, 0 }, Point3D vertex1 = {0, 5, 0}, float lineWidthx = 1) : Shape3D(vertex0, lineWidthx, { 0, 0, 0, 0 }, LINE3D)
 	{
 		v[0] = vertex0;
 		v[1] = vertex1;
@@ -284,6 +358,9 @@ public:
 
 	bool Draw()
 	{
+		DrawDirectMode();
+		return true;
+
 		glColor3f(255, 255, 255);
 
 		glGenBuffers(1, &vBuffer);
@@ -344,6 +421,49 @@ public:
 		glEnd();
 
 		glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
+
+		if (edges) DrawEdges();
+	}
+
+	bool DrawEdges()
+	{
+		glColor3f(255, 0, 0);
+
+		glBegin(GL_LINES);
+		// front face =================
+		glVertex3f(v[4].x, v[4].y, v[4].z); // v4
+		glVertex3f(v[1].x, v[1].y, v[1].z); // v1
+		glVertex3f(v[0].x, v[0].y, v[0].z); // v0
+
+		// left face =================
+		glVertex3f(v[4].x, v[4].y, v[4].z); // v4
+		glVertex3f(v[0].x, v[0].y, v[0].z); // v0
+		glVertex3f(v[3].x, v[3].y, v[3].z); // v3
+
+		// right face =================
+		glVertex3f(v[4].x, v[4].y, v[4].z); // v4
+		glVertex3f(v[2].x, v[2].y, v[2].z); // v2
+		glVertex3f(v[1].x, v[1].y, v[1].z); // v1
+
+		// back face =================
+		glVertex3f(v[3].x, v[3].y, v[3].z); // v3
+		glVertex3f(v[2].x, v[2].y, v[2].z); // v2
+		glVertex3f(v[4].x, v[4].y, v[4].z); // v4
+
+		// bottom face =================
+		glVertex3f(v[0].x, v[0].y, v[0].z); // v0
+		glVertex3f(v[1].x, v[1].y, v[1].z); // v1
+		glVertex3f(v[2].x, v[2].y, v[2].z); // v2
+
+		glVertex3f(v[2].x, v[2].y, v[2].z); // v2
+		glVertex3f(v[3].x, v[3].y, v[3].z); // v3
+		glVertex3f(v[0].x, v[0].y, v[0].z); // v0
+
+		glEnd();
+
+		glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
+
+		return true;
 	}
 
 	void Reset()
@@ -391,7 +511,7 @@ private:
 class Cylinder3D : public Shape3D
 {
 public:
-	Cylinder3D(Point3D pos = { 0.0f, 0.0f, 0.0f }, int numSegment = 6, float h = 1.0f, float r = 1.0f, float s = 1.0f, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, CYLINDER3D)
+	Cylinder3D(Point3D pos = { 0.0f, 0.0f, 0.0f }, int numSegment = 18, float h = 4.0f, float r = 1.0f, float s = 1.0f, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, CYLINDER3D)
 	{
 		segments = numSegment;
 		height = h;
@@ -403,6 +523,55 @@ public:
 		glColor3f(255, 255, 255);
 
 		glBegin(GL_TRIANGLES);
+
+		for (int ii = 0; ii < segments; ii++)
+		{
+			float theta1 = 2.0f * PI * float(ii) / float(segments); //get the current angle
+
+			int index = ii + 1;
+			if (ii == (segments - 1))
+			{
+				index = 0;
+			}
+
+			float theta2 = 2.0f * PI * float(index) / float(segments); //get the current angle
+
+			Point pos1 = { scale * radius * cosf(theta1), scale * radius * sinf(theta1) }; // {x, z}
+			Point pos2 = { scale * radius * cosf(theta2), scale * radius * sinf(theta2) }; // {x, z}
+
+			glVertex3f(pos1.x + position.x, position.y, pos1.y + position.z);
+			glVertex3f(pos2.x + position.x, position.y, pos2.y + position.z);
+			glVertex3f(0 + position.x, position.y, 0 + position.z);
+
+			glVertex3f(position.x, position.y + (scale * height), position.z);
+			glVertex3f(pos2.x + position.x, position.y + (scale * height), pos2.y + position.z);
+			glVertex3f(pos1.x + position.x, position.y + (scale * height), pos1.y + position.z);
+
+			glVertex3f(pos1.x + position.x, position.y, pos1.y + position.z);
+			glVertex3f(pos2.x + position.x, position.y + (scale * height), pos2.y + position.z);
+			glVertex3f(pos2.x + position.x, position.y, pos2.y + position.z);
+
+			glVertex3f(pos1.x + position.x, position.y + (scale * height), pos1.y + position.z);
+			glVertex3f(pos2.x + position.x, position.y + (scale * height), pos2.y + position.z);
+			glVertex3f(pos1.x + position.x, position.y, pos1.y + position.z);
+
+
+		}
+		glEnd();
+
+		glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
+
+		if (axis) DrawAxis();
+		if (edges) DrawEdges();
+
+		return true;
+	}
+
+	bool DrawEdges()
+	{
+		glColor3f(255, 0, 0);
+
+		glBegin(GL_LINES);
 
 		for (int ii = 0; ii < segments; ii++)
 		{

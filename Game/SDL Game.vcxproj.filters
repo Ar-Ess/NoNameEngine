@@ -299,9 +299,6 @@
     <ClCompile Include="Source\Timer.cpp">
       <Filter>Utils\Time</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Model.cpp">
-      <Filter>Utils\Geometry</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Color.cpp">
       <Filter>Utils\Others</Filter>
     </ClCompile>
@@ -310,6 +307,9 @@
     </ClCompile>
     <ClCompile Include="Source\log.cpp">
       <Filter>Utils\Others</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Model.cpp">
+      <Filter>Utils\Geometry</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
