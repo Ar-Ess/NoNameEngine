@@ -194,13 +194,13 @@ bool ModuleRenderer3D::GeometryDraw()
 	bool ret = true;
 	lights[0].SetPos(app->camera->position.x, app->camera->position.y, app->camera->position.z);
 
-	for (uint i = 0; i < MAX_LIGHTS; ++i)
-		lights[i].Render();
-
 	for (int i = 0; i < app->scene->shapes.size(); i++)
 	{
 		ret = app->scene->shapes[i]->Draw();
 	}
+
+	for (uint i = 0; i < MAX_LIGHTS; ++i)
+		lights[i].Render();
 
 	return ret;
 }

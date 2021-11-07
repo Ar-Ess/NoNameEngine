@@ -18,13 +18,17 @@ bool EditorScene::Start()
 	p->axis = true;
 	app->scene->shapes.push_back(p);
 
-	//Cube3D* c = new Cube3D();
-	//c->axis = true;
-	//app->scene->shapes.push_back(c);
+	Model* m = new Model({ 0, 0, 0 }, 1);
+	m->LoadModel("Assets/Models/BakerHouse.fbx", "Assets/Textures/baker_house_texture.png");
+	app->scene->shapes.push_back(m);
 
-	//Model* m = new Model({0, 5, -20}, 1);
-	//m->LoadModel("Assets/Models/BakerHouse.fbx", "Assets/Textures/baker_house_texture.png");
-	//app->scene->shapes.push_back(m);
+	Pyramid3D* py = new Pyramid3D({ 5, 0, 0 }, 3);
+	py->axis = true;
+	app->scene->shapes.push_back(py);
+
+	Model* m1 = new Model({ 10, 1, 0 }, 0.05f);
+	m1->LoadModel("Assets/Models/cube.fbx", "Assets/Textures/cube_texture.jpj");
+	app->scene->shapes.push_back(m1);
 
 	return true;
 }

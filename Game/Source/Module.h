@@ -7,10 +7,10 @@ class Application;
 class Module
 {
 private :
-	bool enabled;
+	bool enabled = true;
 
 public:
-	Application* app;
+	Application* app = nullptr;
 
 	Module(Application* parent, bool start_enabled = true) : app(parent), enabled(start_enabled)
 	{}

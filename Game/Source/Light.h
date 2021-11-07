@@ -12,10 +12,10 @@ struct Light
 	void Active(bool active);
 	void Render();
 
-	Color ambient;
-	Color diffuse;
-	vec3 position;
+	Color ambient = {};
+	Color diffuse = {};
+	vec3 position = {};
 
-	int ref;
-	bool on;
+	int ref = 0;
+	bool on = true;
 };

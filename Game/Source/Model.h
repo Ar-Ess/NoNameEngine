@@ -33,7 +33,7 @@ public:
 	void DrawNormals(Mesh* m);
 
 private:
-	vector<Mesh*> meshes;
+	vector<Mesh*> meshes = {};
 };
 
 #endif // !__MODEL_H__

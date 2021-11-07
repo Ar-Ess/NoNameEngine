@@ -32,7 +32,6 @@ enum class FileContent
 class Module;
 class ModuleRender;
 class ModuleWindow;
-class ModuleTextures;
 class ModuleInput;
 class ModuleScene;
 class ModuleCamera3D;
@@ -41,16 +40,15 @@ class ModuleRenderer3D;
 class Application
 {
 public:
-	ModuleWindow* window;
-	ModuleTextures* textures;
-	ModuleInput* input;
-	ModuleScene* scene;
-	ModuleCamera3D* camera;
-	ModuleRenderer3D* render;
+	ModuleWindow* window = nullptr;
+	ModuleInput* input = nullptr;
+	ModuleScene* scene = nullptr;
+	ModuleCamera3D* camera = nullptr;
+	ModuleRenderer3D* render = nullptr;
 
 private:
 
-	list<Module*> moduleList;
+	list<Module*> moduleList = {};
 
 public:
 
@@ -83,9 +81,9 @@ private:
 
 public: // Variables
 
-	std::vector<float> fpsLog;
+	std::vector<float> fpsLog = {};
 	int frameBarLimit = 80;
-	std::vector<float> msLog;
+	std::vector<float> msLog = {};
 	int msBarLimit = 80;
 	int fps = 60;
 
@@ -93,17 +91,17 @@ private: // Variables
 
 	bool loadRequest = false;
 	bool saveRequest = false;
-	string fileName;
-	FileContent fileContent;
+	string fileName = {};
+	FileContent fileContent = {};
 
 	// L07: DONE 4: Calculate some timing measures
 	// required variables are provided:
-	PerfTimer ptimer;
+	PerfTimer ptimer = {};
 	uint64 frameCount = 0;
 
-	Timer startupTime;
-	Timer frameTime;
-	Timer lastSecFrameTime;
+	Timer startupTime = {};
+	Timer frameTime = {};
+	Timer lastSecFrameTime = {};
 	uint32 lastSecFrameCount = 0;
 	uint32 prevLastSecFrameCount = 0;
 	float dt = 0.0f;

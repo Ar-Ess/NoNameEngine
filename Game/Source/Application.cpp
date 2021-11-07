@@ -1,7 +1,6 @@
 #include "Module.h"
 #include "ModuleWindow.h"
 #include "ModuleRender.h"
-#include "ModuleTextures.h"
 #include "ModuleInput.h"
 #include "ModuleSceneIntro.h"
 #include "ModuleCamera3D.h"
@@ -27,7 +26,6 @@ Application::Application()
 
 	render = new ModuleRenderer3D(this);
 	window = new ModuleWindow(this);
-	textures = new ModuleTextures(this);
 	input = new ModuleInput(this);
 	scene = new ModuleScene(this);
 	camera = new ModuleCamera3D(this);
@@ -35,7 +33,6 @@ Application::Application()
 	// Main Modules
 	AddModule(window);
 	AddModule(camera);
-	AddModule(textures);
 	AddModule(input);
 	
 	// Scenes

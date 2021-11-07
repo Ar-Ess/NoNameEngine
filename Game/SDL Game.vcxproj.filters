@@ -117,9 +117,6 @@
     <ClInclude Include="Source\ModuleSceneIntro.h">
       <Filter>Modules</Filter>
     </ClInclude>
-    <ClInclude Include="Source\ModuleTextures.h">
-      <Filter>Modules</Filter>
-    </ClInclude>
     <ClInclude Include="Source\External\imgui\imgui_impl_opengl3.h">
       <Filter>External\ImGui</Filter>
     </ClInclude>
@@ -210,9 +207,6 @@
       <Filter>Modules</Filter>
     </ClCompile>
     <ClCompile Include="Source\ModuleSceneIntro.cpp">
-      <Filter>Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ModuleTextures.cpp">
       <Filter>Modules</Filter>
     </ClCompile>
     <ClCompile Include="Source\ModuleWindow.cpp">

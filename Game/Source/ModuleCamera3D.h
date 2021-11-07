@@ -36,12 +36,12 @@ private:
 
 public:
 	
-	vec3 X, Y, Z, position, reference;
+	vec3 X = {}, Y = {}, Z = {}, position = {}, reference = {};
 	float speed = 0.5f;
 	float sens = 0.3f;
 
 private:
 
-	mat4x4 ViewMatrix, ViewMatrixInverse;
+	mat4x4 ViewMatrix = {}, ViewMatrixInverse = {};
 	Point3D lookPoint = {};
 };

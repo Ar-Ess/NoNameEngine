@@ -222,7 +222,7 @@ public: // Getters & Setters
 	}
 
 public:
-	vector<Shape3D*> shapes;
+	vector<Shape3D*> shapes = {};
 
 private:
 	Scenes scene = Scenes::EDITOR;
