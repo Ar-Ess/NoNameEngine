@@ -30,7 +30,7 @@ class Pyramid3D;
 class EditorScene
 {
 public:
-	EditorScene(Application* app);
+	EditorScene(Application* app, vector<Shape3D*>* shapes);
 	~EditorScene();
 
 	bool Start();
@@ -44,6 +44,9 @@ private: // Functions
 	bool ShowAboutWindow(bool open);
 	bool ShowOutputWindow(bool open);
 	bool ShowConfigWindow(bool open);
+	bool ShowHierarchyWindow(bool open);
+
+	bool ShortCuts();
 
 	// Instantly browse on internet the link written as an argument
 	void LinkBrowser(string link)
@@ -82,6 +85,7 @@ public: // Variables
 	bool demoWindow = false;
 	bool outputWindow = false;
 	bool configWindow = false;
+	bool hierarchyWindow = true;
 
 	bool aboutPopup = false;
 
@@ -104,6 +108,9 @@ public: // Variables
 	bool edges = true;
 	bool normals = false;
 
+	// Information for Cam
+	bool onWindow = false;
+
 
 	Point wSize = { SCREEN_WIDTH, SCREEN_HEIGHT };
 	int wSizeProportion = 100;
@@ -117,4 +124,5 @@ private: // Variables
 	Application* app = nullptr;
 	float framerate = 0.0f;
 	float milliseconds = 0.0f;
+	vector<Shape3D*>* shapes = nullptr;
 };

@@ -37,8 +37,9 @@ bool ModuleCamera3D::CleanUp()
 
 update_status ModuleCamera3D::Update()
 {
-	if (app->scene->GetWindowState(Windows::CONFIG_W) || app->scene->GetWindowState(Windows::DEMO_W) || app->scene->GetWindowState(Windows::OUTPUT_W) || app->scene->GetWindowState(Windows::ABOUT_W)) return UPDATE_CONTINUE;
-
+	//if (app->scene->GetWindowState(Windows::CONFIG_W) || app->scene->GetWindowState(Windows::DEMO_W) || app->scene->GetWindowState(Windows::OUTPUT_W) || app->scene->GetWindowState(Windows::ABOUT_W)) return UPDATE_CONTINUE;
+	if (app->scene->GetOnWindow()) return UPDATE_CONTINUE;
+	
 	vec3 newPos(0, 0, 0);
 	vec3 newPosition(0, 0, 0);
 	int wheelZV = app->input->GetMouseWheel();

@@ -24,6 +24,7 @@ enum class Windows
 	OUTPUT_W,
 	DEMO_W,
 	CONFIG_W,
+	HIERARCHY_W,
 	ABOUT_W
 };
 
@@ -95,6 +96,7 @@ public: // Getters & Setters
 		case Windows::CONFIG_W: state = editor->configWindow; break;
 		case Windows::DEMO_W: state = editor->demoWindow; break;
 		case Windows::ABOUT_W: state = editor->aboutPopup; break;
+		case Windows::HIERARCHY_W: state = editor->hierarchyWindow; break;
 		}
 
 		return state;
@@ -106,6 +108,7 @@ public: // Getters & Setters
 		case Windows::OUTPUT_W: editor->outputWindow = state; break;
 		case Windows::CONFIG_W: editor->configWindow = state; break;
 		case Windows::DEMO_W: editor->demoWindow = state; break;
+		case Windows::HIERARCHY_W: editor->hierarchyWindow = state; break;
 		}
 	}
 	std::string GetProjectName()
@@ -219,6 +222,10 @@ public: // Getters & Setters
 			case NORMALS: shapes[i]->normals = editor->normals; break;
 			}
 		}
+	}
+	bool GetOnWindow()
+	{
+		return editor->onWindow;
 	}
 
 public:

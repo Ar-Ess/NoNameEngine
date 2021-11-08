@@ -45,7 +45,6 @@ public:
 		texture = tex;
 		texCoordNum = numOfTextureCoords;
 
-
 		uint count = 0;
 		bool sum = true;
 		for (uint i = 0; i < (normalNum * 2); i++)

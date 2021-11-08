@@ -4,7 +4,7 @@
 
 using namespace std;
 
-Model::Model(Point3D pos, float s, Rotation rot) : Shape3D(pos, s, rot, MODEL3D)
+Model::Model(Point3D pos, float s, Rotation rot) : Shape3D(pos, s, rot, MODEL3D, "Model")
 {
     struct aiLogStream stream;
     stream = aiGetPredefinedLogStream(aiDefaultLogStream_DEBUGGER, nullptr);
@@ -25,6 +25,12 @@ Model::~Model()
 bool Model::LoadModel(const char* pathFile, const char* pathTex)
 {
     bool ret = true;
+
+    filePath.clear();
+    filePath += pathFile;
+
+    texturePath.clear();
+    texturePath += pathTex;
 
     const aiScene* scene = aiImportFile(pathFile, aiProcessPreset_TargetRealtime_MaxQuality);
 
@@ -99,6 +105,8 @@ bool Model::LoadModel(const char* pathFile, const char* pathTex)
         tID.internalFormat = GL_RGBA;
         if (compPerPixel == 3) tID.internalFormat = GL_RGB;
 
+        size = {tID.width, tID.height};
+
         // SETTING MESH
         Mesh* m = new Mesh(vertex, numVertex, index, numIndex, normal, numNormal, texture, numTexCoord, tID);
         meshes.push_back(m);
@@ -117,6 +125,9 @@ bool Model::LoadTexture(const char* pathTex)
 {
     bool ret = true;
 
+    texturePath.clear();
+    texturePath += pathTex;
+
     int meshNum = meshes.size();
 
     for (int i = 0; i < meshNum; i++)
@@ -129,6 +140,8 @@ bool Model::LoadTexture(const char* pathTex)
         tID.pixels = stbi_load(pathTex, &tID.width, &tID.height, &compPerPixel, STBI_rgb);
         tID.internalFormat = GL_RGBA;
         if (compPerPixel == 3) tID.internalFormat = GL_RGB;
+
+        size = { tID.width, tID.height };
         
         Mesh* newM = new Mesh(m->GetVertexPtr(), m->GetNum(VERTEX), 
                               m->GetIndexPtr(), m->GetNum(INDEX), 

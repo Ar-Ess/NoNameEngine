@@ -32,8 +32,20 @@ public:
 	void DrawEdges(Mesh* m);
 	void DrawNormals(Mesh* m);
 
-private:
+public:
+	Point GetSize() const
+	{
+		return size;
+	}
+
+public:
 	vector<Mesh*> meshes = {};
+	string filePath = {};
+	string texturePath = {};
+
+private:
+	Point size = {};
+
 };
 
 #endif // !__MODEL_H__

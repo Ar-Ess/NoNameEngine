@@ -224,6 +224,7 @@ bool Application::Load(string fName, FileContent fc)
 			scene->SetWindowState(Windows::DEMO_W, json_object_get_boolean(json_object(file), "IsDemoWindowOpen"));
 			scene->SetWindowState(Windows::CONFIG_W, json_object_get_boolean(json_object(file), "IsConfigWindowOpen"));
 			scene->SetWindowState(Windows::OUTPUT_W, json_object_get_boolean(json_object(file), "IsOutputWindowOpen"));
+			scene->SetWindowState(Windows::HIERARCHY_W, json_object_get_boolean(json_object(file), "IsHierarchyWindowOpen"));
 
 			scene->SetProjectName(json_object_get_string(json_object(file), "ProjectName"));
 			scene->SetTeamName(json_object_get_string(json_object(file), "TeamName"));
@@ -316,6 +317,7 @@ bool Application::Save(string fName, FileContent fc)
 				"\nIsDemoWindowOpen: "
 				"\nIsConfigWindowOpen: "
 				"\nIsOutputWindowOpen: "
+				"\nIsHierarchyWindowOpen: "
 				"\nProject Name: "
 				"\nTeam Name: "
 
@@ -354,6 +356,7 @@ bool Application::Save(string fName, FileContent fc)
 				json_object_set_boolean(json_object(file), "IsDemoWindowOpen", this->scene->GetWindowState(Windows::DEMO_W));
 				json_object_set_boolean(json_object(file), "IsConfigWindowOpen", this->scene->GetWindowState(Windows::CONFIG_W));
 				json_object_set_boolean(json_object(file), "IsOutputWindowOpen", this->scene->GetWindowState(Windows::OUTPUT_W));
+				json_object_set_boolean(json_object(file), "IsHierarchyWindowOpen", this->scene->GetWindowState(Windows::HIERARCHY_W));
 
 				// Project Information - Project
 				json_object_set_string(json_object(file), "ProjectName", this->scene->GetProjectName().c_str());

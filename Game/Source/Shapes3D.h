@@ -1,5 +1,6 @@
 #pragma once
 #include "Globals.h"
+#include <string>
 
 #include "External/glew/glew.h"
 #include "External/SDL/include/SDL_opengl.h"
@@ -9,6 +10,7 @@
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 
 struct Point3D;
+using namespace std;
 
 enum ShapeType
 {
@@ -30,17 +32,54 @@ public:
 
 	virtual bool Draw() { return true; }
 
+	Point3D GetPosition() const
+	{
+		return position;
+	}
+
+	Rotation GetRotation() const
+	{
+		return rotation;
+	}
+
+	float GetScale() const
+	{
+		return scale;
+	}
+
 	ShapeType GetShapeType()
 	{
 		return type;
 	}
 
+	string WriteShapeType(ShapeType sT)
+	{
+		switch (sT)
+		{
+		case CUBE3D: return string("Cube 3D"); break;
+		case LINE3D: return string("Line 3D"); break;
+		case PYRAMID3D: return string("Pyramid 3D"); break;
+		case CYLINDER3D: return string("Cylinder 3D"); break;
+		case PLANE3D: return string("Plane 3D"); break;
+		case SPHERE3D: return string("Sphere 3D"); break;
+		case MODEL3D: return string("Model 3D"); break;
+		}
+
+		return string("NULL3D");
+	}
+
+	const char* GetName() const
+	{
+		return name.c_str();
+	}
+
 	bool axis = false;
 	bool edges = true;
 	bool normals = false;
+	bool selected = false;
 
 protected:
-	Shape3D(Point3D pos, float s, Rotation rot, ShapeType sT)
+	Shape3D(Point3D pos, float s, Rotation rot, ShapeType sT, const char* n)
 	{
 		position = pos;
 		rotation = rot;
@@ -48,6 +87,8 @@ protected:
 		axis = false;
 		selected = false;
 		type = sT;
+		name.clear();
+		name += n;
 	}
 
 	void DrawAxis()
@@ -87,14 +128,14 @@ protected:
 	Point3D position = { 0, 0, 0 };
 	Rotation rotation = { 0, 0, 0, 0};
 	float scale = 1;
-	bool selected = false;
 	ShapeType type = NULL3D;
+	string name = {};
 };
 
 class Cube3D : public Shape3D
 {
 public:
-	Cube3D(Point3D pos = {0.0f, 0.0f, 0.0f}, float s = 1, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, CUBE3D)
+	Cube3D(Point3D pos = {0.0f, 0.0f, 0.0f}, float s = 1, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, CUBE3D, "Cube")
 	{
 		for (int i = 0; i < 24; i++)
 		{
@@ -300,7 +341,7 @@ private:
 class Line3D : public Shape3D
 {
 public:
-	Line3D(Point3D vertex0 = { 0, 0, 0 }, Point3D vertex1 = {0, 5, 0}, float lineWidthx = 1) : Shape3D(vertex0, lineWidthx, { 0, 0, 0, 0 }, LINE3D)
+	Line3D(Point3D vertex0 = { 0, 0, 0 }, Point3D vertex1 = {0, 5, 0}, float lineWidthx = 1) : Shape3D(vertex0, lineWidthx, { 0, 0, 0, 0 }, LINE3D, "Line")
 	{
 		v[0] = vertex0;
 		v[1] = vertex1;
@@ -336,7 +377,7 @@ class Pyramid3D : public Shape3D
 {
 public:
 
-	Pyramid3D(Point3D pos = { 0.0f, 0.0f, 0.0f }, float h = 1.0f, float s = 1.0f, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, PYRAMID3D)
+	Pyramid3D(Point3D pos = { 0.0f, 0.0f, 0.0f }, float h = 1.0f, float s = 1.0f, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, PYRAMID3D, "Line")
 	{
 		height = h;
 
@@ -480,9 +521,14 @@ public:
 		return v;
 	}
 
-	int GetNumVertex()
+	int GetNumVertex() const 
 	{
 		return 5;
+	}
+
+	float GetHeight() const
+	{
+		return height;
 	}
 
 private:
@@ -511,7 +557,7 @@ private:
 class Cylinder3D : public Shape3D
 {
 public:
-	Cylinder3D(Point3D pos = { 0.0f, 0.0f, 0.0f }, int numSegment = 18, float h = 4.0f, float r = 1.0f, float s = 1.0f, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, CYLINDER3D)
+	Cylinder3D(Point3D pos = { 0.0f, 0.0f, 0.0f }, int numSegment = 18, float h = 4.0f, float r = 1.0f, float s = 1.0f, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, CYLINDER3D, "Cylinder")
 	{
 		segments = numSegment;
 		height = h;
@@ -615,6 +661,21 @@ public:
 		return true;
 	}
 
+	float GetRadius() const
+	{
+		return radius;
+	}
+
+	float GetHeight() const
+	{
+		return height;
+	}
+
+	int GetSegments() const
+	{
+		return segments;
+	}
+
 private:
 
 	float radius = 1;
@@ -625,7 +686,7 @@ private:
 class Plane3D : public Shape3D
 {
 public:
-	Plane3D(Point3D pos = { 0, 0, 0 }, Point3D n = { 0, 1, 0 }, float s = 4, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, (s * 50), rot, PLANE3D)
+	Plane3D(Point3D pos = { 0, 0, 0 }, Point3D n = { 0, 1, 0 }, float s = 4, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, (s * 50), rot, PLANE3D, "Plane")
 	{
 		normal = n;
 	}
@@ -677,6 +738,11 @@ public:
 		return true;
 	}
 
+	Point3D GetNormal() const
+	{
+		return normal;
+	}
+
 private:
 
 	Point3D normal = { 0.0f, 0.0f, 0.0f };
@@ -685,7 +751,7 @@ private:
 //class Sphere3D : public Shape3D
 //{
 //public:
-//	Sphere3D(Point3D pos = { 0, 0, 0 }, float s = 4, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, SPHERE3D)
+//	Sphere3D(Point3D pos = { 0, 0, 0 }, float s = 4, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, SPHERE3D, "Sphere")
 //	{
 //	}
 //
