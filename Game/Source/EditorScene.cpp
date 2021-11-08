@@ -67,11 +67,18 @@ bool EditorScene::DrawMenuBar()
 			if (ImGui::MenuItem("Load File"))
 				app->Load("NNE_Project_Saving", FileContent::PROJECT);
 
+			if (ImGui::MenuItem("Exit"))
+				ret = false;
+
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Window"))
+		{
 			if (ImGui::MenuItem("Configuration"))
 				configWindow = !configWindow;
 
-			if (ImGui::MenuItem("Exit"))
-				ret = false;
+			if (ImGui::MenuItem("Output Log"))
+				outputWindow = !outputWindow;
 
 			ImGui::EndMenu();
 		}
@@ -133,9 +140,6 @@ bool EditorScene::DrawMenuBar()
 		}
 		if (ImGui::BeginMenu("View"))
 		{
-			if (ImGui::MenuItem("Output Log"))
-				outputWindow = !outputWindow;
-
 			if (ImGui::BeginMenu("Geometry"))
 			{
 				if (ImGui::MenuItem("Edges"))
