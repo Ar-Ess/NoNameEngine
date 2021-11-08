@@ -23,7 +23,7 @@ NoNameEngine will help programmers developing games as famous as "Split Duty".
 
 ### Save & Load
  - **Project:**
-   - Save & Load the whole project, including preferences (models not yet)
+   - Save & Load the whole project using JSON, including preferences (models not yet)
    - Locate: File -> Save File / Load File
  - **Preferences:**
    - Saves & Loads a preset of the preferences selected on the configuration window
