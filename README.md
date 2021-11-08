@@ -20,10 +20,15 @@ NoNameEngine will help programmers developing games as famous as "Split Duty".
    - D: Move Right
    - L-Shift + W: Move Upwards
    - L-Shift + S: Move Downwards
+ - **Speed Up**
+   - Ctrl: speed x2
 
 ### Save & Load
  - **Project:**
    - Save & Load the whole project using JSON, including preferences (models not yet)
+   - Save/Load Shortcuts:
+     - Ctrl + S: Save
+     - Ctrl + L: Load
    - Locate: File -> Save File / Load File
  - **Preferences:**
    - Saves & Loads a preset of the preferences selected on the configuration window
@@ -37,7 +42,7 @@ NoNameEngine will help programmers developing games as famous as "Split Duty".
     - Supports FBX for now (will be extended on the future) 
   - **Textures:**
     - Supports any kind of image extension
-- When Drag&Drop a texture, it reloads all models texture (future implementation: Drag&Drop texture for specific model)
+    - Select, from the Hierarchy, the Model3D, then Drag & Drop a file on the screen
 
 ### Model Creation
 _Important: "Shape3D" class is the equivalent of "GameObject" class_
@@ -48,13 +53,28 @@ _Important: "Shape3D" class is the equivalent of "GameObject" class_
    - Locate: Create -> Test
    - Baker House, Warrior, Cube
  - **Delete Models:**
-   - You can delete all the models, or just the first one loaded
-   - Locate: Edit -> Delete / Delete All
+   - Delete Model:
+     - Locate: Edit -> Delete Model
+     - Shortcut: Supr
+     - Select the model from the hierarchy
+   - Delete All Models:
+     - Locate: Edit -> Delete All Models
+     - Shortcut: Shift + Supr
 
 ### View Options
 - Modify the information the Engine shows
 - **Geometry:**
   - Modify how geometry is seen
   - Locate: View -> Geometry
-    - Edges: Shows the edges of all models
-    - Normals: Shows the normals of all models
+    - Edges: Shows the edges of the selected model
+    - Normals: Shows the normals of the selected model
+
+### Hierarchy
+ - View all the shapes in the stage
+ - Select a model to display:
+   - Shape name
+   - Transpose info (Position, Rotation, Scale)
+   - Shape type
+     - In case it has specific variables, show them
+   - Mesh info
+   - Texture Info
