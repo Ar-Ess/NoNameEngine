@@ -40,6 +40,7 @@ NoNameEngine will help programmers developing games as famous as "Split Duty".
 - When Drag&Drop a texture, it reloads all models texture (future implementation: Drag&Drop texture for specific model)
 
 ### Model Creation
+_Important: "Shape3D" class is the equivalent of "GameObject" class_
  - **Primitives:**
    - Locate: Create -> Primitives
    - Cube, Pyramid, Line, Cylinder, Plane
