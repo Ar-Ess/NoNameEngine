@@ -39,7 +39,7 @@ to help programmers developing games as their famous game "Split Duty". Enjoy.
     - Supports any kind of image extension
 - When Drag&Drop a texture, it reloads all models texture (future implementation: Drag&Drop texture for specific model)
 
-### Create Models
+### Model Creation
  - **Primitives:**
    - Locate: Create -> Primitives
    - Cube, Pyramid, Line, Cylinder, Plane
@@ -49,3 +49,11 @@ to help programmers developing games as their famous game "Split Duty". Enjoy.
  - **Delete Models:**
    - You can delete all the models, or just the first one loaded
    - Locate: Edit -> Delete / Delete All
+
+### View Options
+- Modify the information the Engine shows
+- **Geometry:**
+  - Modify how geometry is seen
+  - Locate: View -> Geometry
+    - Edges: Shows the edges of all models
+    - Normals: Shows the normals of all models
