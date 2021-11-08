@@ -29,6 +29,14 @@ public:
 	{
 		return &sens;
 	}
+	void SetSpeed(float s)
+	{
+		speed = s;
+	}
+	void SetSensitivity(float s)
+	{
+		sens = s;
+	}
 
 private:
 

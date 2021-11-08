@@ -242,6 +242,9 @@ bool Application::Load(string fName, FileContent fc)
 			scene->SetWindowSettings(WindowSettings::V_SYNC, json_object_get_boolean(json_object(file), "VSync"));
 			scene->SetWindowSettings(WindowSettings::KEEP_PROPORTION, json_object_get_boolean(json_object(file), "Keep Proportion"));
 
+			camera->SetSpeed(json_object_get_number(json_object(file), "Camera Speed"));
+			camera->SetSensitivity(json_object_get_number(json_object(file), "Camera Sens"));
+
 			scene->SetGeometryView(GeometryView::DEPTH_TEST, json_object_get_boolean(json_object(file), "Depth Test"));
 			scene->SetGeometryView(GeometryView::CULL_FACE, json_object_get_boolean(json_object(file), "Cull Face"));
 			scene->SetGeometryView(GeometryView::LIGHTING, json_object_get_boolean(json_object(file), "Lighting"));
@@ -265,6 +268,9 @@ bool Application::Load(string fName, FileContent fc)
 			scene->SetWindowSettings(WindowSettings::BORDERLESS, json_object_get_boolean(json_object(file), "Window Borderless"));
 			scene->SetWindowSettings(WindowSettings::V_SYNC, json_object_get_boolean(json_object(file), "VSync"));
 			scene->SetWindowSettings(WindowSettings::KEEP_PROPORTION, json_object_get_boolean(json_object(file), "Keep Proportion"));
+
+			camera->SetSpeed(json_object_get_number(json_object(file), "Camera Speed"));
+			camera->SetSensitivity(json_object_get_number(json_object(file), "Camera Sens"));
 
 			scene->SetGeometryView(GeometryView::DEPTH_TEST, json_object_get_boolean(json_object(file), "Depth Test"));
 			scene->SetGeometryView(GeometryView::CULL_FACE, json_object_get_boolean(json_object(file), "Cull Face"));
@@ -305,6 +311,8 @@ bool Application::Save(string fName, FileContent fc)
 		{
 			JSON_Value* schema = json_parse_string(
 				"{"
+				//Project
+				//  Main
 				"\nIsDemoWindowOpen: "
 				"\nIsConfigWindowOpen: "
 				"\nIsOutputWindowOpen: "
@@ -326,6 +334,8 @@ bool Application::Save(string fName, FileContent fc)
 				"\nVSync: "
 				"\nWindow Proportion Value: "
 				"\nKeep Proportion: "
+				"\nCamera Speed: "
+				"\nCamera Sens: "
 
 				//	 Geometry View
 				"\nDepth Test: "
@@ -368,6 +378,9 @@ bool Application::Save(string fName, FileContent fc)
 				json_object_set_boolean(json_object(file), "VSync", this->scene->GetWindowSettings(WindowSettings::V_SYNC));
 				json_object_set_boolean(json_object(file), "Keep Proportion", this->scene->GetWindowSettings(WindowSettings::KEEP_PROPORTION));
 
+				json_object_set_number(json_object(file), "Camera Speed", *this->camera->GetSpeed());
+				json_object_set_number(json_object(file), "Camera Sens", *this->camera->GetSensitivity());
+
 				// Geometry View - Preferences
 				json_object_set_boolean(json_object(file), "Depth Test", this->scene->GetGeometryView(GeometryView::DEPTH_TEST));
 				json_object_set_boolean(json_object(file), "Cull Face", this->scene->GetGeometryView(GeometryView::CULL_FACE));
@@ -400,6 +413,8 @@ bool Application::Save(string fName, FileContent fc)
 				"\nVSync: "
 				"\nWindow Proportion Value: "
 				"\nKeep Proportion: "
+				"\nCamera Speed: "
+				"\nCamera Sens: "
 
 				//	 Geometry View
 				"\nDepth Test: "
@@ -429,6 +444,9 @@ bool Application::Save(string fName, FileContent fc)
 				json_object_set_boolean(json_object(file), "Window Borderless", this->scene->GetWindowSettings(WindowSettings::BORDERLESS));
 				json_object_set_boolean(json_object(file), "VSync", this->scene->GetWindowSettings(WindowSettings::V_SYNC));
 				json_object_set_boolean(json_object(file), "Keep Proportion", this->scene->GetWindowSettings(WindowSettings::KEEP_PROPORTION));
+
+				json_object_set_number(json_object(file), "Camera Speed", *this->camera->GetSpeed());
+				json_object_set_number(json_object(file), "Camera Sens", *this->camera->GetSensitivity());
 
 				json_object_set_boolean(json_object(file), "Depth Test", this->scene->GetGeometryView(GeometryView::DEPTH_TEST));
 				json_object_set_boolean(json_object(file), "Cull Face", this->scene->GetGeometryView(GeometryView::CULL_FACE));
@@ -471,6 +489,8 @@ bool Application::SaveRestartPropierties()
 		"\nVSync: "
 		"\nWindow Proportion Value: "
 		"\nKeep Proportion: "
+		"\nCamera Speed: "
+		"\nCamera Sens: "
 		"\n}"
 	);
 
@@ -493,6 +513,9 @@ bool Application::SaveRestartPropierties()
 		json_object_set_boolean(json_object(file), "Window Borderless", false);
 		json_object_set_boolean(json_object(file), "VSync", true);
 		json_object_set_boolean(json_object(file), "Keep Proportion", false);
+
+		json_object_set_number(json_object(file), "Camera Speed", 0.5);
+		json_object_set_number(json_object(file), "Camera Sens", 0.3);
 
 		json_object_set_boolean(json_object(file), "Depth Test", false);
 		json_object_set_boolean(json_object(file), "Cull Face", false);
