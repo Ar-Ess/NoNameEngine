@@ -161,7 +161,7 @@ bool Model::Draw()
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    if (showTexture) glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
     glTranslatef(position.x, position.y, position.z);
 
@@ -180,13 +180,16 @@ bool Model::Draw()
         glBindBuffer(GL_ARRAY_BUFFER, m->GetId(NORMAL));
         glNormalPointer(GL_FLOAT, 0, NULL);
 
-        //coord
-        glBindBuffer(GL_ARRAY_BUFFER, m->GetId(TEXTURE_COORDS));
-        glTexCoordPointer(2, GL_FLOAT, 0, NULL);
+        if (showTexture)
+        {
+            //coord
+            glBindBuffer(GL_ARRAY_BUFFER, m->GetId(TEXTURE_COORDS));
+            glTexCoordPointer(2, GL_FLOAT, 0, NULL);
 
-        //texture
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glBindTexture(GL_TEXTURE_2D, m->GetId(TEXTURE));
+            //texture
+            glBindTexture(GL_TEXTURE_2D, 0);
+            glBindTexture(GL_TEXTURE_2D, m->GetId(TEXTURE));
+        }
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->GetId(INDEX));
         glDrawElements(GL_TRIANGLES, m->GetNum(INDEX), GL_UNSIGNED_INT, NULL);
@@ -197,7 +200,7 @@ bool Model::Draw()
 
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    if (showTexture) glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
     return ret;
 }

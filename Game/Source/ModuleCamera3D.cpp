@@ -47,26 +47,28 @@ update_status ModuleCamera3D::Update()
 	int dx = -app->input->GetMouseXMotion();
 	int dy = -app->input->GetMouseYMotion();
 	bool shift = (app->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT);
+	float frameSpeed = speed;
+	if (app->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT) frameSpeed *= 2;
 
 	// Trackpad movement
 	if (wheelZV != 0)
 	{
 		if (shift)
 		{
-			if (wheelZV > 0) newPos -= Z * speed;
-			if (wheelZV < 0) newPos += Z * speed;
+			if (wheelZV > 0) newPos -= Z * frameSpeed;
+			if (wheelZV < 0) newPos += Z * frameSpeed;
 		}
 		else
 		{
-			if (wheelZV > 0) newPos += Y * speed;
-			if (wheelZV < 0) newPos -= Y * speed;
+			if (wheelZV > 0) newPos += Y * frameSpeed;
+			if (wheelZV < 0) newPos -= Y * frameSpeed;
 		}
 
 	}
 	if (wheelZH != 0)
 	{
-		if (wheelZH > 0) newPos += X * speed;
-		if (wheelZH < 0) newPos -= X * speed;
+		if (wheelZH > 0) newPos += X * frameSpeed;
+		if (wheelZH < 0) newPos -= X * frameSpeed;
 	}
 
 	// Mouse movement
@@ -74,21 +76,21 @@ update_status ModuleCamera3D::Update()
 	{
 		if (dx != 0 && !shift)
 		{
-			if (dx > 0) newPos += X * speed * sens;
-			if (dx < 0) newPos -= X * speed * sens;
+			if (dx > 0) newPos += X * frameSpeed * sens;
+			if (dx < 0) newPos -= X * frameSpeed * sens;
 
 		}
 		if (dy != 0)
 		{
 			if (shift)
 			{
-				if (dy > 0) newPosition += Z * speed * sens;
-				if (dy < 0) newPosition -= Z * speed * sens;
+				if (dy > 0) newPosition += Z * frameSpeed * sens;
+				if (dy < 0) newPosition -= Z * frameSpeed * sens;
 			}
 			else
 			{
-				if (dy > 0) newPos -= Y * speed * sens;
-				if (dy < 0) newPos += Y * speed * sens;
+				if (dy > 0) newPos -= Y * frameSpeed * sens;
+				if (dy < 0) newPos += Y * frameSpeed * sens;
 			}
 		}
 	}
@@ -96,22 +98,22 @@ update_status ModuleCamera3D::Update()
 	// Arrow movement
 	if (app->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
 	{
-		if (shift) newPosition.y += speed;
+		if (shift) newPosition.y += frameSpeed;
 		else
 		{
-			newPosition -= Z * speed;
+			newPosition -= Z * frameSpeed;
 		}
 	}
 	if (app->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT)
 	{
-		if (shift) newPosition.y -= speed;
+		if (shift) newPosition.y -= frameSpeed;
 		else
 		{
-			newPosition += Z * speed;
+			newPosition += Z * frameSpeed;
 		}
 	}
-	if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) newPosition -= X * speed;
-	if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) newPosition += X * speed;
+	if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) newPosition -= X * frameSpeed;
+	if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) newPosition += X * frameSpeed;
 
 	// Position setting
 	position += newPos;

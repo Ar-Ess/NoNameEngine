@@ -618,6 +618,10 @@ bool EditorScene::ShowHierarchyWindow(bool open)
 					// Texture Path
 					ImGui::BulletText("Texture path: %s", m->texturePath.c_str());
 					AddSpacing(1);
+
+					// Show texture
+					ImGui::Checkbox("Texture", &m->showTexture);
+					AddSpacing(1);
 				}
 			}
 		}

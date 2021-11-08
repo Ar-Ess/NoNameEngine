@@ -377,7 +377,7 @@ class Pyramid3D : public Shape3D
 {
 public:
 
-	Pyramid3D(Point3D pos = { 0.0f, 0.0f, 0.0f }, float h = 1.0f, float s = 1.0f, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, PYRAMID3D, "Line")
+	Pyramid3D(Point3D pos = { 0.0f, 0.0f, 0.0f }, float h = 1.0f, float s = 1.0f, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, PYRAMID3D, "Pyramid")
 	{
 		height = h;
 

@@ -43,6 +43,8 @@ public:
 	string filePath = {};
 	string texturePath = {};
 
+	bool showTexture = true;
+
 private:
 	Point size = {};
 

@@ -74,13 +74,25 @@ private: // Private functions
 
 	void LoadDropTexture(const char* path)
 	{
+		bool setted = false;
 		for (int i = 0; i < shapes.size(); i++)
 		{
-			if (shapes[i]->GetShapeType() == MODEL3D)
+			if (shapes[i]->GetShapeType() == MODEL3D && shapes[i]->selected)
 			{
 				Model* m = (Model*)shapes[i];
 				m->LoadTexture(path);
+				setted = true;
 			}
+		}
+
+		if (!setted)
+		{
+			SDL_ShowSimpleMessageBox(
+				SDL_MESSAGEBOX_INFORMATION,
+				"Texture Error",
+				"\nAny Model3D selected",
+				app->window->mainWindow
+			);
 		}
 	}
 
@@ -214,13 +226,28 @@ public: // Getters & Setters
 	}
 	void SetGeometryInfo(GeometryInfo gI)
 	{
+		bool setted = false;
 		for (int i = 0; i < shapes.size(); i++)
 		{
-			switch (gI)
+			if (shapes[i]->selected)
 			{
-			case EDGES: shapes[i]->edges = editor->edges; break;
-			case NORMALS: shapes[i]->normals = editor->normals; break;
+				switch (gI)
+				{
+				case EDGES: shapes[i]->edges = editor->edges; break;
+				case NORMALS: shapes[i]->normals = editor->normals; break;
+				}
+				setted = true;
 			}
+		}
+
+		if (!setted)
+		{
+			SDL_ShowSimpleMessageBox(
+				SDL_MESSAGEBOX_INFORMATION,
+				"Shape Error",
+				"\nAny Shape selected",
+				app->window->mainWindow
+			);
 		}
 	}
 	bool GetOnWindow()
