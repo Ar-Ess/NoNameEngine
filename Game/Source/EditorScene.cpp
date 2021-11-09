@@ -31,6 +31,8 @@ bool EditorScene::Start()
 	m1->LoadModel("Assets/Models/cube.fbx", "Assets/Textures/cube_texture.png");
 	shapes->push_back(m1);
 
+	//Sphere3D* s = new Shape3D({0, 0, 0}, 1);
+
 	return true;
 }
 

@@ -196,6 +196,7 @@ bool ModuleRenderer3D::GeometryDraw()
 
 	for (int i = 0; i < app->scene->shapes.size(); i++)
 	{
+		//glLoadIdentity();
 		ret = app->scene->shapes[i]->Draw();
 	}
 
