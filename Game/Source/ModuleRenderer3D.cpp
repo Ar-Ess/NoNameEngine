@@ -136,7 +136,7 @@ update_status ModuleRenderer3D::PreUpdate()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(app->camera->GetViewMatrix());
+	glLoadMatrixf(app->camera->GetViewMatrix()); // PROBLEM: HOPEFULLY IS THIS. BUT I DON'T KNOW HOW TO SOLVE IT. IF I CHANGE IT; CAMERA WON?T WORK ANYMORE...
 
 	if (!ret) return UPDATE_STOP;
 	return UPDATE_CONTINUE;
@@ -144,6 +144,11 @@ update_status ModuleRenderer3D::PreUpdate()
 
 update_status ModuleRenderer3D::PostUpdate()
 {
+	//glLoadIdentity();
+	//glMatrixMode(GL_MODELVIEW);
+	//mat4x4 identityMatrix = {};
+	//glLoadMatrixf(&identityMatrix);
+
 	DebugDraw();
 	Draw();
 
@@ -196,7 +201,6 @@ bool ModuleRenderer3D::GeometryDraw()
 
 	for (int i = 0; i < app->scene->shapes.size(); i++)
 	{
-		//glLoadIdentity();
 		ret = app->scene->shapes[i]->Draw();
 	}
 

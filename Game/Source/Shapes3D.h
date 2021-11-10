@@ -574,6 +574,7 @@ public:
 
 	bool Draw()
 	{
+		glLoadIdentity();
 		if (solid) DrawSolid();
 		if (edges) DrawEdges();
 		if (axis) DrawAxis();
@@ -775,11 +776,11 @@ private:
 class Sphere3D : public Shape3D
 {
 public:
-	Sphere3D(Point3D pos = { 0, 0, 0 }, float s = 4, float r = 1.0f, int subd= 1, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, 1, rot, SPHERE3D, "Sphere")
+	Sphere3D(Point3D pos = { 0, 0, 0 }, float s = 1.0f, float r = 1.0f, int subd= 1, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, 1, rot, SPHERE3D, "Sphere")
 	{
 		radius = r;
 		subdivision = subd;
-		interleavedStride = 32; // Telef. 665 332 737
+		interleavedStride = 32; // Do not change!
 
 		bool smooth = false;
 
@@ -802,6 +803,8 @@ private:
 
 	bool DrawSolid()
 	{
+		glColor3f(255, 255, 255);
+
 		glEnable(GL_POLYGON_OFFSET_FILL);
 		glPolygonOffset(1.0, 1.0f);
 		// interleaved array

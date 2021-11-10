@@ -20,9 +20,9 @@ bool EditorScene::Start()
 	p->solid = false;
 	shapes->push_back(p);
 
-	//Model* m = new Model({ 0, 0, 0 }, 1);
-	//m->LoadModel("Assets/Models/BakerHouse.fbx", "Assets/Textures/baker_house_texture.png");
-	//shapes->push_back(m);
+	Model* m = new Model({ 0, 0, -20 }, 1);
+	m->LoadModel("Assets/Models/BakerHouse.fbx", "Assets/Textures/baker_house_texture.png");
+	shapes->push_back(m);
 
 	//Pyramid3D* py = new Pyramid3D({ 5, 0, 0 }, 3);
 	//py->axis = true;
@@ -32,7 +32,7 @@ bool EditorScene::Start()
 	//m1->LoadModel("Assets/Models/cube.fbx", "Assets/Textures/cube_texture.png");
 	//shapes->push_back(m1);
 
-	Sphere3D* s = new Sphere3D({ 0, 0, 0 }, 1.0f);
+	Sphere3D* s = new Sphere3D({ 0, 0, 0 }, 1.0f, 2);
 	shapes->push_back(s);
 
 	return true;
@@ -120,6 +120,9 @@ bool EditorScene::DrawMenuBar()
 
 				if (ImGui::MenuItem("Cylinder"))
 					CreatePrimitive(CYLINDER3D);
+
+				if (ImGui::MenuItem("Sphere"))
+					CreatePrimitive(SPHERE3D);
 
 				if (ImGui::MenuItem("Plane"))
 					CreatePrimitive(PLANE3D);
@@ -658,23 +661,25 @@ bool EditorScene::ShowHierarchyWindow(bool open)
 bool EditorScene::ShortCuts()
 {
 	bool ret = true;
+
 	bool shift = (app->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT || app->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT);
 	bool ctrl = (app->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || app->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT);
 
 	if (app->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN) ret = false;
 
-	if (!shift && !ctrl)
+	if (!shift && !ctrl) // NO CLICK
 	{
 		if (app->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN) PopShape();
 	}
-	else if (shift && !ctrl)
+	else if (shift && !ctrl) // SHIFT
 	{
 		if (app->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN) PopAllShapes();
 	}
-	else if (!shift && ctrl)
+	else if (!shift && ctrl) // CTRL
 	{
 		if (app->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN) app->Save("NNE_Project_Saving", FileContent::PROJECT);
 		if (app->input->GetKey(SDL_SCANCODE_L) == KEY_DOWN) app->Load("NNE_Project_Saving", FileContent::PROJECT);
+		if (app->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN) DuplicateSelecShape();
 	}
 
 	return ret;
@@ -684,36 +689,28 @@ void EditorScene::CreatePrimitive(ShapeType sT)
 {
 	switch (sT)
 	{
-	case CUBE3D:
-	{
-		shapes->push_back(new Cube3D()); break;
-	}
-	case LINE3D:
-	{
-		shapes->push_back(new Line3D()); break;
-	}
-	case PYRAMID3D:
-	{
-		shapes->push_back(new Pyramid3D()); break;
-	}
-	case CYLINDER3D:
-	{
-		shapes->push_back(new Cylinder3D()); break;
-	}
-	case PLANE3D:
-	{
-		shapes->push_back(new Plane3D()); break;
-	}
-	case SPHERE3D:
-	{
-		/*shapes->push_back(new Sphere3D({}));*/ break;
-	}
+	case CUBE3D: PushShape3D(new Cube3D()); break;
+	case LINE3D: PushShape3D(new Line3D()); break;
+	case PYRAMID3D: PushShape3D(new Pyramid3D()); break;
+	case CYLINDER3D: PushShape3D(new Cylinder3D()); break;
+	case PLANE3D: PushShape3D(new Plane3D()); break;
+	case SPHERE3D: PushShape3D(new Sphere3D()); break;
 	}
 }
 
 void EditorScene::PushShape3D(Shape3D* s3D)
 {
+	s3D->selected = false;
 	shapes->push_back(s3D);
+}
+
+void EditorScene::DuplicateSelecShape()
+{
+	int size = shapes->size();
+	for (int i = 1; i < size; i++)
+	{
+		if (shapes->at(i)->selected) PushShape3D(shapes->at(i));
+	}
 }
 
 void EditorScene::PopShape()
