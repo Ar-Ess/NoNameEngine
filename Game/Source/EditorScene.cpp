@@ -17,21 +17,23 @@ bool EditorScene::Start()
 {
 	Plane3D* p = new Plane3D();
 	p->axis = true;
+	p->solid = false;
 	shapes->push_back(p);
 
-	Model* m = new Model({ 0, 0, 0 }, 1);
-	m->LoadModel("Assets/Models/BakerHouse.fbx", "Assets/Textures/baker_house_texture.png");
-	shapes->push_back(m);
+	//Model* m = new Model({ 0, 0, 0 }, 1);
+	//m->LoadModel("Assets/Models/BakerHouse.fbx", "Assets/Textures/baker_house_texture.png");
+	//shapes->push_back(m);
 
-	Pyramid3D* py = new Pyramid3D({ 5, 0, 0 }, 3);
-	py->axis = true;
-	shapes->push_back(py);
+	//Pyramid3D* py = new Pyramid3D({ 5, 0, 0 }, 3);
+	//py->axis = true;
+	//shapes->push_back(py);
 
-	Model* m1 = new Model({ 10, 1, 0 }, 0.05f);
-	m1->LoadModel("Assets/Models/cube.fbx", "Assets/Textures/cube_texture.png");
-	shapes->push_back(m1);
+	//Model* m1 = new Model({ 10, 1, 0 }, 0.05f);
+	//m1->LoadModel("Assets/Models/cube.fbx", "Assets/Textures/cube_texture.png");
+	//shapes->push_back(m1);
 
-	//Sphere3D* s = new Shape3D({0, 0, 0}, 1);
+	Sphere3D* s = new Sphere3D({ 0, 0, 0 }, 1.0f);
+	shapes->push_back(s);
 
 	return true;
 }
@@ -152,6 +154,12 @@ bool EditorScene::DrawMenuBar()
 		{
 			if (ImGui::BeginMenu("Geometry"))
 			{
+				if (ImGui::MenuItem("Solid"))
+				{
+					solid = !solid;
+					app->scene->SetGeometryInfo(SOLID);
+				}
+
 				if (ImGui::MenuItem("Edges"))
 				{
 					edges = !edges;
@@ -479,6 +487,7 @@ bool EditorScene::ShowHierarchyWindow(bool open)
 			{
 				char buffer[24] = {};
 				sprintf_s(buffer, " %s %d", shapes->at(i)->GetName(), i);
+
 				// Multiselection
 				/*if (ImGui::Selectable(buffer, &shapes->at(i)->selected))
 				{
@@ -538,7 +547,7 @@ bool EditorScene::ShowHierarchyWindow(bool open)
 				AddSpacing(1);
 
 				// Type
-				ImGui::BulletText("Type: %s", s->WriteShapeType(s->GetShapeType()).c_str());
+				ImGui::BulletText("Type: %s", s->WriteShapeType().c_str());
 				AddSpacing(0);
 				switch (s->GetShapeType())
 				{
@@ -560,6 +569,15 @@ bool EditorScene::ShowHierarchyWindow(bool open)
 				{
 					Plane3D* p = (Plane3D*)s;
 					ImGui::Text("    Normal: {%d, %d, %d}", (int)p->GetNormal().x, (int)p->GetNormal().y, (int)p->GetNormal().z);
+					break;
+				}
+				case SPHERE3D:
+				{
+					Sphere3D* sp = (Sphere3D*)s;
+					/*subdivision = sub
+						interleavedStride*/
+					ImGui::Text("    Radius: %.1f", sp->GetRadius());
+					ImGui::Text("    Subdivisions: %.1f", sp->GetSubdivision());
 					break;
 				}
 				}
@@ -587,6 +605,10 @@ bool EditorScene::ShowHierarchyWindow(bool open)
 					ImGui::BulletText("Model path: %s", m->filePath.c_str());
 					AddSpacing(1);
 				}
+
+				// Solid
+				ImGui::BulletText("Solid: "); ImGui::SameLine(); s->solid ? ImGui::Text("true") : ImGui::Text("false");
+				AddSpacing(1);
 
 				// Edges
 				ImGui::BulletText("Edges: "); ImGui::SameLine(); s->edges ? ImGui::Text("true") : ImGui::Text("false");

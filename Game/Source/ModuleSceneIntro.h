@@ -43,7 +43,8 @@ enum class GeometryView;
 enum GeometryInfo
 {
 	EDGES,
-	NORMALS
+	NORMALS,
+	SOLID
 };
 
 class ModuleScene : public Module
@@ -235,6 +236,7 @@ public: // Getters & Setters
 				{
 				case EDGES: shapes[i]->edges = editor->edges; break;
 				case NORMALS: shapes[i]->normals = editor->normals; break;
+				case SOLID: shapes[i]->solid = editor->solid; break;
 				}
 				setted = true;
 			}

@@ -53,9 +53,9 @@ public:
 		return type;
 	}
 
-	string WriteShapeType(ShapeType sT)
+	string WriteShapeType()
 	{
-		switch (sT)
+		switch (type)
 		{
 		case CUBE3D: return string("Cube 3D"); break;
 		case LINE3D: return string("Line 3D"); break;
@@ -76,6 +76,7 @@ public:
 
 	bool axis = false;
 	bool edges = true;
+	bool solid = true;
 	bool normals = false;
 	bool selected = false;
 
@@ -154,10 +155,14 @@ public:
 
 	bool Draw()
 	{
-		DrawDirectMode();
+		if (solid) DrawSolid();
+		if (edges) DrawEdges();
+		if (axis) DrawAxis();
+
 		return true;
 
-		glColor3f(255, 255, 255);
+		// Buffer Mode
+		/*glColor3f(255, 255, 255);
 
 		glGenBuffers(1, &vBuffer);
 		glGenBuffers(1, &iBuffer);
@@ -171,16 +176,12 @@ public:
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iBuffer);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(index), index, GL_STATIC_DRAW);
 
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
-
-		glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
-
-		if (axis) DrawAxis();
-
-		return true;
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);*/
 	}
 
-	void DrawDirectMode()
+private:
+
+	void DrawSolid()
 	{
 		glColor3f(255, 255, 255);
 		glBegin(GL_TRIANGLES);
@@ -241,12 +242,7 @@ public:
 		glEnd();
 
 		glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
-
-		if (edges) DrawEdges();
 	}
-
-private:
-
 	bool DrawEdges()
 	{
 		glColor3f(255, 0, 0);
@@ -338,7 +334,7 @@ private:
 	uint vBuffer = 0;
 	uint iBuffer = 0;
 	Point3D v[8] = { { 1.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f },
-						{ 1.0f, 0.0f, 1.0f }, { 1.0f, 1.0f, 1.0f }, { 0.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } };
+					 { 1.0f, 0.0f, 1.0f }, { 1.0f, 1.0f, 1.0f }, { 0.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } };
 };
 
 class Line3D : public Shape3D
@@ -352,13 +348,8 @@ public:
 
 	bool Draw()
 	{
-		glColor3f(255, 255, 255);
-		glLineWidth(scale);
-		glBegin(GL_LINES);
-		glVertex3f(v[0].x, v[0].y, v[0].z);
-		glVertex3f(v[1].x, v[1].y, v[1].z);
-		glEnd();
-
+		if (solid) DrawSolid();
+		if (axis) DrawAxis();
 		return true;
 	}
 
@@ -370,6 +361,20 @@ public:
 	int GetNumVertex()
 	{
 		return 2;
+	}
+
+private:
+
+	bool DrawSolid()
+	{
+		glColor3f(255, 255, 255);
+		glLineWidth(scale);
+		glBegin(GL_LINES);
+		glVertex3f(v[0].x, v[0].y, v[0].z);
+		glVertex3f(v[1].x, v[1].y, v[1].z);
+		glEnd();
+
+		return true;
 	}
 
 private:
@@ -402,10 +407,14 @@ public:
 
 	bool Draw()
 	{
-		DrawDirectMode();
+		if (solid) DrawSolid();
+		if (edges) DrawEdges();
+		if (axis) DrawAxis();
+		
 		return true;
 
-		glColor3f(255, 255, 255);
+		// Buffer Mode
+		/*glColor3f(255, 255, 255);
 
 		glGenBuffers(1, &vBuffer);
 		glGenBuffers(1, &iBuffer);
@@ -419,16 +428,12 @@ public:
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iBuffer);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(index), index, GL_STATIC_DRAW);
 
-		glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_SHORT, 0);
-
-		glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
-
-		if (axis) DrawAxis();
-
-		return true;
+		glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_SHORT, 0);*/
 	}
 
-	void DrawDirectMode()
+private:
+
+	void DrawSolid()
 	{
 		glColor3f(255, 255, 255);
 
@@ -465,11 +470,7 @@ public:
 		glEnd();
 
 		glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
-
-		if (edges) DrawEdges();
 	}
-
-private:
 
 	bool DrawEdges()
 	{
@@ -573,6 +574,17 @@ public:
 
 	bool Draw()
 	{
+		if (solid) DrawSolid();
+		if (edges) DrawEdges();
+		if (axis) DrawAxis();
+
+		return true;
+	}
+
+private:
+
+	bool DrawSolid()
+	{
 		glColor3f(255, 255, 255);
 
 		glBegin(GL_TRIANGLES);
@@ -610,17 +622,11 @@ public:
 
 
 		}
+
 		glEnd();
-
-		glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
-
-		if (axis) DrawAxis();
-		if (edges) DrawEdges();
 
 		return true;
 	}
-
-private:
 
 	bool DrawEdges()
 	{
@@ -665,8 +671,6 @@ private:
 
 		glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
 
-		if (axis) DrawAxis();
-
 		return true;
 	}
 
@@ -704,6 +708,17 @@ public:
 
 	bool Draw()
 	{
+		if (solid) DrawSolid();
+		if (edges) DrawEdges();
+		if (axis) DrawAxis();
+
+		return true;
+	}
+
+private:
+
+	bool DrawSolid()
+	{
 		glColor3f(0, 0, 0);
 
 		glLineWidth(1.0f);
@@ -720,14 +735,8 @@ public:
 
 		glEnd();
 
-		if (axis) DrawAxis();
-		if (edges) DrawEdges();
-
 		return true;
 	}
-
-private:
-
 	bool DrawEdges()
 	{
 		glColor3f(255, 255, 255);
@@ -766,14 +775,32 @@ private:
 class Sphere3D : public Shape3D
 {
 public:
-	Sphere3D(Point3D pos = { 0, 0, 0 }, Point3D n = { 0, 1, 0 }, float s = 4, float r = 1.0f, int subd= 1, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, 1, rot, SPHERE3D, "Sphere")
+	Sphere3D(Point3D pos = { 0, 0, 0 }, float s = 4, float r = 1.0f, int subd= 1, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, 1, rot, SPHERE3D, "Sphere")
 	{
 		radius = r;
 		subdivision = subd;
 		interleavedStride = 32; // Telef. 665 332 737
+
+		bool smooth = false;
+
+		if (smooth)
+			BuildVerticesSmooth();
+		else
+			BuildVerticesFlat();
 	}
 
 	bool Draw()
+	{
+		if (solid) DrawSolid();
+		if (edges) DrawEdges();
+		if (axis) DrawAxis();
+
+		return true;
+	}
+
+private:
+
+	bool DrawSolid()
 	{
 		glEnable(GL_POLYGON_OFFSET_FILL);
 		glPolygonOffset(1.0, 1.0f);
@@ -794,12 +821,10 @@ public:
 
 		glDisable(GL_POLYGON_OFFSET_FILL);
 
-		if (edges) DrawEdges();
+		return true;
 	}
 
-private:
-
-	void DrawEdges() const
+	bool DrawEdges()
 	{
 		// set line colour
 		const float color[4] = {255.0f, 0.0f, 0.0f, 255.0f};
@@ -817,6 +842,8 @@ private:
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glEnable(GL_LIGHTING);
 		glEnable(GL_TEXTURE_2D);
+
+		return true;
 	}
 
 public: // Getters & Setters
@@ -834,30 +861,30 @@ public: // Getters & Setters
 		BuildVerticesFlat();
 	}
 
-	unsigned int getVertexCount() const { return (unsigned int)vertex.size() / 3; }
-	unsigned int getNormalCount() const { return (unsigned int)normals.size() / 3; }
-	unsigned int getTexCoordCount() const { return (unsigned int)texCoords.size() / 2; }
-	unsigned int getIndexCount() const { return (unsigned int)index.size(); }
-	unsigned int getLineIndexCount() const { return (unsigned int)lineIndex.size(); }
-	unsigned int getTriangleCount() const { return getIndexCount() / 3; }
+	unsigned int GetVertexCount() const { return (unsigned int)vertex.size() / 3; }
+	unsigned int GetNormalCount() const { return (unsigned int)normals.size() / 3; }
+	unsigned int GetTexCoordCount() const { return (unsigned int)texCoords.size() / 2; }
+	unsigned int GetIndexCount() const { return (unsigned int)index.size(); }
+	unsigned int GetLineIndexCount() const { return (unsigned int)lineIndex.size(); }
+	unsigned int GetTriangleCount() const { return GetIndexCount() / 3; }
 
-	unsigned int getVertexSize() const { return (unsigned int)vertex.size() * sizeof(float); }   // # of bytes
-	unsigned int getNormalSize() const { return (unsigned int)normals.size() * sizeof(float); }
-	unsigned int getTexCoordSize() const { return (unsigned int)texCoords.size() * sizeof(float); }
-	unsigned int getIndexSize() const { return (unsigned int)index.size() * sizeof(unsigned int); }
-	unsigned int getLineIndexSize() const { return (unsigned int)lineIndex.size() * sizeof(unsigned int); }
+	unsigned int GetVertexSize() const { return (unsigned int)vertex.size() * sizeof(float); }   // # of bytes
+	unsigned int GetNormalSize() const { return (unsigned int)normals.size() * sizeof(float); }
+	unsigned int GetTexCoordSize() const { return (unsigned int)texCoords.size() * sizeof(float); }
+	unsigned int GetIndexSize() const { return (unsigned int)index.size() * sizeof(unsigned int); }
+	unsigned int GetLineIndexSize() const { return (unsigned int)lineIndex.size() * sizeof(unsigned int); }
 
-	const float* getVertices() const { return vertex.data(); }
-	const float* getNormals() const { return normals.data(); }
-	const float* getTexCoords() const { return texCoords.data(); }
-	const unsigned int* getIndex() const { return index.data(); }
-	const unsigned int* getLineIndex() const { return lineIndex.data(); }
+	const float* GetVertices() const { return vertex.data(); }
+	const float* GetNormals() const { return normals.data(); }
+	const float* GetTexCoords() const { return texCoords.data(); }
+	const unsigned int* GetIndex() const { return index.data(); }
+	const unsigned int* GetLineIndex() const { return lineIndex.data(); }
 
 	// for interleaved vertices: V/N/T
-	unsigned int getInterleavedVertexCount() const { return getVertexCount(); }    // # of vertices
-	unsigned int getInterleavedVertexSize() const { return (unsigned int)interleavedVertices.size() * sizeof(float); }    // # of bytes
-	int getInterleavedStride() const { return interleavedStride; }   // should be 32 bytes
-	const float* getInterleavedVertices() const { return interleavedVertices.data(); }
+	unsigned int GetInterleavedVertexCount() const { return GetVertexCount(); }    // # of vertices
+	unsigned int GetInterleavedVertexSize() const { return (unsigned int)interleavedVertices.size() * sizeof(float); }    // # of bytes
+	int GetInterleavedStride() const { return interleavedStride; }   // should be 32 bytes
+	const float* GetInterleavedVertices() const { return interleavedVertices.data(); }
 
 	void DebugPring() const
 	{
@@ -866,11 +893,11 @@ public: // Getters & Setters
 			<< "        Radius: " << radius << "\n"
 			<< "   Subdivision: " << subdivision << "\n"
 			//<< "    Smoothness: " << (smooth ? "true" : "false") << "\n"
-			<< "Triangle Count: " << getTriangleCount() << "\n"
-			<< "   Index Count: " << getIndexCount() << "\n"
-			<< "  Vertex Count: " << getVertexCount() << "\n"
-			<< "  Normal Count: " << getNormalCount() << "\n"
-			<< "TexCoord Count: " << getTexCoordCount() << std::endl;
+			<< "Triangle Count: " << GetTriangleCount() << "\n"
+			<< "   Index Count: " << GetIndexCount() << "\n"
+			<< "  Vertex Count: " << GetVertexCount() << "\n"
+			<< "  Normal Count: " << GetNormalCount() << "\n"
+			<< "TexCoord Count: " << GetTexCoordCount() << std::endl;
 	}
 
 private:

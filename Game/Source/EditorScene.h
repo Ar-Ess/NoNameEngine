@@ -107,6 +107,7 @@ public: // Variables
 	// Geometry Info
 	bool edges = true;
 	bool normals = false;
+	bool solid = true;
 
 	// Information for Cam
 	bool onWindow = false;
