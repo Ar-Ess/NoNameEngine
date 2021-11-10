@@ -35,6 +35,8 @@ bool EditorScene::Start()
 	Sphere3D* s = new Sphere3D({ 0, 0, 0 }, 1.0f, 2);
 	shapes->push_back(s);
 
+	/*dockSpaceId = ImGui::GetID("DockSpace");*/
+
 	return true;
 }
 
@@ -45,11 +47,12 @@ bool EditorScene::Update()
 	onWindow = ImGui::IsAnyItemActive();
 
 	if (demoWindow) ImGui::ShowDemoWindow(&demoWindow);
+	ret = DrawDocking();
 	ret = DrawMenuBar();
 	aboutPopup = ShowAboutWindow(aboutPopup);
 	outputWindow = ShowOutputWindow(outputWindow);
 	configWindow = ShowConfigWindow(configWindow);
-	hierarchyWindow = ShowHierarchyWindow(hierarchyWindow);
+	hierarchyWindow = ShowHierarchyDockWindow(hierarchyWindow);
 
 	ret = ShortCuts();
 
@@ -202,6 +205,33 @@ bool EditorScene::DrawMenuBar()
 		}
 	}
 	ImGui::EndMainMenuBar();
+
+	return ret;
+}
+
+bool EditorScene::DrawDocking()
+{
+	bool ret = true;
+
+	ImGuiDockNodeFlags dockspace_flags = (ImGuiDockNodeFlags_PassthruCentralNode);
+	ImGuiViewport* viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(viewport->Pos);
+	ImGui::SetNextWindowSize(viewport->Size);
+	ImGui::SetNextWindowViewport(viewport->ID);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+	ImGui::Begin("Docking", (bool*)0, (ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus));
+	
+	ImGui::PopStyleVar();
+
+	ImGuiIO& io = ImGui::GetIO();
+	if (io.ConfigFlags & (ImGuiConfigFlags_DockingEnable))
+	{
+		ImGuiID dockspaceId = ImGui::GetID("MyDockSpace");
+		ImGui::DockSpace(dockspaceId, ImVec2(0.0f, 0.0f), dockspace_flags);
+	}
+
+	ImGui::End();
 
 	return ret;
 }
@@ -477,7 +507,7 @@ bool EditorScene::ShowConfigWindow(bool open)
 	return open;
 }
 
-bool EditorScene::ShowHierarchyWindow(bool open)
+bool EditorScene::ShowHierarchyDockWindow(bool open)
 {
 	if (open)
 	{
@@ -684,6 +714,8 @@ bool EditorScene::ShortCuts()
 
 	return ret;
 }
+
+// -------------------------------------------------
 
 void EditorScene::CreatePrimitive(ShapeType sT)
 {

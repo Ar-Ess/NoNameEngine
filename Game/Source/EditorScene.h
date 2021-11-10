@@ -40,11 +40,12 @@ public:
 
 private: // Functions
 	bool DrawMenuBar();
+	bool DrawDocking();
 
 	bool ShowAboutWindow(bool open);
 	bool ShowOutputWindow(bool open);
 	bool ShowConfigWindow(bool open);
-	bool ShowHierarchyWindow(bool open);
+	bool ShowHierarchyDockWindow(bool open);
 
 	bool ShortCuts();
 
@@ -115,7 +116,6 @@ public: // Variables
 	// Information for Cam
 	bool onWindow = false;
 
-
 	Point wSize = { SCREEN_WIDTH, SCREEN_HEIGHT };
 	int wSizeProportion = 100;
 
@@ -129,4 +129,5 @@ private: // Variables
 	float framerate = 0.0f;
 	float milliseconds = 0.0f;
 	vector<Shape3D*>* shapes = nullptr;
+	ImGuiID dockSpaceId = {};
 };

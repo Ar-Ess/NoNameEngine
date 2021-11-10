@@ -57,6 +57,7 @@ public:
 	update_status Update();
 
 	// Scene Manager
+
 	bool UpdateEditor();
 	bool SetScene(Scenes newScene);
 	bool CleanUpScene(Scenes scene);
