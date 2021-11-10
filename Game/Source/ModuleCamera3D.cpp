@@ -120,6 +120,8 @@ update_status ModuleCamera3D::Update()
 	position += newPosition;
 	lookPoint += newPosition;
 
+	if (app->input->GetKey(SDL_SCANCODE_F) == KEY_REPEAT) lookPoint = Focus();
+
 	// Recalculate matrix
 	LookAt(vec3{ lookPoint.x, lookPoint.y, lookPoint.z });
 	CalculateViewMatrix();
@@ -173,4 +175,32 @@ void ModuleCamera3D::CalculateViewMatrix()
 {
 	ViewMatrix = mat4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -dot(X, position), -dot(Y, position), -dot(Z, position), 1.0f);
 	ViewMatrixInverse = inverse(ViewMatrix);
+}
+
+Point3D ModuleCamera3D::Focus()
+{
+	int size = app->scene->shapes.size();
+
+	if (size == 1) return Point3D{0, 0, 0};
+
+	if (size == 2) return app->scene->shapes[1]->GetPosition();
+
+	Point3D minor = {0, 0, 0};
+	bool first = true;
+
+	for (int i = 1; i < app->scene->shapes.size(); i++)
+	{
+		Point3D pos = app->scene->shapes[i]->GetPosition();
+		if (first)
+		{
+			minor = pos;
+			first = false;
+		}
+		else
+		{
+			if (minor > pos) minor = pos;
+		}
+	}
+
+	return minor;
 }
