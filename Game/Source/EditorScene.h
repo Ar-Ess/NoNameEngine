@@ -45,7 +45,7 @@ private: // Functions
 	bool ShowAboutWindow(bool open);
 	bool ShowOutputWindow(bool open);
 	bool ShowConfigWindow(bool open);
-	bool ShowHierarchyDockWindow(bool open);
+	bool ShowHierarchyWindow(bool open);
 
 	bool ShortCuts();
 

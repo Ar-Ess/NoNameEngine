@@ -574,7 +574,6 @@ public:
 
 	bool Draw()
 	{
-		glLoadIdentity();
 		if (solid) DrawSolid();
 		if (edges) DrawEdges();
 		if (axis) DrawAxis();

@@ -20,9 +20,9 @@ bool EditorScene::Start()
 	p->solid = false;
 	shapes->push_back(p);
 
-	Model* m = new Model({ 0, 0, -20 }, 1);
-	m->LoadModel("Assets/Models/BakerHouse.fbx", "Assets/Textures/baker_house_texture.png");
-	shapes->push_back(m);
+	//Model* m = new Model({ 0, 0, -20 }, 1);
+	//m->LoadModel("Assets/Models/BakerHouse.fbx", "Assets/Textures/baker_house_texture.png");
+	//shapes->push_back(m);
 
 	//Pyramid3D* py = new Pyramid3D({ 5, 0, 0 }, 3);
 	//py->axis = true;
@@ -32,8 +32,8 @@ bool EditorScene::Start()
 	//m1->LoadModel("Assets/Models/cube.fbx", "Assets/Textures/cube_texture.png");
 	//shapes->push_back(m1);
 
-	Sphere3D* s = new Sphere3D({ 0, 0, 0 }, 1.0f, 2);
-	shapes->push_back(s);
+	//Sphere3D* s = new Sphere3D({ 0, 0, 0 }, 1.0f, 2);
+	//shapes->push_back(s);
 
 	/*dockSpaceId = ImGui::GetID("DockSpace");*/
 
@@ -44,7 +44,8 @@ bool EditorScene::Update()
 {
 	bool ret = true;
 
-	onWindow = ImGui::IsAnyItemActive();
+	onWindow = false;
+	onWindow = ImGui::IsAnyItemHovered();
 
 	if (demoWindow) ImGui::ShowDemoWindow(&demoWindow);
 	ret = DrawDocking();
@@ -52,7 +53,7 @@ bool EditorScene::Update()
 	aboutPopup = ShowAboutWindow(aboutPopup);
 	outputWindow = ShowOutputWindow(outputWindow);
 	configWindow = ShowConfigWindow(configWindow);
-	hierarchyWindow = ShowHierarchyDockWindow(hierarchyWindow);
+	hierarchyWindow = ShowHierarchyWindow(hierarchyWindow);
 
 	ret = ShortCuts();
 
@@ -244,6 +245,7 @@ bool EditorScene::ShowAboutWindow(bool open)
 
 		if (ImGui::BeginPopupModal("About", &open))
 		{
+			if (!onWindow) onWindow = ImGui::IsWindowHovered();
 			ImGui::TextColored({ 1,0,0,1 },"NoNameEngine v0.1\n");
 			ImGui::Text("The best 3D engine for the best games.\nCreated by:\n\nMarti Buxeda: \n");
 			if (ImGui::Button("Github link"))
@@ -290,6 +292,7 @@ bool EditorScene::ShowOutputWindow(bool open)
 	{
 		if (ImGui::Begin("Output Log", &open))
 		{
+			if (!onWindow) onWindow = ImGui::IsWindowHovered();
 			for (int i = 0; i < GetOutputSize(); i++)
 			{
 				ImGui::Text(GetOutputText(i).c_str());
@@ -307,6 +310,7 @@ bool EditorScene::ShowConfigWindow(bool open)
 	{
 		if (ImGui::Begin("Configuration", &open))
 		{
+			if (!onWindow) onWindow = ImGui::IsWindowHovered();
 			if (ImGui::BeginMenu("Options"))
 			{
 				if (ImGui::MenuItem("Save"))
@@ -507,12 +511,13 @@ bool EditorScene::ShowConfigWindow(bool open)
 	return open;
 }
 
-bool EditorScene::ShowHierarchyDockWindow(bool open)
+bool EditorScene::ShowHierarchyWindow(bool open)
 {
 	if (open)
 	{
 		if (ImGui::Begin("Hierarchy", &open))
 		{
+			if (!onWindow) onWindow = ImGui::IsWindowHovered();
 			AddSeparator(2);
 			AddSpacing(1);
 			int select = 0;
