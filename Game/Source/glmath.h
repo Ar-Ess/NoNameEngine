@@ -187,13 +187,27 @@ public:
 	{
 		return vec3(-x, -y, -z);
 	}
-	float* operator & ()
+	vec3* operator & ()
+	{
+		return this;
+	}
+	float* operator & (bool f)
 	{
 		return (float*)this;
 	}
 	vec3& operator += (float num)
 	{
 		x += num; y += num; z += num; return *this;
+	}
+	float operator [] (int num)
+	{
+		if (num == 0) return x;
+		if (num == 1) return y;
+		if (num == 2) return z;
+		else
+		{
+			return NULL;
+		}
 	}
 	vec3& operator += (const vec3 &u)
 	{

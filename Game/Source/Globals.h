@@ -78,6 +78,17 @@ struct Point3D
 
 	float x = 0, y = 0, z = 0;
 
+	float operator[](int i) { 
+		float ret = 0;
+	//  --Cond--   --True--   -----------------------False-------------------------
+	//     ||         ||      --Cond--  --True--   -------------False--------------
+	//     ||         ||         ||        ||      --Cond--   --True--  --False--
+	//     \/         \/         \/        \/         \/         \/         \/
+		(i == 0) ? ret = x : ((i == 1) ? ret = y : ((i == 2) ? ret = z : ret = 0));
+
+		return ret;
+	}
+
 	bool operator==(Point3D b) { return (x == b.x && y == b.y && z == b.z); }
 	bool operator==(int i) { return (x == i || y == i || z == i); }
 	bool operator!=(Point3D b) { return !(x == b.x && y == b.y && z == b.z); }
@@ -103,7 +114,10 @@ struct Point3D
 	bool operator>(Point3D b) { return (x > b.x && y > b.y && z > b.z); }
 	bool operator>=(Point3D b) { return (x >= b.x && y >= b.y && z >= b.z); }
 
-
+	Point3D& operator = (const Point3D& u)
+	{
+		x = u.x; y = u.y; z = u.z; return *this;
+	}
 };
 
 class Rotation

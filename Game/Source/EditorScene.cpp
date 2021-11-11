@@ -85,6 +85,21 @@ bool EditorScene::DrawMenuBar()
 
 			ImGui::EndMenu();
 		}
+		if (ImGui::BeginMenu("Edit"))
+		{
+			if (ImGui::MenuItem("Duplicate", " Ctrl + D"))
+				DuplicateSelectedShape();
+
+			AddSeparator(1);
+
+			if (ImGui::MenuItem("Delete", " Supr"))
+				PopShape();
+
+			if (ImGui::MenuItem("Delete All", " Supr + Shift"))
+				PopAllShapes();
+
+			ImGui::EndMenu();
+		}
 		if (ImGui::BeginMenu("Window"))
 		{
 			if (ImGui::MenuItem("Configuration"))
@@ -95,16 +110,6 @@ bool EditorScene::DrawMenuBar()
 
 			if (ImGui::MenuItem("Hierarchy"))
 				hierarchyWindow = !hierarchyWindow;
-
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu("Edit"))
-		{
-			if (ImGui::MenuItem("Delete Model", " Supr"))
-				PopShape();
-
-			if (ImGui::MenuItem("Delete All Models", " Supr + Shift"))
-				PopAllShapes();
 
 			ImGui::EndMenu();
 		}
@@ -716,7 +721,7 @@ bool EditorScene::ShortCuts()
 	{
 		if (app->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN) app->Save("NNE_Project_Saving", FileContent::PROJECT);
 		if (app->input->GetKey(SDL_SCANCODE_L) == KEY_DOWN) app->Load("NNE_Project_Saving", FileContent::PROJECT);
-		if (app->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN) DuplicateSelecShape();
+		if (app->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN) DuplicateSelectedShape();
 	}
 
 	return ret;
@@ -743,7 +748,7 @@ void EditorScene::PushShape3D(Shape3D* s3D)
 	shapes->push_back(s3D);
 }
 
-void EditorScene::DuplicateSelecShape()
+void EditorScene::DuplicateSelectedShape()
 {
 	int size = shapes->size();
 	for (int i = 1; i < size; i++)

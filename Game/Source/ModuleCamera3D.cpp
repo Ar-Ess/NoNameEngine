@@ -13,7 +13,8 @@ ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(ap
 	Y = vec3(0.0f, 1.0f, 0.0f);
 	Z = vec3(0.0f, 0.0f, 1.0f);
 
-	position = vec3(-2.0f, 5.0f, 12.0f);
+	//position = vec3(-2.0f, 5.0f, 12.0f);
+	position = vec3(0.0f, 0.0f, -10.0f);
 	reference = vec3(0.0f, 0.0f, 0.0f);
 }
 
@@ -48,7 +49,7 @@ update_status ModuleCamera3D::Update()
 	int dy = -app->input->GetMouseYMotion();
 	bool shift = (app->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT);
 	float frameSpeed = speed;
-	if (app->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT) frameSpeed *= 2;
+	if (app->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT) frameSpeed *= 2;
 
 	// Trackpad movement
 	if (wheelZV != 0)
@@ -166,26 +167,15 @@ void ModuleCamera3D::Move(const vec3 &Movement)
 	CalculateViewMatrix();
 }
 
-float* ModuleCamera3D::GetViewMatrix()
-{
-	return &ViewMatrix;
-}
-
-void ModuleCamera3D::CalculateViewMatrix()
-{
-	ViewMatrix = mat4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -dot(X, position), -dot(Y, position), -dot(Z, position), 1.0f);
-	ViewMatrixInverse = inverse(ViewMatrix);
-}
-
 Point3D ModuleCamera3D::Focus()
 {
 	int size = app->scene->shapes.size();
 
-	if (size == 1) return Point3D{0, 0, 0};
+	if (size == 1) return Point3D{ 0, 0, 0 };
 
 	if (size == 2) return app->scene->shapes[1]->GetPosition();
 
-	Point3D minor = {0, 0, 0};
+	Point3D minor = { 0, 0, 0 };
 	bool first = true;
 
 	for (int i = 1; i < app->scene->shapes.size(); i++)
@@ -203,4 +193,15 @@ Point3D ModuleCamera3D::Focus()
 	}
 
 	return minor;
+}
+
+float* ModuleCamera3D::GetViewMatrix()
+{
+	return &ViewMatrix;
+}
+
+void ModuleCamera3D::CalculateViewMatrix()
+{
+	ViewMatrix = mat4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -dot(X, position), -dot(Y, position), -dot(Z, position), 1.0f);
+	ViewMatrixInverse = inverse(ViewMatrix);
 }

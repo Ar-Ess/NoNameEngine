@@ -215,7 +215,9 @@ bool Application::Load(string fName, FileContent fc)
 	{ // Reaching at the end of the code iteration. Variable "file" is actually the variable "loadFileName"
 		loadRequest = false;
 
-		JSON_Value* file = json_parse_file(fName.c_str());;
+		JSON_Value* file = json_parse_file(fName.c_str());
+		JSON_Value* cameraValue = json_object_get_value(json_object(file), "Camera");
+		JSON_Array* cameraArray = json_value_get_array(cameraValue);
 
 		switch (fc)
 		{
@@ -225,6 +227,14 @@ bool Application::Load(string fName, FileContent fc)
 			scene->SetWindowState(Windows::CONFIG_W, json_object_get_boolean(json_object(file), "IsConfigWindowOpen"));
 			scene->SetWindowState(Windows::OUTPUT_W, json_object_get_boolean(json_object(file), "IsOutputWindowOpen"));
 			scene->SetWindowState(Windows::HIERARCHY_W, json_object_get_boolean(json_object(file), "IsHierarchyWindowOpen"));
+
+			ArrayRetrieveVector(cameraArray, &camera->X, 0);
+			ArrayRetrieveVector(cameraArray, &camera->Y, 1);
+			ArrayRetrieveVector(cameraArray, &camera->Z, 2);
+			ArrayRetrieveVector(cameraArray, &camera->position, 3);
+			ArrayRetrieveVector(cameraArray, &camera->reference, 4);
+			ArrayRetrieveVector(cameraArray, &camera->GetLookPoint(), 5);
+			camera->CalculateViewMatrix();
 
 			scene->SetProjectName(json_object_get_string(json_object(file), "ProjectName"));
 			scene->SetTeamName(json_object_get_string(json_object(file), "TeamName"));
@@ -283,6 +293,7 @@ bool Application::Load(string fName, FileContent fc)
 		}
 		}
 
+		//json_value_free(cameraValue);
 		json_value_free(file);
 		fileName.clear();
 	}
@@ -305,6 +316,8 @@ bool Application::Save(string fName, FileContent fc)
 		saveRequest = false;
 
 		JSON_Value* file = json_parse_file(fName.c_str());
+		JSON_Value* cameraValue = json_value_init_array();
+		JSON_Array* cameraArray = json_value_get_array(cameraValue);
 
 		switch (fc)
 		{
@@ -320,6 +333,9 @@ bool Application::Save(string fName, FileContent fc)
 				"\nIsHierarchyWindowOpen: "
 				"\nProject Name: "
 				"\nTeam Name: "
+
+				//  Camera   
+				"\nCamera"
 
 				// Config Preferences
 				//	 General  
@@ -345,8 +361,9 @@ bool Application::Save(string fName, FileContent fc)
 				"\nLighting: "
 				"\nColor Material: "
 				"\nTexture 2D: "
-				"\n}"
 			);
+
+			//Test
 
 			if (file == NULL || json_validate(schema, file) != JSONSuccess)
 			{
@@ -357,6 +374,15 @@ bool Application::Save(string fName, FileContent fc)
 				json_object_set_boolean(json_object(file), "IsConfigWindowOpen", this->scene->GetWindowState(Windows::CONFIG_W));
 				json_object_set_boolean(json_object(file), "IsOutputWindowOpen", this->scene->GetWindowState(Windows::OUTPUT_W));
 				json_object_set_boolean(json_object(file), "IsHierarchyWindowOpen", this->scene->GetWindowState(Windows::HIERARCHY_W));
+
+				// General Endine - Camera
+				ArrayAppendVector(cameraArray, camera->X);
+				ArrayAppendVector(cameraArray, camera->Y);
+				ArrayAppendVector(cameraArray, camera->Z);
+				ArrayAppendVector(cameraArray, camera->position);
+				ArrayAppendVector(cameraArray, camera->reference);
+				ArrayAppendVector(cameraArray, camera->GetLookPoint());
+				json_object_set_value(json_object(file), "Camera", cameraValue);
 
 				// Project Information - Project
 				json_object_set_string(json_object(file), "ProjectName", this->scene->GetProjectName().c_str());
@@ -465,6 +491,7 @@ bool Application::Save(string fName, FileContent fc)
 		}
 		}
 
+		//json_value_free(cameraValue);
 		json_value_free(file);
 		fileName.clear();
 	}

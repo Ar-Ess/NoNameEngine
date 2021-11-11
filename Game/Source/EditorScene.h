@@ -77,7 +77,7 @@ private: // Functions
 	void PushShape3D(Shape3D* s3D);
 
 	// Duplicates selected shape
-	void DuplicateSelecShape();
+	void DuplicateSelectedShape();
 
 	// Pop First of a Shape3D
 	void PopShape();

@@ -39,8 +39,6 @@ public:
 		sens = s;
 	}
 
-private:
-
 	void CalculateViewMatrix();
 
 public:

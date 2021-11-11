@@ -79,6 +79,41 @@ private:
 	void AddModule(Module* mod);
 	void ProfilerLogic();
 
+private: // JSON Functions
+
+	void ArrayAppendVector(JSON_Array* arr, vec3 vec)
+	{
+		for (int i = 0; i < 3; i++)
+			json_array_append_number(arr, vec[i]);
+	}
+
+	void ArrayAppendVector(JSON_Array* arr, Point3D vec)
+	{
+		for (int i = 0; i < 3; i++)
+			json_array_append_number(arr, vec[i]);
+	}
+
+	void ArrayRetrieveVector(JSON_Array* arr, vec3* vec, int offSet)
+	{
+		double array[3] = {};
+		for (int i = 0; i < 3; i++)
+			array[i] = json_array_get_number(arr, (i + (3 * offSet)));
+
+		vec->x = array[0];
+		vec->y = array[1];
+		vec->z = array[2];
+	}
+
+	void ArrayRetrieveVector(JSON_Array* arr, Point3D* vec, int offSet)
+	{
+		double array[3] = {};
+		for (int i = 0; i < 3; i++) array[i] = json_array_get_number(arr, (i + (3 * offSet)));
+
+		vec->x = array[0];
+		vec->y = array[1];
+		vec->z = array[2];
+	}
+
 public: // Variables
 
 	std::vector<float> fpsLog = {};
