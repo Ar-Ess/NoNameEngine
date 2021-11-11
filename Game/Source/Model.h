@@ -29,6 +29,7 @@ public:
 	bool LoadTexture(const char* pathTex = "Assets/Textures/default_texture.jpg");
 
 	bool Draw();
+	bool DrawSolid(Mesh* m);
 	void DrawEdges(Mesh* m);
 	void DrawNormals(Mesh* m);
 

@@ -169,31 +169,8 @@ bool Model::Draw()
 
     for (int i = 0; i < meshes.size(); i++)
     {
-        glColor3f(255, 255, 255);
         Mesh* m = meshes[i];
-
-        //vertex
-        glBindBuffer(GL_ARRAY_BUFFER, m->GetId(VERTEX));
-        glVertexPointer(3, GL_FLOAT, 0, NULL);
-
-        //normals
-        glBindBuffer(GL_ARRAY_BUFFER, m->GetId(NORMAL));
-        glNormalPointer(GL_FLOAT, 0, NULL);
-
-        if (showTexture)
-        {
-            //coord
-            glBindBuffer(GL_ARRAY_BUFFER, m->GetId(TEXTURE_COORDS));
-            glTexCoordPointer(2, GL_FLOAT, 0, NULL);
-
-            //texture
-            glBindTexture(GL_TEXTURE_2D, 0);
-            glBindTexture(GL_TEXTURE_2D, m->GetId(TEXTURE));
-        }
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->GetId(INDEX));
-        glDrawElements(GL_TRIANGLES, m->GetNum(INDEX), GL_UNSIGNED_INT, NULL);
-
+        if (solid) DrawSolid(m);
         if (edges) DrawEdges(m);
         if (normals) DrawNormals(m);
     }
@@ -201,6 +178,37 @@ bool Model::Draw()
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
     if (showTexture) glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+    return ret;
+}
+
+bool Model::DrawSolid(Mesh* m)
+{
+    bool ret = true;
+
+    glColor3f(255, 255, 255);
+
+    //vertex
+    glBindBuffer(GL_ARRAY_BUFFER, m->GetId(VERTEX));
+    glVertexPointer(3, GL_FLOAT, 0, NULL);
+
+    //normals
+    glBindBuffer(GL_ARRAY_BUFFER, m->GetId(NORMAL));
+    glNormalPointer(GL_FLOAT, 0, NULL);
+
+    if (showTexture)
+    {
+        //coord
+        glBindBuffer(GL_ARRAY_BUFFER, m->GetId(TEXTURE_COORDS));
+        glTexCoordPointer(2, GL_FLOAT, 0, NULL);
+
+        //texture
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindTexture(GL_TEXTURE_2D, m->GetId(TEXTURE));
+    }
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->GetId(INDEX));
+    glDrawElements(GL_TRIANGLES, m->GetNum(INDEX), GL_UNSIGNED_INT, NULL);
 
     return ret;
 }

@@ -44,7 +44,6 @@ bool EditorScene::Update()
 {
 	bool ret = true;
 
-	onWindow = false;
 	onWindow = ImGui::IsAnyItemHovered();
 
 	if (demoWindow) ImGui::ShowDemoWindow(&demoWindow);
@@ -652,9 +651,12 @@ bool EditorScene::ShowHierarchyWindow(bool open)
 				ImGui::BulletText("Edges: "); ImGui::SameLine(); s->edges ? ImGui::Text("true") : ImGui::Text("false");
 				AddSpacing(1);
 
-				// Normals
-				ImGui::BulletText("Normals: "); ImGui::SameLine(); s->normals ? ImGui::Text("true") : ImGui::Text("false");
-				AddSpacing(1);
+				if (s->GetShapeType() == MODEL3D)
+				{
+					// Normals
+					ImGui::BulletText("Normals: "); ImGui::SameLine(); s->normals ? ImGui::Text("true") : ImGui::Text("false");
+					AddSpacing(1);
+				}
 				AddSeparator(1);
 				AddSpacing(1);
 
@@ -746,7 +748,19 @@ void EditorScene::DuplicateSelecShape()
 	int size = shapes->size();
 	for (int i = 1; i < size; i++)
 	{
-		if (shapes->at(i)->selected) PushShape3D(shapes->at(i));
+		if (shapes->at(i)->selected)
+		{
+			switch (shapes->at(i)->GetShapeType())
+			{
+				case CUBE3D: PushShape3D(new Cube3D(*(Cube3D*)shapes->at(i))); break;
+				case LINE3D: PushShape3D(new Line3D(*(Line3D*)shapes->at(i))); break;
+				case PYRAMID3D: PushShape3D(new Pyramid3D(*(Pyramid3D*)shapes->at(i))); break;
+				case CYLINDER3D: PushShape3D(new Cylinder3D(*(Cylinder3D*)shapes->at(i))); break;
+				case PLANE3D: PushShape3D(new Plane3D(*(Plane3D*)shapes->at(i))); break;
+				case SPHERE3D: PushShape3D(new Sphere3D(*(Sphere3D*)shapes->at(i))); break;
+				case MODEL3D: PushShape3D(new Model(*(Model*)shapes->at(i))); break;
+			}
+		}
 	}
 }
 
