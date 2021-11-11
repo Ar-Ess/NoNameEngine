@@ -21,7 +21,7 @@ NoNameEngine will help programmers developing games as famous as "Split Duty".
    - L-Shift + W: Move Upwards
    - L-Shift + S: Move Downwards
  - **Speed Up**
-   - Ctrl: speed x2
+   - L-Alt: speed x2
 
 ### Save & Load
  - **Project:**
