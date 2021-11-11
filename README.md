@@ -25,7 +25,7 @@ NoNameEngine will help programmers developing games as famous as "Split Duty".
 
 ### Save & Load
  - **Project:**
-   - Save & Load the whole project using JSON, including preferences (models not yet)
+   - Save & Load the whole project using JSON, including preferences (camera pos as well, modules not yet)
    - Save/Load Shortcuts:
      - Ctrl + S: Save
      - Ctrl + L: Load
