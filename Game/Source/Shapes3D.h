@@ -69,10 +69,30 @@ public:
 		return string("NULL3D");
 	}
 
+	ShapeType ReadShapeType(const char* type)
+	{
+		if (type == "Cube 3D") return CUBE3D;
+		if (type == "Line 3D") return LINE3D;
+		if (type == "Pyramid 3D") return PYRAMID3D;
+		if (type == "Cylinder 3D") return CYLINDER3D;
+		if (type == "Plane 3D") return PLANE3D;
+		if (type == "Sphere 3D") return SPHERE3D;
+		if (type == "Model 3D") return MODEL3D;
+
+		return NULL3D;
+	}
+
 	const char* GetName() const
 	{
 		return name.c_str();
 	}
+
+	void SetName(const char* nameSet)
+	{
+		name.clear();
+		name += nameSet;
+	}
+
 
 	bool axis = false;
 	bool edges = true;
@@ -81,6 +101,7 @@ public:
 	bool selected = false;
 
 protected:
+
 	Shape3D(Point3D pos, float s, Rotation rot, ShapeType sT, const char* n)
 	{
 		position = pos;
@@ -131,7 +152,7 @@ protected:
 	Rotation rotation = { 0, 0, 0, 0};
 	float scale = 1;
 	ShapeType type = NULL3D;
-	string name = {};
+	string name;
 };
 
 class Cube3D : public Shape3D
@@ -356,6 +377,11 @@ public:
 	Point3D* GetVertexs()
 	{
 		return v;
+	}
+
+	Point3D GetSecondVertex()
+	{
+		return v[1];
 	}
 
 	int GetNumVertex()

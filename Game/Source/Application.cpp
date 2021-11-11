@@ -218,6 +218,8 @@ bool Application::Load(string fName, FileContent fc)
 		JSON_Value* file = json_parse_file(fName.c_str());
 		JSON_Value* cameraValue = json_object_get_value(json_object(file), "Camera");
 		JSON_Array* cameraArray = json_value_get_array(cameraValue);
+		JSON_Value* primitiveValue = json_object_get_value(json_object(file), "Primitives");
+		JSON_Array* primitiveArray = json_value_get_array(primitiveValue);
 
 		switch (fc)
 		{
@@ -235,6 +237,9 @@ bool Application::Load(string fName, FileContent fc)
 			ArrayRetrieveVector(cameraArray, &camera->reference, 4);
 			ArrayRetrieveVector(cameraArray, &camera->GetLookPoint(), 5);
 			camera->CalculateViewMatrix();
+
+			//----------------------------
+			JsonLoadPrimitives(primitiveArray);
 
 			scene->SetProjectName(json_object_get_string(json_object(file), "ProjectName"));
 			scene->SetTeamName(json_object_get_string(json_object(file), "TeamName"));
@@ -318,6 +323,8 @@ bool Application::Save(string fName, FileContent fc)
 		JSON_Value* file = json_parse_file(fName.c_str());
 		JSON_Value* cameraValue = json_value_init_array();
 		JSON_Array* cameraArray = json_value_get_array(cameraValue);
+		JSON_Value* primitiveValue = json_value_init_array();
+		JSON_Array* primitiveArray = json_value_get_array(primitiveValue);
 
 		switch (fc)
 		{
@@ -327,40 +334,43 @@ bool Application::Save(string fName, FileContent fc)
 				"{"
 				//Project
 				//  Main
-				"\nIsDemoWindowOpen: "
-				"\nIsConfigWindowOpen: "
-				"\nIsOutputWindowOpen: "
-				"\nIsHierarchyWindowOpen: "
-				"\nProject Name: "
-				"\nTeam Name: "
+				"IsDemoWindowOpen: "
+				"IsConfigWindowOpen: "
+				"IsOutputWindowOpen: "
+				"IsHierarchyWindowOpen: "
+				"Project Name: "
+				"Team Name: "
 
 				//  Camera   
-				"\nCamera"
+				"Camera:"
+
+				// Shapes
+				"Primitives:"
 
 				// Config Preferences
 				//	 General  
-				"\nFPS: "
-				"\nFrameBarLimit: "
-				"\nMsBarLimit: "
-				"\nBrightness: "
-				"\nWindow Width: "
-				"\nWindow Height: "
-				"\nFull Screen: "
-				"\nFull Desktop: "
-				"\nWindow Resizable: "
-				"\nWindow Borderless: "
-				"\nVSync: "
-				"\nWindow Proportion Value: "
-				"\nKeep Proportion: "
-				"\nCamera Speed: "
-				"\nCamera Sens: "
+				"FPS: "
+				"FrameBarLimit: "
+				"MsBarLimit: "
+				"Brightness: "
+				"Window Width: "
+				"Window Height: "
+				"Full Screen: "
+				"Full Desktop: "
+				"Window Resizable: "
+				"Window Borderless: "
+				"VSync: "
+				"Window Proportion Value: "
+				"Keep Proportion: "
+				"Camera Speed: "
+				"Camera Sens: "
 
 				//	 Geometry View
-				"\nDepth Test: "
-				"\nCull Face: "
-				"\nLighting: "
-				"\nColor Material: "
-				"\nTexture 2D: "
+				"Depth Test: "
+				"Cull Face: "
+				"Lighting: "
+				"Color Material: "
+				"Texture 2D: "
 			);
 
 			//Test
@@ -375,7 +385,7 @@ bool Application::Save(string fName, FileContent fc)
 				json_object_set_boolean(json_object(file), "IsOutputWindowOpen", this->scene->GetWindowState(Windows::OUTPUT_W));
 				json_object_set_boolean(json_object(file), "IsHierarchyWindowOpen", this->scene->GetWindowState(Windows::HIERARCHY_W));
 
-				// General Endine - Camera
+				// General Engine - Camera
 				ArrayAppendVector(cameraArray, camera->X);
 				ArrayAppendVector(cameraArray, camera->Y);
 				ArrayAppendVector(cameraArray, camera->Z);
@@ -383,6 +393,10 @@ bool Application::Save(string fName, FileContent fc)
 				ArrayAppendVector(cameraArray, camera->reference);
 				ArrayAppendVector(cameraArray, camera->GetLookPoint());
 				json_object_set_value(json_object(file), "Camera", cameraValue);
+
+				// General Engine - Primitives
+				JsonSavePrimitives(primitiveArray);
+				json_object_set_value(json_object(file), "Primitives", primitiveValue);
 
 				// Project Information - Project
 				json_object_set_string(json_object(file), "ProjectName", this->scene->GetProjectName().c_str());
@@ -429,29 +443,29 @@ bool Application::Save(string fName, FileContent fc)
 				"{"
 				// Config Preferences
 				//	 General  
-				"\nFPS: "
-				"\nFrameBarLimit: "
-				"\nMsBarLimit: "
-				"\nBrightness: "
-				"\nWindow Width: "
-				"\nWindow Height: "
-				"\nFull Screen: "
-				"\nFull Desktop: "
-				"\nWindow Resizable: "
-				"\nWindow Borderless: "
-				"\nVSync: "
-				"\nWindow Proportion Value: "
-				"\nKeep Proportion: "
-				"\nCamera Speed: "
-				"\nCamera Sens: "
+				"FPS: "
+				"FrameBarLimit: "
+				"MsBarLimit: "
+				"Brightness: "
+				"Window Width: "
+				"Window Height: "
+				"Full Screen: "
+				"Full Desktop: "
+				"Window Resizable: "
+				"Window Borderless: "
+				"VSync: "
+				"Window Proportion Value: "
+				"Keep Proportion: "
+				"Camera Speed: "
+				"Camera Sens: "
 
 				//	 Geometry View
-				"\nDepth Test: "
-				"\nCull Face: "
-				"\nLighting: "
-				"\nColor Material: "
-				"\nTexture 2D: "
-				"\n}"
+				"Depth Test: "
+				"Cull Face: "
+				"Lighting: "
+				"Color Material: "
+				"Texture 2D: "
+				"}"
 			);
 
 			if (file == NULL || json_validate(schema, file) != JSONSuccess)
@@ -575,4 +589,144 @@ bool Application::LoadRestartPropierties()
 	json_value_free(file);
 
 	return ret;
+}
+
+void Application::JsonSavePrimitives(JSON_Array* arr)
+{
+	for (int i = 1; i < scene->shapes.size(); i++)
+	{
+		Shape3D* shape = scene->shapes[i];
+		JSON_Value* shapeValue = json_value_init_array();
+		JSON_Array* shapeArray = json_value_get_array(shapeValue);
+
+		json_array_append_boolean(shapeArray, shape->axis); // Axis (1)
+		json_array_append_boolean(shapeArray, false); // Selected (1)
+		json_array_append_boolean(shapeArray, shape->solid); // Solid (1)
+		json_array_append_boolean(shapeArray, shape->edges); // Edges (1)
+		json_array_append_boolean(shapeArray, shape->normals); // Normals (1)
+
+		ArrayAppendVector(shapeArray, shape->GetPosition()); // Position (3)
+		json_array_append_number(shapeArray, shape->GetRotation().angle); // Angle (1)
+		ArrayAppendVector(shapeArray, shape->GetRotation().GetPlane()); // Rotation (3)
+		json_array_append_number(shapeArray, shape->GetScale()); // Scale (1)
+		json_array_append_string(shapeArray, shape->WriteShapeType().c_str()); // Type (1)
+		json_array_append_string(shapeArray, shape->GetName()); // Name (1)
+
+		switch (shape->GetShapeType())
+		{
+		case LINE3D:
+		{
+			Line3D* l = (Line3D*)scene->shapes[i];
+			ArrayAppendVector(shapeArray, l->GetSecondVertex()); // Second Vertex (3)
+			break;
+		}
+		case PYRAMID3D:
+		{
+			Pyramid3D* py = (Pyramid3D*)scene->shapes[i];
+			json_array_append_number(shapeArray, py->GetHeight()); // Height (1)
+			break;
+		}
+		case CYLINDER3D:
+		{
+			Cylinder3D* cy = (Cylinder3D*)scene->shapes[i];
+			json_array_append_number(shapeArray, cy->GetHeight()); // Height (1)
+			json_array_append_number(shapeArray, cy->GetRadius()); // Radius (1)
+			json_array_append_number(shapeArray, cy->GetSegments()); // Segments (1)
+			break;
+		}
+		case PLANE3D:
+		{
+			Plane3D* p = (Plane3D*)scene->shapes[i];
+			ArrayAppendVector(shapeArray, p->GetNormal()); // Normal (3)
+			break;
+		}
+		case SPHERE3D:
+		{
+			Sphere3D* s = (Sphere3D*)scene->shapes[i];
+			json_array_append_number(shapeArray, s->GetRadius()); // Radius (1)
+			json_array_append_number(shapeArray, s->GetSubdivision()); // Subdivisions (1)
+			break;
+		}
+		}
+
+		json_array_append_value(arr, shapeValue);
+	}
+}
+
+void Application::JsonLoadPrimitives(JSON_Array* arr)
+{
+	for (int i = 0; i < json_array_get_count(arr); i++)
+	{
+		JSON_Value* shapeValue = json_value_init_array();
+		JSON_Array* shapeArray = json_value_get_array(shapeValue);
+		Cube3D c({0, 0, 0});
+
+		Point3D position = {}, planeNormal = {};
+
+		bool axis = json_array_get_boolean(shapeArray, 0);
+		bool selected = json_array_get_boolean(shapeArray, 1);
+		bool solid = json_array_get_boolean(shapeArray, 2);
+		bool edges = json_array_get_boolean(shapeArray, 3);
+		bool normals = json_array_get_boolean(shapeArray, 4);
+
+		ArrayRetrieveVector(shapeArray, &position, 5);
+		float angle = json_array_get_number(shapeArray, 8);
+		ArrayRetrieveVector(shapeArray, &planeNormal, 9);
+		float scale = json_array_get_number(shapeArray, 12);
+
+		string type(json_array_get_string(shapeArray, 13));
+		string name(json_array_get_string(shapeArray, 14));
+
+		switch (c.ReadShapeType(json_array_get_string(shapeArray, 13)))
+		{
+		case CUBE3D:
+		{
+			scene->shapes.push_back(new Cube3D(position, scale, Rotation{angle, planeNormal.x, planeNormal.y, planeNormal.z}));
+			break;
+		}
+		case LINE3D:
+		{
+			Point3D secondVertex = {};
+			ArrayRetrieveVector(shapeArray, &secondVertex, 15); // Second Vertex (3)
+			scene->shapes.push_back(new Line3D(position, secondVertex, scale));
+			break;
+		}
+		case PYRAMID3D:
+		{
+			float height = json_array_get_number(shapeArray, 15);
+			scene->shapes.push_back(new Pyramid3D(position, height, scale, Rotation{ angle, planeNormal.x, planeNormal.y, planeNormal.z }));
+			break;
+		}
+		case CYLINDER3D:
+		{
+			float height = json_array_get_number(shapeArray, 15);
+			float radius = json_array_get_number(shapeArray, 16);
+			int segments = json_array_get_number(shapeArray, 17);
+			scene->shapes.push_back(new Cylinder3D(position, segments, height, radius, scale, Rotation{ angle, planeNormal.x, planeNormal.y, planeNormal.z }));
+			break;
+		}
+		case PLANE3D:
+		{
+			Point3D normal = {};
+			ArrayRetrieveVector(shapeArray, &normal, 15); // Normal (3)
+			scene->shapes.push_back(new Plane3D(position, normal, scale, Rotation{ angle, planeNormal.x, planeNormal.y, planeNormal.z }));
+			break;
+		}
+		case SPHERE3D:
+		{
+			float radius = json_array_get_number(shapeArray, 15);
+			int subdivisions = json_array_get_number(shapeArray, 16);
+			scene->shapes.push_back(new Sphere3D(position, scale, radius, subdivisions, Rotation{ angle, planeNormal.x, planeNormal.y, planeNormal.z }));
+			break;
+		}
+		}
+
+		Shape3D* s = scene->shapes.at(scene->shapes.size() - 1);
+		s->axis = axis;
+		s->selected = selected;
+		s->solid = solid;
+		s->edges = edges;
+		s->normals = normals;
+		s->SetName(name.c_str());
+	}
 }

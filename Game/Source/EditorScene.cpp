@@ -35,8 +35,6 @@ bool EditorScene::Start()
 	//Sphere3D* s = new Sphere3D({ 0, 0, 0 }, 1.0f, 2);
 	//shapes->push_back(s);
 
-	/*dockSpaceId = ImGui::GetID("DockSpace");*/
-
 	return true;
 }
 

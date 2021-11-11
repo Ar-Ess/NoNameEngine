@@ -136,6 +136,11 @@ public:
 	float planeX = 0;
 	float planeY = 0;
 	float planeZ = 0;
+
+	Point3D GetPlane()
+	{
+		return Point3D{planeX, planeY, planeZ};
+	}
 };
 
 // Configuration -----------
