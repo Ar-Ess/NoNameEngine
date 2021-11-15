@@ -729,6 +729,15 @@ class Plane3D : public Shape3D
 public:
 	Plane3D(Point3D pos = { 0, 0, 0 }, Point3D n = { 0, 1, 0 }, float s = 4, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, (s * 50), rot, PLANE3D, "Plane")
 	{
+		if ((bool)n.x)
+			n.Set(1, 0, 0);
+
+		else if ((bool)n.y)
+			n.Set(0, 1, 0);
+
+		else
+			n.Set(0, 0, 1);
+
 		normal = n;
 	}
 
@@ -754,15 +763,33 @@ private:
 		float d = scale;
 		float p = scale;
 
-		glVertex3f(position.x - p, position.y, position.z - p);
-		glVertex3f(position.x - p, position.y, position.z + p);
-		glVertex3f(position.x + p, position.y, position.z + p);
-		glVertex3f(position.x + p, position.y, position.z - p);
+		if ((bool)normal.x)
+		{
+			glVertex3f(position.x, position.y - p, position.z - p);
+			glVertex3f(position.x, position.y - p, position.z + p);
+			glVertex3f(position.x, position.y + p, position.z + p);
+			glVertex3f(position.x, position.y + p, position.z - p);
+		}
+		else if ((bool)normal.y)
+		{
+			glVertex3f(position.x - p, position.y, position.z - p);
+			glVertex3f(position.x - p, position.y, position.z + p);
+			glVertex3f(position.x + p, position.y, position.z + p);
+			glVertex3f(position.x + p, position.y, position.z - p);
+		}
+		else if ((bool)normal.z)
+		{
+			glVertex3f(position.x - p, position.y - p, position.z);
+			glVertex3f(position.x - p, position.y + p, position.z);
+			glVertex3f(position.x + p, position.y + p, position.z);
+			glVertex3f(position.x + p, position.y - p, position.z);
+		}
 
 		glEnd();
 
 		return true;
 	}
+
 	bool DrawEdges()
 	{
 		glColor3f(255, 255, 255);
@@ -773,12 +800,35 @@ private:
 
 		float d = scale;
 
-		for (float i = -d; i <= d; i += 1.0f)
+		if ((bool)normal.x)
 		{
-			glVertex3f(i + position.x, position.y, -d + position.z);
-			glVertex3f(i + position.x, position.y, d + position.z);
-			glVertex3f(-d + position.x, position.y, i + position.z);
-			glVertex3f(d + position.x, position.y, i + position.z);
+			for (float i = -d; i <= d; i += 1.0f)
+			{
+				glVertex3f(     position.x,  i + position.y, -d + position.z);
+				glVertex3f(     position.x,  i + position.y,  d + position.z);
+				glVertex3f(     position.x, -d + position.y,  i + position.z);
+				glVertex3f(     position.x,  d + position.y,  i + position.z);
+			}
+		}
+		else if ((bool)normal.y)
+		{
+			for (float i = -d; i <= d; i += 1.0f)
+			{
+				glVertex3f( i + position.x,      position.y, -d + position.z);
+				glVertex3f( i + position.x,      position.y,  d + position.z);
+				glVertex3f(-d + position.x,      position.y,  i + position.z);
+				glVertex3f( d + position.x,      position.y,  i + position.z);
+			}
+		}
+		else
+		{
+			for (float i = -d; i <= d; i += 1.0f)
+			{
+				glVertex3f( i + position.x, -d + position.y,      position.z);
+				glVertex3f( i + position.x,  d + position.y,      position.z);
+				glVertex3f(-d + position.x,  i + position.y,      position.z);
+				glVertex3f( d + position.x,  i + position.y,      position.z);
+			}
 		}
 
 		glEnd();

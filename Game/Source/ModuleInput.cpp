@@ -92,6 +92,7 @@ update_status ModuleInput::PreUpdate()
 	SDL_EventState(SDL_DROPFILE, SDL_ENABLE);
 	while (SDL_PollEvent(&e))
 	{
+		ImGui_ImplSDL2_ProcessEvent(&e);
 		switch (e.type)
 		{
 		case SDL_MOUSEWHEEL:

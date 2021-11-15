@@ -43,6 +43,7 @@ bool EditorScene::Update()
 	bool ret = true;
 
 	onWindow = ImGui::IsAnyItemHovered();
+	if (!onWindow) onWindow = ImGui::IsAnyItemActive();
 
 	if (demoWindow) ImGui::ShowDemoWindow(&demoWindow);
 	ret = DrawDocking();
@@ -248,6 +249,7 @@ bool EditorScene::ShowAboutWindow(bool open)
 		if (ImGui::BeginPopupModal("About", &open))
 		{
 			if (!onWindow) onWindow = ImGui::IsWindowHovered();
+
 			ImGui::TextColored({ 1,0,0,1 },"NoNameEngine v0.1\n");
 			ImGui::Text("The best 3D engine for the best games.\nCreated by:\n\nMarti Buxeda: \n");
 			if (ImGui::Button("Github link"))
@@ -313,6 +315,7 @@ bool EditorScene::ShowConfigWindow(bool open)
 		if (ImGui::Begin("Configuration", &open))
 		{
 			if (!onWindow) onWindow = ImGui::IsWindowHovered();
+
 			if (ImGui::BeginMenu("Options"))
 			{
 				if (ImGui::MenuItem("Save"))
@@ -337,9 +340,11 @@ bool EditorScene::ShowConfigWindow(bool open)
 							AddSpacing(1);
 							ImGui::Text("Project Name");
 							ImGui::InputText("New Project", &projectName);
+							if (!onWindow) onWindow = ImGui::IsItemEdited();
 							AddSpacing(0);
 							ImGui::Text("Developer Team");
 							ImGui::InputText("Team Name", &teamName);
+							if (!onWindow) onWindow = ImGui::IsItemEdited();
 							AddSpacing(1);
 
 							AddSeparator(2);

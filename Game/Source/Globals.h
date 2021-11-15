@@ -78,6 +78,13 @@ struct Point3D
 
 	float x = 0, y = 0, z = 0;
 
+	void Set(float xx, float yy, float zz)
+	{
+		x = xx;
+		y = yy;
+		z = zz;
+	}
+
 	float operator[](int i) { 
 		float ret = 0;
 	//  --Cond--   --True--   -----------------------False-------------------------

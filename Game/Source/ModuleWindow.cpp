@@ -48,6 +48,7 @@ bool ModuleWindow::Init()
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
 	io.WantCaptureMouse = true;
+	io.WantCaptureKeyboard = true;
 	io.MousePos.x = app->input->GetMouseX();
 	io.MousePos.y = app->input->GetMouseY();
 	//io.ConfigViewportsNoAutoMerge = true;
