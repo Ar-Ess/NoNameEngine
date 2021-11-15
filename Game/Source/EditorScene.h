@@ -83,7 +83,7 @@ private: // Functions
 	void PopShape();
 
 	// Pop All Shapes on scene
-	void PopAllShapes();
+	void DeleteAllShapes(bool enableMessage = true);
 
 public: // Variables
 	bool demoWindow = false;

@@ -22,6 +22,7 @@ public:
 	{
 		return lookPoint;
 	}
+	void SetLookPoint(Point3D lP) { lookPoint = lP; }
 	float* GetSpeed()
 	{
 		return &speed;

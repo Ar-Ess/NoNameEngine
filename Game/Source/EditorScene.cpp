@@ -77,7 +77,10 @@ bool EditorScene::DrawMenuBar()
 				app->Save("NNE_Project_Saving", FileContent::PROJECT);
 
 			if (ImGui::MenuItem("Load File", "Ctrl + L"))
+			{
+				DeleteAllShapes(false);
 				app->Load("NNE_Project_Saving", FileContent::PROJECT);
+			}
 
 			if (ImGui::MenuItem("Exit", " Esc"))
 				ret = false;
@@ -95,7 +98,7 @@ bool EditorScene::DrawMenuBar()
 				PopShape();
 
 			if (ImGui::MenuItem("Delete All", " Supr + Shift"))
-				PopAllShapes();
+				DeleteAllShapes();
 
 			ImGui::EndMenu();
 		}
@@ -718,12 +721,16 @@ bool EditorScene::ShortCuts()
 	}
 	else if (shift && !ctrl) // SHIFT
 	{
-		if (app->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN) PopAllShapes();
+		if (app->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN) DeleteAllShapes();
 	}
 	else if (!shift && ctrl) // CTRL
 	{
 		if (app->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN) app->Save("NNE_Project_Saving", FileContent::PROJECT);
-		if (app->input->GetKey(SDL_SCANCODE_L) == KEY_DOWN) app->Load("NNE_Project_Saving", FileContent::PROJECT);
+		if (app->input->GetKey(SDL_SCANCODE_L) == KEY_DOWN)
+		{
+			DeleteAllShapes(false);
+			app->Load("NNE_Project_Saving", FileContent::PROJECT);
+		}
 		if (app->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN) DuplicateSelectedShape();
 	}
 
@@ -800,16 +807,19 @@ void EditorScene::PopShape()
 	}
 }
 
-void EditorScene::PopAllShapes()
+void EditorScene::DeleteAllShapes(bool enableMessage)
 {
 	if (shapes->size() > 1) shapes->erase(shapes->begin() + 1, shapes->end());
 	else
 	{
-		SDL_ShowSimpleMessageBox(
-			SDL_MESSAGEBOX_INFORMATION,
-			"Shapes Error",
-			"\nCan not delete a Model\nNo shape left in the scene",
-			app->window->mainWindow
-		);
+		if (enableMessage)
+		{
+			SDL_ShowSimpleMessageBox(
+				SDL_MESSAGEBOX_INFORMATION,
+				"Shapes Error",
+				"\nCan not delete a Model\nNo shape left in the scene",
+				app->window->mainWindow
+			);
+		}
 	}
 }

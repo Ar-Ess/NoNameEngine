@@ -230,12 +230,15 @@ bool Application::Load(string fName, FileContent fc)
 			scene->SetWindowState(Windows::OUTPUT_W, json_object_get_boolean(json_object(file), "IsOutputWindowOpen"));
 			scene->SetWindowState(Windows::HIERARCHY_W, json_object_get_boolean(json_object(file), "IsHierarchyWindowOpen"));
 
+			Point3D lookPoint = {};
+
 			ArrayRetrieveVector(cameraArray, &camera->X, 0);
 			ArrayRetrieveVector(cameraArray, &camera->Y, 1);
 			ArrayRetrieveVector(cameraArray, &camera->Z, 2);
 			ArrayRetrieveVector(cameraArray, &camera->position, 3);
 			ArrayRetrieveVector(cameraArray, &camera->reference, 4);
-			ArrayRetrieveVector(cameraArray, &camera->GetLookPoint(), 5);
+			ArrayRetrieveVector(cameraArray, &lookPoint, 5);
+			camera->SetLookPoint(lookPoint);
 			camera->CalculateViewMatrix();
 
 			//----------------------------
@@ -561,9 +564,9 @@ bool Application::SaveRestartPropierties()
 		json_object_set_number(json_object(file), "Camera Speed", 0.5);
 		json_object_set_number(json_object(file), "Camera Sens", 0.3);
 
-		json_object_set_boolean(json_object(file), "Depth Test", false);
+		json_object_set_boolean(json_object(file), "Depth Test", true);
 		json_object_set_boolean(json_object(file), "Cull Face", false);
-		json_object_set_boolean(json_object(file), "Lighting", true);
+		json_object_set_boolean(json_object(file), "Lighting", false);
 		json_object_set_boolean(json_object(file), "Color Material", true);
 		json_object_set_boolean(json_object(file), "Texture 2D", true);
 
@@ -609,6 +612,7 @@ void Application::JsonSavePrimitives(JSON_Array* arr)
 		json_array_append_number(shapeArray, shape->GetRotation().angle); // Angle (1)
 		ArrayAppendVector(shapeArray, shape->GetRotation().GetPlane()); // Rotation (3)
 		json_array_append_number(shapeArray, shape->GetScale()); // Scale (1)
+
 		json_array_append_string(shapeArray, shape->WriteShapeType().c_str()); // Type (1)
 		json_array_append_string(shapeArray, shape->GetName()); // Name (1)
 
@@ -657,8 +661,9 @@ void Application::JsonLoadPrimitives(JSON_Array* arr)
 {
 	for (int i = 0; i < json_array_get_count(arr); i++)
 	{
-		JSON_Value* shapeValue = json_value_init_array();
+		JSON_Value* shapeValue = json_array_get_value(arr, i);
 		JSON_Array* shapeArray = json_value_get_array(shapeValue);
+
 		Cube3D c({0, 0, 0});
 
 		Point3D position = {}, planeNormal = {};
@@ -669,13 +674,15 @@ void Application::JsonLoadPrimitives(JSON_Array* arr)
 		bool edges = json_array_get_boolean(shapeArray, 3);
 		bool normals = json_array_get_boolean(shapeArray, 4);
 
-		ArrayRetrieveVector(shapeArray, &position, 5);
+		ArrayRetrieveVector(shapeArray, &position, 5, false);
 		float angle = json_array_get_number(shapeArray, 8);
-		ArrayRetrieveVector(shapeArray, &planeNormal, 9);
+		ArrayRetrieveVector(shapeArray, &planeNormal, 9, false);
 		float scale = json_array_get_number(shapeArray, 12);
 
-		string type(json_array_get_string(shapeArray, 13));
-		string name(json_array_get_string(shapeArray, 14));
+		const char* typeChar = json_array_get_string(shapeArray, 13);
+		string type = typeChar;
+		const char* nameChar = json_array_get_string(shapeArray, 14);
+		string name = nameChar;
 
 		switch (c.ReadShapeType(json_array_get_string(shapeArray, 13)))
 		{
@@ -687,7 +694,7 @@ void Application::JsonLoadPrimitives(JSON_Array* arr)
 		case LINE3D:
 		{
 			Point3D secondVertex = {};
-			ArrayRetrieveVector(shapeArray, &secondVertex, 15); // Second Vertex (3)
+			ArrayRetrieveVector(shapeArray, &secondVertex, 15, false); // Second Vertex (3)
 			scene->shapes.push_back(new Line3D(position, secondVertex, scale));
 			break;
 		}
@@ -708,7 +715,7 @@ void Application::JsonLoadPrimitives(JSON_Array* arr)
 		case PLANE3D:
 		{
 			Point3D normal = {};
-			ArrayRetrieveVector(shapeArray, &normal, 15); // Normal (3)
+			ArrayRetrieveVector(shapeArray, &normal, 15, false); // Normal (3)
 			scene->shapes.push_back(new Plane3D(position, normal, scale, Rotation{ angle, planeNormal.x, planeNormal.y, planeNormal.z }));
 			break;
 		}

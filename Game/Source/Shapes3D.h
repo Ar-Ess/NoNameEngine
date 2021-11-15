@@ -71,13 +71,13 @@ public:
 
 	ShapeType ReadShapeType(const char* type)
 	{
-		if (type == "Cube 3D") return CUBE3D;
-		if (type == "Line 3D") return LINE3D;
-		if (type == "Pyramid 3D") return PYRAMID3D;
-		if (type == "Cylinder 3D") return CYLINDER3D;
-		if (type == "Plane 3D") return PLANE3D;
-		if (type == "Sphere 3D") return SPHERE3D;
-		if (type == "Model 3D") return MODEL3D;
+		if (SameString(type, "Cube 3D")) return CUBE3D;
+		if (SameString(type, "Line 3D")) return LINE3D;
+		if (SameString(type, "Pyramid 3D")) return PYRAMID3D;
+		if (SameString(type, "Cylinder 3D")) return CYLINDER3D;
+		if (SameString(type, "Plane 3D")) return PLANE3D;
+		if (SameString(type, "Sphere 3D")) return SPHERE3D;
+		if (SameString(type, "Model 3D")) return MODEL3D;
 
 		return NULL3D;
 	}

@@ -56,11 +56,11 @@ public:
 
 		switch (gV)
 		{
-		case GeometryView::DEPTH_TEST: gViewType = GL_DEPTH_TEST;
-		case GeometryView::CULL_FACE: gViewType = GL_CULL_FACE;
-		case GeometryView::LIGHTING: gViewType = GL_LIGHTING;
-		case GeometryView::COLOR_MATERIAL: gViewType = GL_COLOR_MATERIAL;
-		case GeometryView::TEXTURE_2D: gViewType = GL_TEXTURE_2D;
+		case GeometryView::DEPTH_TEST: gViewType = GL_DEPTH_TEST; break;
+		case GeometryView::CULL_FACE: gViewType = GL_CULL_FACE; break;
+		case GeometryView::LIGHTING: gViewType = GL_LIGHTING; break;
+		case GeometryView::COLOR_MATERIAL: gViewType = GL_COLOR_MATERIAL; break;
+		case GeometryView::TEXTURE_2D: gViewType = GL_TEXTURE_2D; break;
 		}
 
 		if (active) glEnable(gViewType);
