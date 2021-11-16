@@ -1,6 +1,7 @@
 # [NoNameEngine](https://github.com/BooStarGamer/NoNameEngine)
 ## Team Members
 ### [Martí Buxeda](https://github.com/BooStarGamer)
+### [Jordi Espriu](https://github.com/LordUnicorn31)
 ### [Víctor Jara](https://github.com/Kerali)
 ## Description
 A programed & a designer of the successful team NoNameBros, have created an astonishing engine that will blow your mind. 
