@@ -20,21 +20,6 @@ bool EditorScene::Start()
 	p->solid = false;
 	shapes->push_back(p);
 
-	//Model* m = new Model({ 0, 0, -20 }, 1);
-	//m->LoadModel("Assets/Models/BakerHouse.fbx", "Assets/Textures/baker_house_texture.png");
-	//shapes->push_back(m);
-
-	//Pyramid3D* py = new Pyramid3D({ 5, 0, 0 }, 3);
-	//py->axis = true;
-	//shapes->push_back(py);
-
-	//Model* m1 = new Model({ 10, 1, 0 }, 0.05f);
-	//m1->LoadModel("Assets/Models/cube.fbx", "Assets/Textures/cube_texture.png");
-	//shapes->push_back(m1);
-
-	//Sphere3D* s = new Sphere3D({ 0, 0, 0 }, 1.0f, 2);
-	//shapes->push_back(s);
-
 	return true;
 }
 
@@ -52,6 +37,8 @@ bool EditorScene::Update()
 	outputWindow = ShowOutputWindow(outputWindow);
 	configWindow = ShowConfigWindow(configWindow);
 	hierarchyWindow = ShowHierarchyWindow(hierarchyWindow);
+	inspectorWindow = ShowInspectorWindow(inspectorWindow);
+	assetsWindow = ShowAssetsWindow(assetsWindow);
 
 	ret = ShortCuts();
 
@@ -61,7 +48,7 @@ bool EditorScene::Update()
 bool EditorScene::CleanUp()
 {
 	bool ret = true;
-
+	DeleteAllShapes(false);
 	return ret;
 }
 
@@ -112,6 +99,12 @@ bool EditorScene::DrawMenuBar()
 
 			if (ImGui::MenuItem("Hierarchy"))
 				hierarchyWindow = !hierarchyWindow;
+
+			if (ImGui::MenuItem("Assets"))
+				assetsWindow = !assetsWindow;
+
+			if (ImGui::MenuItem("Inspector"))
+				inspectorWindow = !inspectorWindow;
 
 			ImGui::EndMenu();
 		}
@@ -530,7 +523,7 @@ bool EditorScene::ShowHierarchyWindow(bool open)
 			if (!onWindow) onWindow = ImGui::IsWindowHovered();
 			AddSeparator(2);
 			AddSpacing(1);
-			int select = 0;
+			selectedShape = 0;
 			for (int i = 1; i < shapes->size(); i++)
 			{
 				char buffer[24] = {};
@@ -554,20 +547,34 @@ bool EditorScene::ShowHierarchyWindow(bool open)
 				AddSpacing(0);
 
 
-				if (select == 0 && shapes->at(i)->selected) select = i;
+				if (selectedShape == 0 && shapes->at(i)->selected) selectedShape = i;
 			}
+			
+		}
+		ImGui::End();
+	}
 
-			if (select != 0)
+	return open;
+}
+
+bool EditorScene::ShowInspectorWindow(bool open)
+{
+	if (open)
+	{
+		if (ImGui::Begin("Inspector", &open))
+		{
+			if (!onWindow) onWindow = ImGui::IsWindowHovered();
+
+			if (selectedShape != 0)
 			{
-				Shape3D* s = shapes->at(select);
+				Shape3D* s = shapes->at(selectedShape);
 
-				AddSpacing(4);
 				AddSeparator(2);
 				AddSpacing(0);
 
 				// NAME
 				char buffer[24] = {};
-				sprintf_s(buffer, " Name: %s %d", s->GetName(), select);
+				sprintf_s(buffer, " Name: %s %d", s->GetName(), selectedShape);
 				ImGui::Text(buffer);
 				AddSpacing(1);
 				AddSeparator(1);
@@ -599,7 +606,7 @@ bool EditorScene::ShowHierarchyWindow(bool open)
 				AddSpacing(0);
 				switch (s->GetShapeType())
 				{
-				case PYRAMID3D: 
+				case PYRAMID3D:
 				{
 					Pyramid3D* py = (Pyramid3D*)s;
 					ImGui::Text("    Height: %.2f", py->GetHeight());
@@ -699,10 +706,23 @@ bool EditorScene::ShowHierarchyWindow(bool open)
 					AddSpacing(1);
 				}
 			}
+			ImGui::End();
+		}
+	}
+	return open;
+}
+
+bool EditorScene::ShowAssetsWindow(bool open)
+{
+	if (open)
+	{
+		if (ImGui::Begin("Assets", &open))
+		{
+			if (!onWindow) onWindow = ImGui::IsWindowHovered();
+			ImGui::Button("Refresh directory");
 		}
 		ImGui::End();
 	}
-
 	return open;
 }
 

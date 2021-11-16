@@ -46,6 +46,8 @@ private: // Functions
 	bool ShowOutputWindow(bool open);
 	bool ShowConfigWindow(bool open);
 	bool ShowHierarchyWindow(bool open);
+	bool ShowInspectorWindow(bool open);
+	bool ShowAssetsWindow(bool open);
 
 	bool ShortCuts();
 
@@ -87,9 +89,11 @@ private: // Functions
 
 public: // Variables
 	bool demoWindow = false;
-	bool outputWindow = false;
+	bool outputWindow = true;
 	bool configWindow = false;
 	bool hierarchyWindow = true;
+	bool inspectorWindow = true;
+	bool assetsWindow = true;
 
 	bool aboutPopup = false;
 
@@ -130,4 +134,5 @@ private: // Variables
 	float milliseconds = 0.0f;
 	vector<Shape3D*>* shapes = nullptr;
 	ImGuiID dockSpaceId = {};
+	int selectedShape = 0;
 };

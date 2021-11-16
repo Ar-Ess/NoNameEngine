@@ -95,6 +95,7 @@ bool ModuleScene::CleanUp()
 	bool ret = true;
 
 	ret = CleanUpScene(scene);
+	delete editor;
 
 	return ret;
 }
