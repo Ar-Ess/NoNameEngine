@@ -15,9 +15,13 @@ bool SameString(std::string a, std::string b)
 
 	if (a.size() != b.size()) return false;
 
-	for (int i = 0; i < a.size(); i++) ret = (a[i] == b[i]);
+	for (int i = 0; i < a.size(); i++)
+	{
+		ret = (a[i] == b[i]);
+		if (!ret) return false;
+	}
 
-	return ret;
+	return true;
 }
 
 int GetOutputSize()
