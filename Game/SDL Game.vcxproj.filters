@@ -126,9 +126,6 @@
     <ClInclude Include="Source\Globals.h">
       <Filter>Modules</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Primitive.h">
-      <Filter>Utils\Geometry</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Shapes3D.h">
       <Filter>Utils\Geometry</Filter>
     </ClInclude>
@@ -220,9 +217,6 @@
     </ClCompile>
     <ClCompile Include="Source\Application.cpp">
       <Filter>Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Primitive.cpp">
-      <Filter>Utils\Geometry</Filter>
     </ClCompile>
     <ClCompile Include="Source\Light.cpp">
       <Filter>Utils\Geometry</Filter>
