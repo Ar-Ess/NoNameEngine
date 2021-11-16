@@ -97,12 +97,20 @@ public:
 	{
 		delete index;
 		index = nullptr;
+		glDeleteBuffers(indexNum, &indexID);
+
 		delete vertex;
 		vertex = nullptr;
+		glDeleteBuffers(vertexNum, &vertexID);
+
 		delete normal;
 		normal = nullptr;
+		glDeleteBuffers(normalNum, &normalID);
+
 		delete texture;
 		texture = nullptr;
+		glDeleteBuffers(texCoordNum, &texCoordID);
+		glDeleteTextures(1, &textureID); 
 	}
 
 	uint GetId(MeshData md)

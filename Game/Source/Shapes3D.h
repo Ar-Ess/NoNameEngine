@@ -727,7 +727,7 @@ private:
 class Plane3D : public Shape3D
 {
 public:
-	Plane3D(Point3D pos = { 0, 0, 0 }, Point3D n = { 0, 1, 0 }, float s = 4, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, (s * 50), rot, PLANE3D, "Plane")
+	Plane3D(Point3D pos = { 0, 0, 0 }, Point3D n = { 0, 1, 0 }, float s = 1, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, PLANE3D, "Plane")
 	{
 		if ((bool)n.x)
 			n.Set(1, 0, 0);
@@ -754,7 +754,7 @@ private:
 
 	bool DrawSolid()
 	{
-		glColor3f(0, 0, 0);
+		glColor3f(255, 255, 255);
 
 		glLineWidth(1.0f);
 

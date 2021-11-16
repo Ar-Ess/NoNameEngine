@@ -15,7 +15,7 @@ EditorScene::~EditorScene()
 
 bool EditorScene::Start()
 {
-	Plane3D* p = new Plane3D();
+	Plane3D* p = new Plane3D({ 0, 0, 0 }, {0, 1, 0}, 200);
 	p->axis = true;
 	p->solid = false;
 	shapes->push_back(p);
