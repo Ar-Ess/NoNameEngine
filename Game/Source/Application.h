@@ -119,9 +119,9 @@ private: // JSON Functions
 		vec->z = array[2];
 	}
 
-	void JsonSavePrimitives(JSON_Array* arr);
+	void JsonSaveShapes(JSON_Array* arr);
 
-	void JsonLoadPrimitives(JSON_Array* arr);
+	void JsonLoadShapes(JSON_Array* arr);
 
 public: // Variables
 

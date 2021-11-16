@@ -218,8 +218,8 @@ bool Application::Load(string fName, FileContent fc)
 		JSON_Value* file = json_parse_file(fName.c_str());
 		JSON_Value* cameraValue = json_object_get_value(json_object(file), "Camera");
 		JSON_Array* cameraArray = json_value_get_array(cameraValue);
-		JSON_Value* primitiveValue = json_object_get_value(json_object(file), "Primitives");
-		JSON_Array* primitiveArray = json_value_get_array(primitiveValue);
+		JSON_Value* shapeValue = json_object_get_value(json_object(file), "Primitives");
+		JSON_Array* shapeArray = json_value_get_array(shapeValue);
 
 		switch (fc)
 		{
@@ -242,7 +242,7 @@ bool Application::Load(string fName, FileContent fc)
 			camera->CalculateViewMatrix();
 
 			//----------------------------
-			JsonLoadPrimitives(primitiveArray);
+			JsonLoadShapes(shapeArray);
 
 			scene->SetProjectName(json_object_get_string(json_object(file), "ProjectName"));
 			scene->SetTeamName(json_object_get_string(json_object(file), "TeamName"));
@@ -326,8 +326,8 @@ bool Application::Save(string fName, FileContent fc)
 		JSON_Value* file = json_parse_file(fName.c_str());
 		JSON_Value* cameraValue = json_value_init_array();
 		JSON_Array* cameraArray = json_value_get_array(cameraValue);
-		JSON_Value* primitiveValue = json_value_init_array();
-		JSON_Array* primitiveArray = json_value_get_array(primitiveValue);
+		JSON_Value* shapeValue = json_value_init_array();
+		JSON_Array* shapeArray = json_value_get_array(shapeValue);
 
 		switch (fc)
 		{
@@ -398,8 +398,8 @@ bool Application::Save(string fName, FileContent fc)
 				json_object_set_value(json_object(file), "Camera", cameraValue);
 
 				// General Engine - Primitives
-				JsonSavePrimitives(primitiveArray);
-				json_object_set_value(json_object(file), "Primitives", primitiveValue);
+				JsonSaveShapes(shapeArray);
+				json_object_set_value(json_object(file), "Primitives", shapeValue);
 
 				// Project Information - Project
 				json_object_set_string(json_object(file), "ProjectName", this->scene->GetProjectName().c_str());
@@ -594,7 +594,7 @@ bool Application::LoadRestartPropierties()
 	return ret;
 }
 
-void Application::JsonSavePrimitives(JSON_Array* arr)
+void Application::JsonSaveShapes(JSON_Array* arr)
 {
 	for (int i = 1; i < scene->shapes.size(); i++)
 	{
@@ -602,53 +602,61 @@ void Application::JsonSavePrimitives(JSON_Array* arr)
 		JSON_Value* shapeValue = json_value_init_array();
 		JSON_Array* shapeArray = json_value_get_array(shapeValue);
 
-		json_array_append_boolean(shapeArray, shape->axis); // Axis (1)
-		json_array_append_boolean(shapeArray, false); // Selected (1)
-		json_array_append_boolean(shapeArray, shape->solid); // Solid (1)
-		json_array_append_boolean(shapeArray, shape->edges); // Edges (1)
-		json_array_append_boolean(shapeArray, shape->normals); // Normals (1)
+		json_array_append_boolean(shapeArray, shape->axis); // Axis (1) - 0
+		json_array_append_boolean(shapeArray, false); // Selected (1) - 1
+		json_array_append_boolean(shapeArray, shape->solid); // Solid (1) - 2
+		json_array_append_boolean(shapeArray, shape->edges); // Edges (1) - 3
+		json_array_append_boolean(shapeArray, shape->normals); // Normals (1) - 4
 
-		ArrayAppendVector(shapeArray, shape->GetPosition()); // Position (3)
-		json_array_append_number(shapeArray, shape->GetRotation().angle); // Angle (1)
-		ArrayAppendVector(shapeArray, shape->GetRotation().GetPlane()); // Rotation (3)
-		json_array_append_number(shapeArray, shape->GetScale()); // Scale (1)
+		ArrayAppendVector(shapeArray, shape->GetPosition()); // Position (3) - 5
+		json_array_append_number(shapeArray, shape->GetRotation().angle); // Angle (1) - 8
+		ArrayAppendVector(shapeArray, shape->GetRotation().GetPlane()); // Rotation (3) - 9
+		json_array_append_number(shapeArray, shape->GetScale()); // Scale (1) - 12
 
-		json_array_append_string(shapeArray, shape->WriteShapeType().c_str()); // Type (1)
-		json_array_append_string(shapeArray, shape->GetName()); // Name (1)
+		json_array_append_string(shapeArray, shape->WriteShapeType().c_str()); // Type (1) - 13
+		json_array_append_string(shapeArray, shape->GetName()); // Name (1) - 14
 
 		switch (shape->GetShapeType())
 		{
 		case LINE3D:
 		{
-			Line3D* l = (Line3D*)scene->shapes[i];
-			ArrayAppendVector(shapeArray, l->GetSecondVertex()); // Second Vertex (3)
+			Line3D* l = (Line3D*)shape;
+			ArrayAppendVector(shapeArray, l->GetSecondVertex()); // Second Vertex (3) - 15
 			break;
 		}
 		case PYRAMID3D:
 		{
-			Pyramid3D* py = (Pyramid3D*)scene->shapes[i];
-			json_array_append_number(shapeArray, py->GetHeight()); // Height (1)
+			Pyramid3D* py = (Pyramid3D*)shape;
+			json_array_append_number(shapeArray, py->GetHeight()); // Height (1) - 15
 			break;
 		}
 		case CYLINDER3D:
 		{
-			Cylinder3D* cy = (Cylinder3D*)scene->shapes[i];
-			json_array_append_number(shapeArray, cy->GetHeight()); // Height (1)
-			json_array_append_number(shapeArray, cy->GetRadius()); // Radius (1)
-			json_array_append_number(shapeArray, cy->GetSegments()); // Segments (1)
+			Cylinder3D* cy = (Cylinder3D*)shape;
+			json_array_append_number(shapeArray, cy->GetHeight()); // Height (1) - 15
+			json_array_append_number(shapeArray, cy->GetRadius()); // Radius (1) - 16
+			json_array_append_number(shapeArray, cy->GetSegments()); // Segments (1) - 17
 			break;
 		}
 		case PLANE3D:
 		{
-			Plane3D* p = (Plane3D*)scene->shapes[i];
-			ArrayAppendVector(shapeArray, p->GetNormal()); // Normal (3)
+			Plane3D* p = (Plane3D*)shape;
+			ArrayAppendVector(shapeArray, p->GetNormal()); // Normal (3) - 15
 			break;
 		}
 		case SPHERE3D:
 		{
-			Sphere3D* s = (Sphere3D*)scene->shapes[i];
-			json_array_append_number(shapeArray, s->GetRadius()); // Radius (1)
-			json_array_append_number(shapeArray, s->GetSubdivision()); // Subdivisions (1)
+			Sphere3D* s = (Sphere3D*)shape;
+			json_array_append_number(shapeArray, s->GetRadius()); // Radius (1) - 15
+			json_array_append_number(shapeArray, s->GetSubdivision()); // Subdivisions (1) - 16
+			break;
+		}
+		case MODEL3D:
+		{
+			Model* m = (Model*)shape;
+			json_array_append_string(shapeArray, m->filePath.c_str()); // Path File (1) - 15
+			json_array_append_string(shapeArray, m->texturePath.c_str()); // Path File (1) - 16
+
 			break;
 		}
 		}
@@ -657,7 +665,7 @@ void Application::JsonSavePrimitives(JSON_Array* arr)
 	}
 }
 
-void Application::JsonLoadPrimitives(JSON_Array* arr)
+void Application::JsonLoadShapes(JSON_Array* arr)
 {
 	for (int i = 0; i < json_array_get_count(arr); i++)
 	{
@@ -724,6 +732,15 @@ void Application::JsonLoadPrimitives(JSON_Array* arr)
 			float radius = json_array_get_number(shapeArray, 15);
 			int subdivisions = json_array_get_number(shapeArray, 16);
 			scene->shapes.push_back(new Sphere3D(position, scale, radius, subdivisions, Rotation{ angle, planeNormal.x, planeNormal.y, planeNormal.z }));
+			break;
+		}
+		case MODEL3D:
+		{
+			string filePath = json_array_get_string(shapeArray, 15);
+			string texturePath = json_array_get_string(shapeArray, 16);
+			Model* m = new Model(position, scale, Rotation{ angle, planeNormal.x, planeNormal.y, planeNormal.z });
+			m->LoadModel(filePath.c_str(), texturePath.c_str());
+			scene->shapes.push_back(m);
 			break;
 		}
 		}
