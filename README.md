@@ -11,14 +11,18 @@ NoNameEngine will help programmers developing games as famous as "Split Duty".
  - **Orientation:**
    - Mouse: Move + L-Click 
    - Trackpad: Scroll vertically / horizontally
+   - Wheel: Scroll vertically + L-Shift (Z axis)
  - **Zoom:**
-   - Mouse: L-Shift + Move + L-Click
+   - Mouse: L-Shift + L-Click + Move Vertically
    - Trackpad: L-Shift + Scroll vertically
+   - Mouse Wheel: Scroll vertically
  - **Movement**
-   - W: Move forwards
-   - S: Move Backwards
+   - W: Move Front
+   - S: Move Back
    - A: Move Left
    - D: Move Right
+   - L-Click + W: Move Forwards Cam Axis
+   - L-Click + S: Move Backwards Cam Axis
    - L-Shift + W: Move Upwards
    - L-Shift + S: Move Downwards
  - **Speed Up**
@@ -26,7 +30,7 @@ NoNameEngine will help programmers developing games as famous as "Split Duty".
 
 ### Save & Load
  - **Project:**
-   - Save & Load the whole project using JSON, including preferences (camera pos as well, modules not yet)
+   - Save & Load the whole project using JSON, including preferences
    - Save/Load Shortcuts:
      - Ctrl + S: Save
      - Ctrl + L: Load
@@ -43,13 +47,14 @@ NoNameEngine will help programmers developing games as famous as "Split Duty".
     - Supports FBX for now (will be extended on the future) 
   - **Textures:**
     - Supports any kind of image extension
+    - Only for Model3D shapes, not Primitives yet
     - Select, from the Hierarchy, the Model3D, then Drag & Drop a file on the screen
 
 ### Model Creation
 _Important: "Shape3D" class is the equivalent of "GameObject" class_
  - **Primitives:**
    - Locate: Create -> Primitives
-   - Cube, Pyramid, Line, Cylinder, Plane
+   - Cube, Pyramid, Line, Cylinder, Sphere, Plane
  - **Test:**
    - Locate: Create -> Test
    - Baker House, Warrior, Cube
@@ -67,8 +72,9 @@ _Important: "Shape3D" class is the equivalent of "GameObject" class_
 - **Geometry:**
   - Modify how geometry is seen
   - Locate: View -> Geometry
-    - Edges: Shows the edges of the selected model
-    - Normals: Shows the normals of the selected model
+    - Edges: Shows the edges of the selected shape
+    - Normals: Shows the normals of the selected shape
+    - Solid: Shows the solid plane that defines the selected shape
 
 ### Hierarchy
  - View all the shapes in the stage
