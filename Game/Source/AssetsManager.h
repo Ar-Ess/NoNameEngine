@@ -16,6 +16,7 @@ public:
 
 public:
 
+	bool MountPath(const char* path);
 	void ParseFiles(const char* path, std::vector<std::string>& files, std::vector<std::string>& directory) const;
 	void DrawFiles(std::string path);
 

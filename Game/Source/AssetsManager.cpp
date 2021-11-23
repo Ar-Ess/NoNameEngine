@@ -1,14 +1,42 @@
 #include <iostream>
+#include <direct.h>
 #include "AssetsManager.h"
 
 AssetsManager::AssetsManager(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	PHYSFS_init(NULL); // Initialize PhysFS library
+
+	// Create the required path to parse files with PHYSFS
+	char basePath[200];
+
+	_getcwd(basePath, sizeof(basePath));
+
+	LOG("Base path is: %s", basePath);
+	PHYSFS_init(nullptr);
+
+	if (PHYSFS_setWriteDir(basePath) == 0)
+		LOG("File System error while creating write dir: %s\n", PHYSFS_getLastError());
+	MountPath(basePath);
+	MountPath("Assets");
 }
 
 AssetsManager::~AssetsManager()
 {
 	PHYSFS_deinit(); 
+}
+
+bool AssetsManager::MountPath(const char* path)
+{
+	if (PHYSFS_mount(path, nullptr, 1) != 0)
+	{
+		return true;
+	}
+
+	else
+	{
+		LOG("Error parsing the path!", PHYSFS_getLastError());
+		return false;
+	}
 }
 
 void AssetsManager::ParseFiles(const char* path, std::vector<std::string>& files, std::vector<std::string>& directory) const
@@ -18,7 +46,6 @@ void AssetsManager::ParseFiles(const char* path, std::vector<std::string>& files
 
 	for (i = rc; *i != nullptr; ++i)
 	{
-		LOG(" * We've got [%s].\n", *i);
 		std::string str = std::string(path) + std::string("/") + std::string(*i);
 		if (PHYSFS_isDirectory(str.c_str()) != 0)
 		{
