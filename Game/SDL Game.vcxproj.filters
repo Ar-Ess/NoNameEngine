@@ -34,6 +34,9 @@
     <Filter Include="External\STB">
       <UniqueIdentifier>{bec67902-ded1-4874-bde1-512fb7543a11}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External\PhysFS">
+      <UniqueIdentifier>{a4feabb6-2d05-40c3-ac03-730c0c631125}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\External\imgui\imconfig.h">
@@ -156,6 +159,12 @@
     <ClInclude Include="Source\stb_image.h">
       <Filter>External\STB</Filter>
     </ClInclude>
+    <ClInclude Include="Source\External\PhysFS\include\physfs.h">
+      <Filter>External\PhysFS</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AssetsManager.h">
+      <Filter>Modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\External\imgui\imgui_demo.cpp">
@@ -238,6 +247,9 @@
     </ClCompile>
     <ClCompile Include="Source\Model.cpp">
       <Filter>Utils\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AssetsManager.cpp">
+      <Filter>Modules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

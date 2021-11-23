@@ -8,6 +8,7 @@
 #include <math.h>
 #include "ModuleSceneIntro.h"
 #include "External/SDL/include/SDL.h"
+#include "physfs.h"
 
 #pragma comment (lib, "Source/External/glew/glew32.lib")    /* link OpenGL Utility lib     */
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */

@@ -2,6 +2,7 @@
 #include "ModuleSceneIntro.h"
 #include "ModuleInput.h"
 #include "ModuleCamera3D.h"
+#include "AssetsManager.h"
 
 EditorScene::EditorScene(Application* App, vector<Shape3D*>* s)
 {
@@ -706,8 +707,9 @@ bool EditorScene::ShowInspectorWindow(bool open)
 					AddSpacing(1);
 				}
 			}
-			ImGui::End();
 		}
+
+		ImGui::End();
 	}
 	return open;
 }
@@ -719,7 +721,13 @@ bool EditorScene::ShowAssetsWindow(bool open)
 		if (ImGui::Begin("Assets", &open))
 		{
 			if (!onWindow) onWindow = ImGui::IsWindowHovered();
+
+
 			ImGui::Button("Refresh directory");
+			
+
+			app->assets->DrawFiles("Assets");
+	
 		}
 		ImGui::End();
 	}
