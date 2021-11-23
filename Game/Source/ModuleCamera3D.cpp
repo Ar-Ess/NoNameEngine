@@ -48,6 +48,7 @@ update_status ModuleCamera3D::Update()
 	int dx = -app->input->GetMouseXMotion();
 	int dy = -app->input->GetMouseYMotion();
 	bool shift = (app->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT);
+	bool lclick = (app->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT);
 	float frameSpeed = speed;
 	if (app->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT) frameSpeed *= 2;
 
@@ -56,13 +57,13 @@ update_status ModuleCamera3D::Update()
 	{
 		if (shift)
 		{
-			if (wheelZV > 0) newPos -= Z * frameSpeed;
-			if (wheelZV < 0) newPos += Z * frameSpeed;
+			if (wheelZV > 0) newPos += Y * frameSpeed;
+			if (wheelZV < 0) newPos -= Y * frameSpeed;
 		}
 		else
 		{
-			if (wheelZV > 0) newPos += Y * frameSpeed;
-			if (wheelZV < 0) newPos -= Y * frameSpeed;
+			if (wheelZV > 0) newPos -= Z * frameSpeed;
+			if (wheelZV < 0) newPos += Z * frameSpeed;
 		}
 
 	}
@@ -73,7 +74,7 @@ update_status ModuleCamera3D::Update()
 	}
 
 	// Mouse movement
-	if (app->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)
+	if (lclick)
 	{
 		if (dx != 0 && !shift)
 		{
@@ -102,7 +103,11 @@ update_status ModuleCamera3D::Update()
 		if (shift) newPosition.y += frameSpeed;
 		else
 		{
-			newPosition -= Z * frameSpeed;
+			if (lclick) newPosition -= Z * frameSpeed;
+			else
+			{
+				newPosition.z += frameSpeed;
+			}
 		}
 	}
 	if (app->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT)
@@ -110,7 +115,11 @@ update_status ModuleCamera3D::Update()
 		if (shift) newPosition.y -= frameSpeed;
 		else
 		{
-			newPosition += Z * frameSpeed;
+			if (lclick) newPosition += Z * frameSpeed;
+			else
+			{
+				newPosition.z -= frameSpeed;
+			}
 		}
 	}
 	if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) newPosition -= X * frameSpeed;
