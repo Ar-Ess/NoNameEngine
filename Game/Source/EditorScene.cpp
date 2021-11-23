@@ -21,13 +21,13 @@ bool EditorScene::Start()
 	p->solid = false;
 	shapes->push_back(p);
 
-	Cube3D* c0 = new Cube3D({ 3, 0, 0 });
+	Cube3D* c0 = new Cube3D({ 3, 0, 5 }, 1.0f, { 00, 0, 0, 0 });
 	shapes->push_back(c0);
-	Cube3D* c1 = new Cube3D({ 2, 0, 0 });
+	Cube3D* c1 = new Cube3D({ 2, 0, 2 }, 1.0f, { 00, 0, 0, 0 });
 	shapes->push_back(c1);
-	Cube3D* c2 = new Cube3D({ 1, 0, 0 });
+	Cube3D* c2 = new Cube3D({ 1, 0, 4 }, 1.0f, { 00, 0, 0, 0 });
 	shapes->push_back(c2);
-	Cube3D* c3 = new Cube3D({ 0, 0, 0 });
+	Cube3D* c3 = new Cube3D({ 0, 0, 1 }, 1.0f, { 45, 0, 1, 0 });
 	shapes->push_back(c3);
 
 	return true;

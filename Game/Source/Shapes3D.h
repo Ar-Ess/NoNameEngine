@@ -7,7 +7,7 @@
 #include "External/SDL/include/SDL_opengl.h"
 #include <gl/GL.h>
 
-#pragma comment (lib, "Source/External/glew/glew32.lib")    /* link OpenGL Utility lib     */
+#pragma comment (lib, "Source/External/glew/glew32.lib") /* link OpenGL Utility lib     */
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 
 struct Point3D;
@@ -176,6 +176,8 @@ public:
 
 	bool Draw()
 	{
+		glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
+
 		if (solid) DrawSolid();
 		if (edges) DrawEdges();
 		if (axis) DrawAxis();
@@ -261,8 +263,6 @@ private:
 		glVertex3f(v[6].x, v[6].y, v[6].z); // v6
 
 		glEnd();
-
-		glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
 	}
 	bool DrawEdges()
 	{
@@ -323,8 +323,6 @@ private:
 		glVertex3f(v[6].x, v[6].y, v[6].z); // v6
 
 		glEnd();
-
-		glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
 
 		return true;
 	}

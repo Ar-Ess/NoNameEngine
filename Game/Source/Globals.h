@@ -106,6 +106,11 @@ struct Point3D
 	void operator*=(int i) { x *= i; y *= i; z *= i; }
 	void operator/=(int i) { if (i == 0) return; x /= i; y /= i; z /= i;}
 
+	void operator+=(float i) { x += i; y += i; z += i; }
+	void operator-=(float i) { x -= i; y -= i; z -= i; }
+	void operator*=(float i) { x *= i; y *= i; z *= i; }
+	void operator/=(float i) { if (i == 0) return; x /= i; y /= i; z /= i; }
+
 	void operator+=(Point3D i) { x += i.x; y += i.y; z += i.z; }
 	void operator-=(Point3D i) { x -= i.x; y -= i.y; z -= i.z; }
 	void operator*=(Point3D i) { x *= i.x; y *= i.y; z *= i.z; }
