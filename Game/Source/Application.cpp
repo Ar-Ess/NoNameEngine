@@ -4,7 +4,6 @@
 #include "ModuleInput.h"
 #include "ModuleSceneIntro.h"
 #include "ModuleCamera3D.h"
-#include "AssetsManager.h"
 #include "ModuleRenderer3D.h"
 
 //#include "Primitive.h"
@@ -30,13 +29,11 @@ Application::Application()
 	input = new ModuleInput(this);
 	scene = new ModuleScene(this);
 	camera = new ModuleCamera3D(this);
-	assets = new AssetsManager(this);
 
 	// Main Modules
 	AddModule(window);
 	AddModule(camera);
 	AddModule(input);
-	AddModule(assets);
 	
 	// Scenes
 	AddModule(scene);

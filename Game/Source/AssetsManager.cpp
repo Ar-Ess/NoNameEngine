@@ -2,7 +2,7 @@
 #include <direct.h>
 #include "AssetsManager.h"
 
-AssetsManager::AssetsManager(Application* app, bool start_enabled) : Module(app, start_enabled)
+AssetsManager::AssetsManager(const char* pathh)
 {
 	PHYSFS_init(NULL); // Initialize PhysFS library
 
@@ -11,13 +11,17 @@ AssetsManager::AssetsManager(Application* app, bool start_enabled) : Module(app,
 
 	_getcwd(basePath, sizeof(basePath));
 
+	path = basePath;
+
 	LOG("Base path is: %s", basePath);
 	PHYSFS_init(nullptr);
 
 	if (PHYSFS_setWriteDir(basePath) == 0)
 		LOG("File System error while creating write dir: %s\n", PHYSFS_getLastError());
-	MountPath(basePath);
-	MountPath("Assets");
+
+	MountPath(path.c_str());
+	path += pathh;
+	MountPath(path.c_str());
 }
 
 AssetsManager::~AssetsManager()
@@ -39,61 +43,94 @@ bool AssetsManager::MountPath(const char* path)
 	}
 }
 
-void AssetsManager::ParseFiles(const char* path, std::vector<std::string>& files, std::vector<std::string>& directory) const
+void AssetsManager::ParseFiles()
 {
-	char** rc = PHYSFS_enumerateFiles(path); // I followed the example in physfs.h and it isn't working :/
+	std::string dir = path.substr(path.find_last_of("/") + 1);
+
+	char** rc = PHYSFS_enumerateFiles(dir.c_str()); // I followed the example in physfs.h and it isn't working :/
 	char** i;
+
+	assets.clear();
 
 	for (i = rc; *i != nullptr; ++i)
 	{
-		std::string str = std::string(path) + std::string("/") + std::string(*i);
+		std::string str = dir + std::string("/") + std::string(*i);
+
 		if (PHYSFS_isDirectory(str.c_str()) != 0)
 		{
-			directory.push_back(*i);
+			assets.push_back(new Asset(*i, AssetType::DIRECTORY));
 		}
-
-		else 
+		else
 		{
-			files.push_back(*i);
+			assets.push_back(new Asset(*i, AssetType::FILE));
 		}
 	}
 
 	PHYSFS_freeList(rc);
 }
 
-void AssetsManager::DrawFiles(std::string path)
+void AssetsManager::ParseForwardFiles(const char* sumPath)
 {
-	std::vector<std::string> files;
-	std::vector<std::string> directories;
-
-	ParseFiles(path.c_str(), files, directories);
-
-	ImGuiTreeNodeFlags flag = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
-
-	if (directories.empty())
+	std::string dir = path.substr(path.find_last_of("/") + 1);
+	if (sumPath != nullptr)
 	{
-		flag |= ImGuiTreeNodeFlags_Leaf;
+		dir += "/";
+		dir += sumPath;
+		path += "/";
+		path += sumPath;
 	}
 
-	std::string name;
-	name = path.substr(path.find_last_of("/") + 1);
+	char** rc = PHYSFS_enumerateFiles(dir.c_str()); // I followed the example in physfs.h and it isn't working :/
+	char** i;
 
-	if(ImGui::TreeNodeEx(name.c_str(), flag))
+	assets.clear();
+
+	for (i = rc; *i != nullptr; ++i)
 	{
-		if (ImGui::IsItemClicked())
-		{
-			std::string selectedFolder = path;
-			LOG("Selected folder: %s", selectedFolder.c_str());
-		}
+		std::string str = dir + std::string("/") + std::string(*i);
 
-		std::vector<std::string>::iterator it = directories.begin();
-		for (; it != directories.end(); it++)
+		if (PHYSFS_isDirectory(str.c_str()) != 0)
 		{
-			std::string newPath = path;
-			newPath += "/" + (*it);
-			DrawFiles(newPath.c_str()); // Recursively call when the path gets updated.
+			assets.push_back(new Asset(*i, AssetType::DIRECTORY));
 		}
-
-		ImGui::TreePop();
+		else 
+		{
+			assets.push_back(new Asset(*i, AssetType::FILE));
+		}
 	}
+
+	PHYSFS_freeList(rc);
+}
+
+void AssetsManager::ParseBackwardFiles()
+{
+	std::string erase = path.substr(path.find_last_of("/") + 1);
+
+	if (SameString(erase.c_str(), "Assets")) return;
+
+	int size = path.size() - erase.size() - 1;
+	path = path.erase(size, erase.size() + 1);
+
+	std::string dir = path.substr(path.find_last_of("/") + 1);
+
+	char** rc = PHYSFS_enumerateFiles(dir.c_str()); // I followed the example in physfs.h and it isn't working :/
+	char** i;
+
+	assets.clear();
+
+	for (i = rc; *i != nullptr; ++i)
+	{
+		std::string str = dir + std::string("/") + std::string(*i);
+
+		if (PHYSFS_isDirectory(str.c_str()) != 0)
+		{
+			assets.push_back(new Asset(*i, AssetType::DIRECTORY));
+		}
+		else
+		{
+			assets.push_back(new Asset(*i, AssetType::FILE));
+		}
+	}
+
+	PHYSFS_freeList(rc);
 }

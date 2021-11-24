@@ -7,17 +7,54 @@
 #include <vector>
 #include <string>
 
-class AssetsManager : public Module
+enum class AssetType
+{
+	NO_ASSET_TYPE,
+	DIRECTORY,
+	FILE
+};
+
+struct Asset
+{
+	Asset(const char* path, AssetType assetType)
+	{
+		type = assetType;
+		name = path;
+	}
+
+	AssetType type = AssetType::NO_ASSET_TYPE;
+	std::string name;
+};
+
+class AssetsManager
 {
 public:
 
-	AssetsManager(Application * app, bool start_enabled = true);
+	AssetsManager(const char* path);
 	~AssetsManager();
 
-public:
-
 	bool MountPath(const char* path);
-	void ParseFiles(const char* path, std::vector<std::string>& files, std::vector<std::string>& directory) const;
-	void DrawFiles(std::string path);
+	void ParseFiles();
+	void ParseForwardFiles(const char* sumPath);
+	void ParseBackwardFiles();
+	void SetPath(const char* pathh)
+	{
+		path.clear();
+		path = pathh;
+	}
+	int GetAssetsNumber()
+	{
+		return assets.size();
+	}
+	Asset* GetAssetAt(unsigned int i)
+	{
+		return assets.at(i);
+	}
+
+
+private:
+
+	std::vector<Asset*> assets;
+	std::string path;
 
 };

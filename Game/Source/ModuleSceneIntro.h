@@ -7,6 +7,7 @@
 #include <vector>
 #include "ModuleRenderer3D.h"
 #include "ModuleInput.h"
+#include "AssetsManager.h"
 #include "Model.h"
 
 class Shape3D;

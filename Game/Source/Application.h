@@ -45,7 +45,6 @@ public:
 	ModuleInput* input = nullptr;
 	ModuleScene* scene = nullptr;
 	ModuleCamera3D* camera = nullptr;
-	AssetsManager* assets = nullptr;
 	ModuleRenderer3D* render = nullptr;
 
 private:

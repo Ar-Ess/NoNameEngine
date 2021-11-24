@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "ModuleWindow.h"
 #include "ModuleRender.h"
+#include "AssetsManager.h"
 #include "Globals.h"
 #include <string>
 
@@ -30,7 +31,7 @@ class Pyramid3D;
 class EditorScene
 {
 public:
-	EditorScene(Application* app, vector<Shape3D*>* shapes);
+	EditorScene(Application* app, vector<Shape3D*>* shapes, AssetsManager* assetsManager);
 	~EditorScene();
 
 	bool Start();
@@ -133,6 +134,7 @@ private: // Variables
 	float framerate = 0.0f;
 	float milliseconds = 0.0f;
 	vector<Shape3D*>* shapes = nullptr;
+	AssetsManager* assets = nullptr;
 	ImGuiID dockSpaceId = {};
 	int selectedShape = 0;
 };
