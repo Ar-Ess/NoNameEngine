@@ -3,6 +3,7 @@
 #include "ModuleWindow.h"
 #include "ModuleRender.h"
 #include "AssetsManager.h"
+#include "Model.h"
 #include "Globals.h"
 #include <string>
 
@@ -49,6 +50,9 @@ private: // Functions
 	bool ShowHierarchyWindow(bool open);
 	bool ShowInspectorWindow(bool open);
 	bool ShowAssetsWindow(bool open);
+
+	bool LoadTextureFromFile(const char* filename, GLuint* out_texture, int* out_width, int* out_height);
+	bool ImageLoader(const char* filename, GLuint* out);
 
 	bool ShortCuts();
 
@@ -137,4 +141,12 @@ private: // Variables
 	AssetsManager* assets = nullptr;
 	ImGuiID dockSpaceId = {};
 	int selectedShape = 0;
+
+	// Image texture UI variables
+	int myImageWidth = 0;
+	int myImageHeight = 0;
+	GLuint myImageTexture = 0;
+	bool image;
+	int imageWidth = 80;
+	int imageHeight = 80;
 };

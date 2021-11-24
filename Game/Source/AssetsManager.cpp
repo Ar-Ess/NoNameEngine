@@ -80,7 +80,7 @@ void AssetsManager::ParseForwardFiles(const char* sumPath)
 		path += sumPath;
 	}
 
-	char** rc = PHYSFS_enumerateFiles(dir.c_str()); // I followed the example in physfs.h and it isn't working :/
+	char** rc = PHYSFS_enumerateFiles(dir.c_str()); 
 	char** i;
 
 	assets.clear();
@@ -113,7 +113,7 @@ void AssetsManager::ParseBackwardFiles()
 
 	std::string dir = path.substr(path.find_last_of("/") + 1);
 
-	char** rc = PHYSFS_enumerateFiles(dir.c_str()); // I followed the example in physfs.h and it isn't working :/
+	char** rc = PHYSFS_enumerateFiles(dir.c_str());
 	char** i;
 
 	assets.clear();

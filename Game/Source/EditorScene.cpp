@@ -1,9 +1,11 @@
 #include "EditorScene.h"
+
 #include "ModuleSceneIntro.h"
 #include "ModuleInput.h"
 #include "ModuleCamera3D.h"
 #include "AssetsManager.h"
-
+#include "stb_image.h"
+//#include "External/imgui/imgui.h"
 EditorScene::EditorScene(Application* App, vector<Shape3D*>* s, AssetsManager* assetsManager)
 {
 	this->app = App;
@@ -30,6 +32,10 @@ bool EditorScene::Start()
 	shapes->push_back(c2);
 	Cube3D* c3 = new Cube3D({ 0, 0, 1 }, 1.0f, { 45, 0, 1, 0 });
 	shapes->push_back(c3);
+
+
+	image = LoadTextureFromFile("Assets/Textures/baker_house_texture.png", &myImageTexture, &myImageWidth, &myImageHeight);
+	IM_ASSERT(image);
 
 	assets->ParseFiles();
 
@@ -693,6 +699,7 @@ bool EditorScene::ShowInspectorWindow(bool open)
 
 				// TEXTURE
 				ImGui::Text(" Texture:");
+				
 				AddSpacing(0);
 
 				if (s->GetShapeType() != MODEL3D)
@@ -703,6 +710,8 @@ bool EditorScene::ShowInspectorWindow(bool open)
 				else
 				{
 					Model* m = (Model*)s;
+
+					ImGui::Image((void*)(intptr_t)myImageTexture, ImVec2(imageWidth, imageHeight));
 
 					// Size
 					ImGui::BulletText("Size: ");
@@ -811,6 +820,40 @@ bool EditorScene::ShowAssetsWindow(bool open)
 		ImGui::End();
 	}
 	return open;
+}
+
+bool EditorScene::LoadTextureFromFile(const char* filename, GLuint* out_texture, int* out_width, int* out_height)
+{
+	// Load from file
+	int image_width = 0;
+	int image_height = 0;
+	unsigned char* image_data = stbi_load(filename, &image_width, &image_height, NULL, 4);
+	if (image_data == NULL)
+		return false;
+
+	// Create a OpenGL texture identifier
+	GLuint image_texture;
+	glGenTextures(1, &image_texture);
+	glBindTexture(GL_TEXTURE_2D, image_texture);
+
+	// Setup filtering parameters for display
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // This is required on WebGL for non power-of-two textures
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // Same
+
+	// Upload pixels into texture
+#if defined(GL_UNPACK_ROW_LENGTH) && !defined(__EMSCRIPTEN__)
+	glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+#endif
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_width, image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
+	stbi_image_free(image_data);
+
+	*out_texture = image_texture;
+	*out_width = image_width;
+	*out_height = image_height;
+
+	return true;
 }
 
 bool EditorScene::ShortCuts()
