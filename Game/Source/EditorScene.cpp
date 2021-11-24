@@ -783,7 +783,7 @@ bool EditorScene::ShowAssetsWindow(bool open)
 					}
 
 					ImGui::TableHeadersRow();
-					ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
+					ImGui::TableNextRow();
 
 					for (int i = 0; i < columns; i++)
 					{
