@@ -1,6 +1,6 @@
-# [NoNameEngine](https://github.com/BooStarGamer/NoNameEngine)
+# [NoNameEngine](https://github.com/Ar-Ess/NoNameEngine)
 ## Team Members
-### [Martí Buxeda](https://github.com/BooStarGamer)
+### [Martí Buxeda](https://github.com/Ar-Ess)
 ### [Jordi Espriu](https://github.com/LordUnicorn31)
 ### [Víctor Jara](https://github.com/Kerali)
 ## Description
