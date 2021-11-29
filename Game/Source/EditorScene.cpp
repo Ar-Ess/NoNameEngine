@@ -746,6 +746,8 @@ bool EditorScene::ShowAssetsWindow(bool open)
 			if (ImGui::Button("Refresh directory"))
 				assets->ParseFiles();
 
+			ImGui::SameLine();
+
 			if (ImGui::Button("Back"))
 				assets->ParseBackwardFiles();
 
