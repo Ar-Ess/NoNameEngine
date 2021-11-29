@@ -7,7 +7,7 @@
 ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	// Create Scenes
-	editor = new EditorScene(app, &shapes, new AssetsManager("/Assets"));
+	editor = new EditorScene(app, &shapes, new AssetsManager("/Assets"), new ImportManager());
 }
 
 ModuleScene::~ModuleScene()

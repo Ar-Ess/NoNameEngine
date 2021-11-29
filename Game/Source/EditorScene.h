@@ -3,6 +3,7 @@
 #include "ModuleWindow.h"
 #include "ModuleRender.h"
 #include "AssetsManager.h"
+#include "ImportManager.h"
 #include "Model.h"
 #include "Globals.h"
 #include <string>
@@ -28,11 +29,12 @@ class Plane3D;
 class Cube3D;
 class Cylinder3D;
 class Pyramid3D;
+class Image;
 
 class EditorScene
 {
 public:
-	EditorScene(Application* app, vector<Shape3D*>* shapes, AssetsManager* assetsManager);
+	EditorScene(Application* app, vector<Shape3D*>* shapes, AssetsManager* assetsManager, ImportManager* importManager);
 	~EditorScene();
 
 	bool Start();
@@ -50,9 +52,6 @@ private: // Functions
 	bool ShowHierarchyWindow(bool open);
 	bool ShowInspectorWindow(bool open);
 	bool ShowAssetsWindow(bool open);
-
-	bool LoadTextureFromFile(const char* filename, GLuint* out_texture, int* out_width, int* out_height);
-	bool ImageLoader(const char* filename, GLuint* out);
 
 	bool ShortCuts();
 
@@ -75,6 +74,72 @@ private: // Functions
 	{
 		if (separator == 0) return;
 		for (int i = 0; i < separator; i++) ImGui::Separator();
+	}
+
+	// Given an Image enum type, width and height, draw an image
+	void AddImage(Image img, unsigned int w = 0, unsigned int h = 0)
+	{
+		int width = (int)img.GetImageDimensions().x;
+		int height = (int)img.GetImageDimensions().y;
+
+		if (w != 0 || h != 0)
+		{
+			width = w;
+			height = h;
+		}
+
+		ImGui::Image(ImTextureID(img.GetTextureId()),ImVec2(width, height));
+	}
+
+	void AddImage(Image img, int proportion = 100)
+	{
+		int width = (int)img.GetImageDimensions().x;
+		int height = (int)img.GetImageDimensions().y;
+
+		if (proportion <= 0) proportion = 100;
+
+		if (proportion != 100)
+		{
+			width = int(ceil((width * proportion) / 100));
+			height = int(ceil((height * proportion) / 100));
+		}
+
+		ImGui::Image(ImTextureID(img.GetTextureId()), ImVec2(width, height));
+	}
+
+	// Given an Image enum type, width and height, draw an image
+	bool AddImageButton(Image img, unsigned int w = 0, unsigned int h = 0)
+	{
+		int width = (int)img.GetImageDimensions().x;
+		int height = (int)img.GetImageDimensions().y;
+
+		if (w != 0 || h != 0)
+		{
+			width = w;
+			height = h;
+		}
+
+		if (ImGui::ImageButton(ImTextureID(img.GetTextureId()), ImVec2(width, height))) return true;
+
+		return false;
+	}
+
+	bool AddImageButton(Image img, int proportion = 100)
+	{
+		int width = (int)img.GetImageDimensions().x;
+		int height = (int)img.GetImageDimensions().y;
+
+		if (proportion <= 0) proportion = 100;
+
+		if (proportion != 100)
+		{
+			width = int(ceil((width * proportion) / 100));
+			height = int(ceil((height * proportion) / 100));
+		}
+
+		if (ImGui::ImageButton(ImTextureID(img.GetTextureId()), ImVec2(width, height))) return true;
+
+		return false;
 	}
 
 	// Create a default primitive
@@ -139,10 +204,11 @@ private: // Variables
 	float milliseconds = 0.0f;
 	vector<Shape3D*>* shapes = nullptr;
 	AssetsManager* assets = nullptr;
+	ImportManager* import = nullptr;
 	ImGuiID dockSpaceId = {};
 	int selectedShape = 0;
 
-	// Image texture UI variables
+	// Test image texture UI variables
 	int myImageWidth = 0;
 	int myImageHeight = 0;
 	GLuint myImageTexture = 0;

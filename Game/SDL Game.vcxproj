@@ -109,6 +109,7 @@
     <ClInclude Include="Source\External\PhysFS\include\physfs.h" />
     <ClInclude Include="Source\glmath.h" />
     <ClInclude Include="Source\Globals.h" />
+    <ClInclude Include="Source\ImportManager.h" />
     <ClInclude Include="Source\stb_image.h" />
     <ClInclude Include="Source\Light.h" />
     <ClInclude Include="Source\Mesh.h" />
@@ -141,6 +142,7 @@
     <ClCompile Include="Source\External\json\json_writer.cpp" />
     <ClCompile Include="Source\External\parson\Parson.cpp" />
     <ClCompile Include="Source\glmath.cpp" />
+    <ClCompile Include="Source\ImportManager.cpp" />
     <ClCompile Include="Source\Light.cpp" />
     <ClCompile Include="Source\log.cpp" />
     <ClCompile Include="Source\Main.cpp" />

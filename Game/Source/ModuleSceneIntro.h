@@ -8,6 +8,7 @@
 #include "ModuleRenderer3D.h"
 #include "ModuleInput.h"
 #include "AssetsManager.h"
+#include "ImportManager.h"
 #include "Model.h"
 
 class Shape3D;

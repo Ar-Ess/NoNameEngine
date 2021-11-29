@@ -37,6 +37,9 @@
     <Filter Include="External\PhysFS">
       <UniqueIdentifier>{a4feabb6-2d05-40c3-ac03-730c0c631125}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils\Managers">
+      <UniqueIdentifier>{2781aeb3-0ccc-4dae-9b75-2ec0f48c4d0e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\External\imgui\imconfig.h">
@@ -162,8 +165,11 @@
     <ClInclude Include="Source\External\PhysFS\include\physfs.h">
       <Filter>External\PhysFS</Filter>
     </ClInclude>
+    <ClInclude Include="Source\ImportManager.h">
+      <Filter>Utils\Managers</Filter>
+    </ClInclude>
     <ClInclude Include="Source\AssetsManager.h">
-      <Filter>Modules</Filter>
+      <Filter>Utils\Managers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -248,8 +254,11 @@
     <ClCompile Include="Source\Model.cpp">
       <Filter>Utils\Geometry</Filter>
     </ClCompile>
+    <ClCompile Include="Source\ImportManager.cpp">
+      <Filter>Utils\Managers</Filter>
+    </ClCompile>
     <ClCompile Include="Source\AssetsManager.cpp">
-      <Filter>Modules</Filter>
+      <Filter>Utils\Managers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
