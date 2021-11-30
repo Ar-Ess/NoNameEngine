@@ -145,10 +145,6 @@ update_status ModuleRenderer3D::PreUpdate()
 
 update_status ModuleRenderer3D::PostUpdate()
 {
-	//glLoadIdentity();
-	//glMatrixMode(GL_MODELVIEW);
-	//mat4x4 identityMatrix = {};
-	//glLoadMatrixf(&identityMatrix);
 
 	DebugDraw();
 	Draw();
@@ -202,7 +198,9 @@ bool ModuleRenderer3D::GeometryDraw()
 
 	for (int i = 0; i < app->scene->shapes.size(); i++)
 	{
+		glPushMatrix();
 		ret = app->scene->shapes[i]->Draw();
+		glPopMatrix();
 	}
 
 	for (uint i = 0; i < MAX_LIGHTS; ++i)

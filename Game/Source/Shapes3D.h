@@ -160,22 +160,23 @@ class Cube3D : public Shape3D
 public:
 	Cube3D(Point3D pos = {0.0f, 0.0f, 0.0f}, float s = 1, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, CUBE3D, "Cube")
 	{
-		for (int i = 0; i < 24; i++)
-		{
-			float p[3] = {pos.x, pos.y, pos.z};
-			vertex[i] *= s;
-			vertex[i] += p[i % 3];
+		//for (int i = 0; i < 24; i++)
+		//{
+		//	float p[3] = {pos.x, pos.y, pos.z};
+		//	vertex[i] *= s;
+		//	vertex[i] += p[i % 3];
 
-			if (i < 8)
-			{
-				v[i] *= s;
-				v[i] += pos;
-			}
-		}
+		//	if (i < 8)
+		//	{
+		//		v[i] *= s;
+		//		v[i] += pos;
+		//	}
+		//}
 	}
 
 	bool Draw()
 	{
+		glTranslatef(position.x, position.y, position.z);
 		glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
 
 		if (solid) DrawSolid();

@@ -21,19 +21,20 @@ EditorScene::~EditorScene()
 
 bool EditorScene::Start()
 {
+	// Test
+	folderImage = import->LoadTextureFromFile("Assets/Textures/NNE_Folder_Texture.png");
+
 	Plane3D* p = new Plane3D({ 0, 0, 0 }, {0, 1, 0}, 200);
 	p->axis = true;
 	p->solid = false;
 	shapes->push_back(p);
 
-	Cube3D* c0 = new Cube3D({ 3, 0, 5 }, 1.0f, { 00, 0, 0, 0 });
+	Cube3D* c0 = new Cube3D({ 0, 0, 0 }, 1.0f, { 0, 0, 0, 0 });
 	shapes->push_back(c0);
-	Cube3D* c1 = new Cube3D({ 2, 0, 2 }, 1.0f, { 00, 0, 0, 0 });
+	Cube3D* c1 = new Cube3D({ 2, 2, 0 }, 1.0f, { 0, 0, 0, 0 });
 	shapes->push_back(c1);
-	Cube3D* c2 = new Cube3D({ 1, 0, 4 }, 1.0f, { 00, 0, 0, 0 });
+	Cube3D* c2 = new Cube3D({ 1, 0, 4 }, 1.0f, { 0, 0, 0, 0 });
 	shapes->push_back(c2);
-	Cube3D* c3 = new Cube3D({ 0, 0, 1 }, 1.0f, { 45, 0, 1, 0 });
-	shapes->push_back(c3);
 
 	assets->ParseFiles();
 
@@ -709,7 +710,7 @@ bool EditorScene::ShowInspectorWindow(bool open)
 				{
 					Model* m = (Model*)s;
 
-					ImGui::Image((void*)(intptr_t)myImageTexture, ImVec2(imageWidth, imageHeight));
+					//ImGui::Image((void*)(intptr_t)myImageTexture, ImVec2(imageWidth, imageHeight));
 
 					// Size
 					ImGui::BulletText("Size: ");
@@ -749,6 +750,11 @@ bool EditorScene::ShowAssetsWindow(bool open)
 			if (ImGui::Button("Back"))
 				assets->ParseBackwardFiles();
 
+			ImGui::SameLine(0.0f, 600);
+			ImGui::PushItemWidth(150);
+			ImGui::SliderInt("Size", &assetsWidth, 0, 100, "%d");
+			ImGui::PopItemWidth();
+
 			ImGuiTableFlags flags = ImGuiTableFlags_Reorderable | ImGuiTableFlags_PadOuterX | ImGuiTableFlags_SizingStretchSame;
 
 			// Number of assets in total
@@ -761,6 +767,54 @@ bool EditorScene::ShowAssetsWindow(bool open)
 			int numTables = 1; // Number of tables to make
 			if (assetSize > numMaxAssets) numTables = ceil((float)assetSize / numMaxAssets);
 
+			// Assets via Buttons
+			for (int a = 0; a < numTables; a++)
+			{
+				if (assetSize == 0) break;
+				bool click = false;
+
+				AddSpacing(1);
+				AddSeparator(1);
+				AddSpacing(1);
+
+				int columns = 0;
+				if (numTables == 1) columns = assetSize;
+				else
+				{
+					if (a == numTables - 1) columns = assetSize - (numMaxAssets * (numTables - 1));
+					else
+						columns = numMaxAssets;
+				}
+
+				for (int i = 0; i < columns; i++)
+				{
+					char n[20];
+					sprintf_s(n, "col%d", i);
+
+					ImGui::Columns(columns, n, false);
+					ImGui::SetColumnWidth(i, (assetsWidth + 120));
+					ImGui::Text(assets->GetAssetAt(i + (columns * a))->name.c_str());
+					ImGui::PushID(i);
+					if (AddImageButton(folderImage, (int)10))
+					{
+						switch (assets->GetAssetAt(i)->type)
+						{
+						case AssetType::DIRECTORY:
+						{
+							assets->ParseForwardFiles(assets->GetAssetAt(i + (columns * a))->name.c_str());
+							click = true;
+							break;
+						}
+						case AssetType::FILE: break;
+						}
+					}
+					ImGui::PopID();
+					ImGui::NextColumn();
+				}
+			}
+
+			// Assets via Headers
+			/*
 			for (int a = 0; a < numTables; a++)
 			{
 				if (assetSize == 0) break;
@@ -822,6 +876,7 @@ bool EditorScene::ShowAssetsWindow(bool open)
 					if (click) break;
 				}
 			}
+			*/
 		}
 		ImGui::End();
 	}

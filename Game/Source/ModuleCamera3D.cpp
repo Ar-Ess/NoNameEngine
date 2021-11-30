@@ -36,7 +36,7 @@ bool ModuleCamera3D::CleanUp()
 	return true;
 }
 
-update_status ModuleCamera3D::Update()
+update_status ModuleCamera3D::PostUpdate()
 {
 	//if (app->scene->GetWindowState(Windows::CONFIG_W) || app->scene->GetWindowState(Windows::DEMO_W) || app->scene->GetWindowState(Windows::OUTPUT_W) || app->scene->GetWindowState(Windows::ABOUT_W)) return UPDATE_CONTINUE;
 	if (app->scene->GetOnWindow() || app->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || (app->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT)) return UPDATE_CONTINUE;

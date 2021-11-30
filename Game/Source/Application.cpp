@@ -32,7 +32,6 @@ Application::Application()
 
 	// Main Modules
 	AddModule(window);
-	AddModule(camera);
 	AddModule(input);
 	
 	// Scenes
@@ -40,6 +39,9 @@ Application::Application()
 
 	// Render
 	AddModule(render);
+
+	// Camera
+	AddModule(camera);
 
 	PERF_PEEK(ptimer);
 }

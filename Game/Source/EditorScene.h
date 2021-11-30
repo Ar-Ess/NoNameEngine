@@ -119,7 +119,7 @@ private: // Functions
 			height = h;
 		}
 
-		if (ImGui::ImageButton(ImTextureID(img.GetTextureId()), ImVec2(width, height))) return true;
+		if (ImGui::ImageButton(ImTextureID(img.GetTextureId()), ImVec2(width, height), ImVec2(0, 0), ImVec2(1, 1), 0)) return true;
 
 		return false;
 	}
@@ -137,7 +137,7 @@ private: // Functions
 			height = int(ceil((height * proportion) / 100));
 		}
 
-		if (ImGui::ImageButton(ImTextureID(img.GetTextureId()), ImVec2(width, height))) return true;
+		if (ImGui::ImageButton(ImTextureID(img.GetTextureId()), ImVec2(width, height), ImVec2(0, 0), ImVec2(1, 1))) return true;
 
 		return false;
 	}
@@ -202,17 +202,12 @@ private: // Variables
 	Application* app = nullptr;
 	float framerate = 0.0f;
 	float milliseconds = 0.0f;
+	int assetsWidth = 0;
 	vector<Shape3D*>* shapes = nullptr;
 	AssetsManager* assets = nullptr;
 	ImportManager* import = nullptr;
 	ImGuiID dockSpaceId = {};
 	int selectedShape = 0;
 
-	// Test image texture UI variables
-	int myImageWidth = 0;
-	int myImageHeight = 0;
-	GLuint myImageTexture = 0;
-	bool image;
-	int imageWidth = 80;
-	int imageHeight = 80;
+	Image folderImage = { ImageTexture::IMG_NO_IMAGE };
 };
