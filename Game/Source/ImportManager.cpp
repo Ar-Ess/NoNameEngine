@@ -7,9 +7,10 @@ ImportManager::ImportManager()
 
 ImportManager::~ImportManager()
 {
+	imageList.clear();
 }
 
-Image ImportManager::LoadTextureFromFile(const char* filename)
+Image ImportManager::LoadImageFromFile(const char* filename, ImageTexture tex)
 {
 	// Load from file
 	int imageWidth = 0;
@@ -40,5 +41,19 @@ Image ImportManager::LoadTextureFromFile(const char* filename)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
 	stbi_image_free(imageData);
 
-	return Image(imageTexture, imageWidth, imageHeight);
+	return Image(imageTexture, imageWidth, imageHeight, tex);
+}
+
+Image ImportManager::GetImage(ImageTexture tex)
+{
+	if ((int)tex < 0 || (int)tex >= imageList.size())
+		return Image(ImageTexture::IMG_NO_IMAGE);
+
+	return imageList[(int)tex];
+}
+
+void ImportManager::LoadDefaultImages()
+{
+	imageList.push_back(LoadImageFromFile("Assets/Textures/NNE_Folder_Texture.png", ImageTexture::IMG_FOLDER));
+	imageList.push_back(LoadImageFromFile("Assets/Textures/NNE_File_Texture.png", ImageTexture::IMG_FILE));
 }

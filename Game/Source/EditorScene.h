@@ -210,4 +210,5 @@ private: // Variables
 	int selectedShape = 0;
 
 	Image folderImage = { ImageTexture::IMG_NO_IMAGE };
+	Image fileImage = { ImageTexture::IMG_NO_IMAGE };
 };

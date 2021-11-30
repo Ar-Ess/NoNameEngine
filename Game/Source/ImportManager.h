@@ -2,12 +2,12 @@
 #define __IMPORT_MANAGER_H__
 
 #include "Globals.h"
-#include <string>
+#include <vector>
 #include "External/SDL/include/SDL_opengl.h"
 
 enum class ImageTexture
 {
-	IMG_NO_IMAGE,
+	IMG_NO_IMAGE = -1,
 	IMG_FOLDER,
 	IMG_FILE,
 	IMG_CUSTOM
@@ -40,20 +40,25 @@ public:
 		return;
 	}
 
-	Image(GLuint imgTextureID, Point size)
+	Image(GLuint imgTextureID, Point size, ImageTexture tex = ImageTexture::IMG_CUSTOM)
 	{
 		textureID = imgTextureID;
 		width = (int)size.x;
 		height = (int)size.y;
-		texture = ImageTexture::IMG_CUSTOM;
+		texture = tex;
 	}
 
-	Image(GLuint imgTextureID, int imgWidth, int imgHeight)
+	Image(GLuint imgTextureID, int imgWidth, int imgHeight, ImageTexture tex = ImageTexture::IMG_CUSTOM)
 	{
 		textureID = imgTextureID;
 		width = imgWidth;
 		height = imgHeight;
-		texture = ImageTexture::IMG_CUSTOM;
+		texture = tex;
+	}
+
+	~Image()
+	{
+
 	}
 
 public:
@@ -89,9 +94,15 @@ public:
 
 	~ImportManager();
 
-	Image LoadTextureFromFile(const char* filename);
+	Image LoadImageFromFile(const char* filename, ImageTexture tex = ImageTexture::IMG_CUSTOM);
 
-	bool ImageLoader(const char* filename, GLuint* out);
+	Image GetImage(ImageTexture tex);
+
+	void LoadDefaultImages();
+
+private:
+	std::vector<Image> imageList;
+
 };
 
 #endif // !__IMPORT_MANAGER_H__

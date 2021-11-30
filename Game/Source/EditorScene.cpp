@@ -21,8 +21,7 @@ EditorScene::~EditorScene()
 
 bool EditorScene::Start()
 {
-	// Test
-	folderImage = import->LoadTextureFromFile("Assets/Textures/NNE_Folder_Texture.png");
+	import->LoadDefaultImages();
 
 	Plane3D* p = new Plane3D({ 0, 0, 0 }, {0, 1, 0}, 200);
 	p->axis = true;
@@ -798,7 +797,14 @@ bool EditorScene::ShowAssetsWindow(bool open)
 					ImGui::Text(assets->GetAssetAt(i + (columns * a))->name.c_str());
 					ImGui::PushID(i);
 
-					if (AddImageButton(folderImage, (int)10))
+					ImageTexture tex = ImageTexture::IMG_FOLDER;
+					switch (assets->GetAssetAt(i)->type)
+					{
+					case AssetType::DIRECTORY: tex = ImageTexture::IMG_FOLDER; break;
+					case AssetType::FILE: tex = ImageTexture::IMG_FILE; break;
+					}
+
+					if (AddImageButton(import->GetImage(tex), (int)10))
 					{
 						switch (assets->GetAssetAt(i)->type)
 						{
@@ -810,6 +816,7 @@ bool EditorScene::ShowAssetsWindow(bool open)
 						case AssetType::FILE: break;
 						}
 					}
+					
 					ImGui::PopID();
 					ImGui::NextColumn();
 				}
