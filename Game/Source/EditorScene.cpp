@@ -752,36 +752,34 @@ bool EditorScene::ShowAssetsWindow(bool open)
 
 			ImGui::SameLine(0.0f, 600);
 			ImGui::PushItemWidth(150);
-			ImGui::SliderInt("Size", &assetsWidth, 0, 100, "%d");
+			ImGui::SliderInt("Size", &assetsWidth, 0, 28, "%d");
 			ImGui::PopItemWidth();
-
-			ImGuiTableFlags flags = ImGuiTableFlags_Reorderable | ImGuiTableFlags_PadOuterX | ImGuiTableFlags_SizingStretchSame;
 
 			// Number of assets in total
 			int assetSize = assets->GetAssetsNumber();
 
 			// Number of assets per table
-			int numMaxAssets = 7;
+			int numMaxAssets = 8;
+			if (assetsWidth >= 11) numMaxAssets = 7;
 
 			// Number of tables to make
-			int numTables = 1; // Number of tables to make
-			if (assetSize > numMaxAssets) numTables = ceil((float)assetSize / numMaxAssets);
+			int numRows = 1; // Number of tables to make
+			if (assetSize > numMaxAssets) numRows = ceil((float)assetSize / numMaxAssets);
+
+			AddSpacing(1);
+			AddSeparator(1);
 
 			// Assets via Buttons
-			for (int a = 0; a < numTables; a++)
+			for (int a = 0; a < numRows; a++)
 			{
 				if (assetSize == 0) break;
-				bool click = false;
-
-				AddSpacing(1);
-				AddSeparator(1);
 				AddSpacing(1);
 
 				int columns = 0;
-				if (numTables == 1) columns = assetSize;
+				if (numRows == 1) columns = assetSize;
 				else
 				{
-					if (a == numTables - 1) columns = assetSize - (numMaxAssets * (numTables - 1));
+					if (a == numRows - 1) columns = assetSize - (numMaxAssets * (numRows - 1));
 					else
 						columns = numMaxAssets;
 				}
@@ -789,12 +787,17 @@ bool EditorScene::ShowAssetsWindow(bool open)
 				for (int i = 0; i < columns; i++)
 				{
 					char n[20];
-					sprintf_s(n, "col%d", i);
 
-					ImGui::Columns(columns, n, false);
-					ImGui::SetColumnWidth(i, (assetsWidth + 120));
+					if (columns > 1)
+					{
+						sprintf_s(n, "col%d", a);
+						ImGui::Columns(columns, n, false);
+						ImGui::SetColumnWidth(i, (assetsWidth + 120));
+					}
+
 					ImGui::Text(assets->GetAssetAt(i + (columns * a))->name.c_str());
 					ImGui::PushID(i);
+
 					if (AddImageButton(folderImage, (int)10))
 					{
 						switch (assets->GetAssetAt(i)->type)
@@ -802,7 +805,6 @@ bool EditorScene::ShowAssetsWindow(bool open)
 						case AssetType::DIRECTORY:
 						{
 							assets->ParseForwardFiles(assets->GetAssetAt(i + (columns * a))->name.c_str());
-							click = true;
 							break;
 						}
 						case AssetType::FILE: break;
@@ -812,71 +814,6 @@ bool EditorScene::ShowAssetsWindow(bool open)
 					ImGui::NextColumn();
 				}
 			}
-
-			// Assets via Headers
-			/*
-			for (int a = 0; a < numTables; a++)
-			{
-				if (assetSize == 0) break;
-				bool click = false;
-
-				AddSpacing(1);
-				AddSeparator(1);
-				AddSpacing(1);
-
-				char n[20];
-				sprintf_s(n, "table%d", a);
-
-				int columns = 0;
-				if (numTables == 1) columns = assetSize;
-				else
-				{
-					if (a == numTables - 1) columns = assetSize - (numMaxAssets * (numTables - 1));
-					else
-						columns = numMaxAssets;
-				}
-
-				if (ImGui::BeginTable(n, columns, flags, ImVec2{ 1000, 0.0f}, 1000))
-				{
-					// Submit columns name with TableSetupColumn() and call TableHeadersRow() to create a row with a header in each column.
-					// (Later we will show how TableSetupColumn() has other uses, optional flags, sizing weight etc.)
-					for (int i = 0; i < columns; i++)
-					{
-						ImGui::TableSetupColumn(assets->GetAssetAt(i + (columns * a))->name.c_str());
-					}
-
-					ImGui::TableHeadersRow();
-					ImGui::TableNextRow();
-
-					for (int i = 0; i < columns; i++)
-					{
-						ImGui::TableSetColumnIndex(i);
-
-						Image image = import->LoadTextureFromFile("Assets/Textures/NNE_Folder_Texture.png");
-						AddImageButton(image, (int)10);
-
-						if (ImGui::Button(assets->GetAssetAt(i + (columns * a))->name.c_str()))
-						{
-							switch (assets->GetAssetAt(i)->type)
-							{
-							case AssetType::DIRECTORY: 
-							{
-								assets->ParseForwardFiles(assets->GetAssetAt(i + (columns * a))->name.c_str());
-								click = true;
-								break;
-							}
-							case AssetType::FILE: break;
-							}
-						}
-
-						if (click) break;
-					}
-					ImGui::EndTable();
-
-					if (click) break;
-				}
-			}
-			*/
 		}
 		ImGui::End();
 	}
