@@ -105,6 +105,8 @@ bool Model::LoadModel(const char* pathFile, const char* pathTex)
         tID.internalFormat = GL_RGBA;
         if (compPerPixel == 3) tID.internalFormat = GL_RGB;
 
+        tID.channelsPerPixel = compPerPixel;
+
         size = {tID.width, tID.height};
 
         // SETTING MESH
@@ -112,7 +114,7 @@ bool Model::LoadModel(const char* pathFile, const char* pathTex)
         meshes.push_back(m);
 
         // FREE VARIABLES
-        stbi_image_free(tID.pixels);
+        //stbi_image_free(tID.pixels);
     }
 
     aiReleaseImport(scene);

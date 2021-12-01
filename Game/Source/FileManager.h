@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <string>
 #include <iterator>
+#include "External/Density/density_api.h"
 
 struct FileEditor;
 
@@ -72,15 +73,44 @@ class FileManager
 						fprintf_s(file, "%f ", *s.t);
 					}
 
-					//// Texture Internal Data
-					//fprintf_s(file, "\n - Texture Internal Data: (Pixels, InternalFormat, Width, Height, textCoordArraySizeinBytes)\n");
-					//int pixelNum = sizeof(mh->GetInternalData().pixels) / sizeof(unsigned char);
-					//for (struct { int a;  unsigned char* p; void Add() { ++a; p += 1; }; } s = { 0, mh->GetInternalData().pixels };
-					//	s.a < pixelNum; 
-					//	s.Add())
-					//{
-					//	fprintf_s(file, "%s ", *s.p);
-					//}
+					// Texture Internal Data
+					fprintf_s(file, "\n - Texture Internal Data: (Pixels, InternalFormat, Width, Height, TextCoordArraySize in Bytes, ChannelsPerPixel)\n");
+					TextureInternalData tID = mh->GetInternalData();
+					int dataNum = tID.width * tID.height * tID.channelsPerPixel;
+					fprintf_s(file, "%d\n", (int)tID.internalFormat);
+					fprintf_s(file, "%d\n", tID.width);
+					fprintf_s(file, "%d\n", tID.height);
+					fprintf_s(file, "%d\n", (int)tID.textCoordArraySizeinBytes);
+					fprintf_s(file, "%d\n", tID.channelsPerPixel);
+					//// Example
+					//uint_fast64_t compress_safe_size = density_compress_safe_size(dataNum);
+					////uint_fast64_t decompress_safe_size = density_decompress_safe_size(datanum);
+					//
+					//// Allocate required memory
+					//uint8_t* outCompressed = (uint8_t*)malloc(compress_safe_size * sizeof(unsigned char));
+					////uint8_t* outDecompressed = (uint8_t*)malloc(decompress_safe_size * sizeof(unsigned char));
+					//density_processing_result result;
+					//
+					//result = density_compress(tID.pixels, dataNum, outCompressed, compress_safe_size, DENSITY_ALGORITHM::DENSITY_ALGORITHM_LION);
+					//if (!result.state)
+					//	LOG("Compressed %llu bytes to %llu bytes\n", result.bytesRead, result.bytesWritten);
+					//
+					////// Decompress
+					////result = density_decompress(outCompressed, result.bytesWritten, outDecompressed, decompress_safe_size);
+					////if (!result.state)
+					////	printf("Decompressed %llu bytes to %llu bytes\n", result.bytesRead, result.bytesWritten);
+					//
+					//// Free memory_allocated
+					//free(outCompressed);
+					////free(outDecompressed);
+					//
+					////for (struct { int a;  unsigned char* p; void Add() { ++a; p += 1; }; } s = { 0, tID.pixels };
+					////	s.a < dataNum; 
+					////	s.Add())
+					////{
+					////	unsigned char a = *s.p;
+					////	fprintf_s(file, "%d ", *s.p);
+					////}
 				}
 
 				break;
@@ -101,6 +131,7 @@ class FileManager
 	};
 
 public:
+
 	FileEditor OpenFile(const char* fileName)
 	{
 		std::string name = fileName;

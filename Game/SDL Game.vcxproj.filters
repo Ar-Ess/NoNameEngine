@@ -40,6 +40,9 @@
     <Filter Include="Utils\Managers">
       <UniqueIdentifier>{2781aeb3-0ccc-4dae-9b75-2ec0f48c4d0e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External\Density">
+      <UniqueIdentifier>{26030cc1-70a2-4877-b7aa-9d779fcdfad4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\External\imgui\imconfig.h">
@@ -174,6 +177,63 @@
     <ClInclude Include="Source\FileManager.h">
       <Filter>Utils\Managers</Filter>
     </ClInclude>
+    <ClInclude Include="Source\External\Density\algorithms\algorithms.h">
+      <Filter>External\Density</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Density\algorithms\chameleon\chameleon.h">
+      <Filter>External\Density</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Density\algorithms\chameleon\core\chameleon_decode.h">
+      <Filter>External\Density</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Density\algorithms\chameleon\core\chameleon_encode.h">
+      <Filter>External\Density</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Density\algorithms\chameleon\dictionary\chameleon_dictionary.h">
+      <Filter>External\Density</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Density\algorithms\cheetah\cheetah.h">
+      <Filter>External\Density</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Density\algorithms\cheetah\core\cheetah_decode.h">
+      <Filter>External\Density</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Density\algorithms\cheetah\core\cheetah_encode.h">
+      <Filter>External\Density</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Density\algorithms\cheetah\dictionary\cheetah_dictionary.h">
+      <Filter>External\Density</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Density\algorithms\dictionaries.h">
+      <Filter>External\Density</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Density\algorithms\lion\core\lion_decode.h">
+      <Filter>External\Density</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Density\algorithms\lion\core\lion_encode.h">
+      <Filter>External\Density</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Density\algorithms\lion\dictionary\lion_dictionary.h">
+      <Filter>External\Density</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Density\algorithms\lion\forms\lion_form_model.h">
+      <Filter>External\Density</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Density\algorithms\lion\lion.h">
+      <Filter>External\Density</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Density\buffers\buffer.h">
+      <Filter>External\Density</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Density\density_api.h">
+      <Filter>External\Density</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Density\globals.h">
+      <Filter>External\Density</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Density\structure\header.h">
+      <Filter>External\Density</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\External\imgui\imgui_demo.cpp">
@@ -262,6 +322,42 @@
     </ClCompile>
     <ClCompile Include="Source\AssetsManager.cpp">
       <Filter>Utils\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\Density\algorithms\algorithms.c">
+      <Filter>External\Density</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\Density\algorithms\chameleon\core\chameleon_decode.c">
+      <Filter>External\Density</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\Density\algorithms\chameleon\core\chameleon_encode.c">
+      <Filter>External\Density</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\Density\algorithms\cheetah\core\cheetah_decode.c">
+      <Filter>External\Density</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\Density\algorithms\cheetah\core\cheetah_encode.c">
+      <Filter>External\Density</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\Density\algorithms\dictionaries.c">
+      <Filter>External\Density</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\Density\algorithms\lion\core\lion_decode.c">
+      <Filter>External\Density</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\Density\algorithms\lion\core\lion_encode.c">
+      <Filter>External\Density</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\Density\algorithms\lion\forms\lion_form_model.c">
+      <Filter>External\Density</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\Density\buffers\buffer.c">
+      <Filter>External\Density</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\Density\globals.c">
+      <Filter>External\Density</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\Density\structure\header.c">
+      <Filter>External\Density</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

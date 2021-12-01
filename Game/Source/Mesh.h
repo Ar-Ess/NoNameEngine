@@ -13,6 +13,7 @@ struct TextureInternalData
 		width = 0; 
 		height = 0;
 		textCoordArraySizeinBytes = 0;
+		channelsPerPixel = 0;
 	}
 
 	void Reset()
@@ -22,12 +23,14 @@ struct TextureInternalData
 		width = 0;
 		height = 0;
 		textCoordArraySizeinBytes = 0;
+		channelsPerPixel = 0;
 	}
 
 	unsigned char* pixels = nullptr;
 	GLint internalFormat = 0;
 	int width = 0, height = 0;
 	size_t textCoordArraySizeinBytes = 0;
+	int channelsPerPixel = 0;
 };
 
 enum MeshData
@@ -103,6 +106,8 @@ public:
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tID.width, tID.height, 0, tID.internalFormat, GL_UNSIGNED_BYTE, tID.pixels);
+
+		//textureInternalData.Reset();
 	}
 
 	~Mesh() 
