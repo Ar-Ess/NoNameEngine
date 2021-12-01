@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 #include <string>
-#include <vector>
+#include <iterator>
 
 struct FileEditor;
 
@@ -30,20 +30,57 @@ class FileManager
 			{
 				Model* m = (Model*)shape;
 
-				fprintf(file, "\n-- Shape %d --", *numberOfShapesSaved);
+				fprintf_s(file, "-- Shape %d --", *numberOfShapesSaved);
 
 				for (int i = 0; i < m->meshes.size(); i++)
 				{
 					Mesh* mh = m->meshes[i];
 
-					fprintf(file, "\nMesh %d\n - Vertex:\n", i);
-					int a = 0;
-					for (float* vertex = mh->GetVertexPtr(); vertex != nullptr; vertex += 1)
+					// Vertex
+					fprintf_s(file, "\nMesh %d\n - Vertex: %d\n", i, mh->GetNum(MeshData::VERTEX));
+					for (struct { int a; float* v; void Add() {++a; v += 1;}; } s = { 0, mh->GetVertexPtr() };
+						s.a < mh->GetNum(MeshData::VERTEX);
+						s.Add())
 					{
-						a += 1;
-						if (a == 100) break;
-						fprintf(file, "%f ", *vertex);
+						fprintf_s(file, "%f ", *s.v);
 					}
+
+					// Index
+					fprintf_s(file, "\n - Index: %d\n", mh->GetNum(MeshData::INDEX));
+					for (struct { int a; uint* idx; void Add() { ++a; idx += 1; }; } s = { 0, mh->GetIndexPtr() };
+						s.a < mh->GetNum(MeshData::INDEX);
+						s.Add())
+					{
+						fprintf_s(file, "%d ", *s.idx);
+					}
+
+					// Normals
+					fprintf_s(file, "\n - Normals: %d\n", mh->GetNum(MeshData::NORMAL));
+					for (struct { int a; float* n; void Add() { ++a; n += 1; }; } s = { 0, mh->GetNormalPtr() };
+						s.a < mh->GetNum(MeshData::NORMAL);
+						s.Add())
+					{
+						fprintf_s(file, "%f ", *s.n);
+					}
+
+					// Texture Coords
+					fprintf_s(file, "\n - Texture Coords: %d\n", mh->GetNum(MeshData::TEXTURE_COORDS));
+					for (struct { int a; float* t; void Add() { ++a; t += 1; }; } s = { 0, mh->GetTexturePtr() };
+						s.a < mh->GetNum(MeshData::TEXTURE_COORDS);
+						s.Add())
+					{
+						fprintf_s(file, "%f ", *s.t);
+					}
+
+					//// Texture Internal Data
+					//fprintf_s(file, "\n - Texture Internal Data: (Pixels, InternalFormat, Width, Height, textCoordArraySizeinBytes)\n");
+					//int pixelNum = sizeof(mh->GetInternalData().pixels) / sizeof(unsigned char);
+					//for (struct { int a;  unsigned char* p; void Add() { ++a; p += 1; }; } s = { 0, mh->GetInternalData().pixels };
+					//	s.a < pixelNum; 
+					//	s.Add())
+					//{
+					//	fprintf_s(file, "%s ", *s.p);
+					//}
 				}
 
 				break;
@@ -71,31 +108,18 @@ public:
 
 		FILE* file = nullptr;
 		fopen_s(&file, name.c_str(), "r");
-		if (file == nullptr)
+
+		if (file != nullptr)
 		{
-			fopen_s(&file, name.c_str(), "w");
-			if (file != nullptr)
-			{
-				fprintf(file, "PROJECT FILE: %s\n-------------------------------\n", name.c_str());
-				fclose(file);
-			}
+			fclose(file);
+			remove(name.c_str());
 		}
 
-		return FileEditor(name.c_str(), file, &numberOfShapesSaved);
-	}
-
-	bool WriteFile(const char* fileName, const char* text)
-	{
-		std::string name = fileName;
-		name += FILE_EXTENSION;
-
-		FILE* file = nullptr;
 		fopen_s(&file, name.c_str(), "w");
-		if (file == NULL) return false;
-
+		fprintf_s(file, "PROJECT FILE: %s\n-------------------------------\n", name.c_str());
 		fclose(file);
 
-		return true;
+		return FileEditor(name.c_str(), file, &numberOfShapesSaved);
 	}
 
 private:

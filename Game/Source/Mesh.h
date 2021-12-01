@@ -15,6 +15,15 @@ struct TextureInternalData
 		textCoordArraySizeinBytes = 0;
 	}
 
+	void Reset()
+	{
+		pixels = nullptr;
+		internalFormat = 0;
+		width = 0;
+		height = 0;
+		textCoordArraySizeinBytes = 0;
+	}
+
 	unsigned char* pixels = nullptr;
 	GLint internalFormat = 0;
 	int width = 0, height = 0;
@@ -44,6 +53,9 @@ public:
 		normal = normalBuffer;
 		texture = tex;
 		texCoordNum = numOfTextureCoords;
+		textureInternalData = tID;
+
+
 
 		uint count = 0;
 		bool sum = true;
@@ -165,6 +177,11 @@ public:
 		return texture;
 	}
 
+	TextureInternalData GetInternalData() const
+	{
+		return textureInternalData;
+	}
+
 private:
 
 	uint indexID = 0; // index in VRAM
@@ -183,6 +200,8 @@ private:
 	uint textureID = 0;
 	uint texCoordNum = 0;
 	float* texture = nullptr;
+
+	TextureInternalData textureInternalData;
 
 };
 #endif // !__MESH_H__
