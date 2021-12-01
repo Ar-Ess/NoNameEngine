@@ -171,6 +171,9 @@
     <ClInclude Include="Source\AssetsManager.h">
       <Filter>Utils\Managers</Filter>
     </ClInclude>
+    <ClInclude Include="Source\FileManager.h">
+      <Filter>Utils\Managers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\External\imgui\imgui_demo.cpp">

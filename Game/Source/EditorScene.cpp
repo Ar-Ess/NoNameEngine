@@ -4,6 +4,7 @@
 #include "ModuleInput.h"
 #include "ModuleCamera3D.h"
 #include "AssetsManager.h"
+#include "FileManager.h"
 #include "stb_image.h"
 //#include "External/imgui/imgui.h"
 
@@ -21,8 +22,6 @@ EditorScene::~EditorScene()
 
 bool EditorScene::Start()
 {
-	import->LoadDefaultImages();
-
 	Plane3D* p = new Plane3D({ 0, 0, 0 }, {0, 1, 0}, 200);
 	p->axis = true;
 	p->solid = false;
@@ -35,7 +34,14 @@ bool EditorScene::Start()
 	Cube3D* c2 = new Cube3D({ 1, 0, 4 }, 1.0f, { 0, 0, 0, 0 });
 	shapes->push_back(c2);
 
+	Model* m = new Model({ 0, 0, 0 }, 1.0f);
+	m->LoadModel("Assets/Models/cube.fbx");
+
 	assets->ParseFiles();
+	import->LoadDefaultImages();
+
+	FileManager fM;
+	fM.OpenFile("test").Write((Shape3D*)m);
 
 	return true;
 }

@@ -107,6 +107,7 @@
     <ClInclude Include="Source\External\json\writer.h" />
     <ClInclude Include="Source\External\parson\Parson.h" />
     <ClInclude Include="Source\External\PhysFS\include\physfs.h" />
+    <ClInclude Include="Source\FileManager.h" />
     <ClInclude Include="Source\glmath.h" />
     <ClInclude Include="Source\Globals.h" />
     <ClInclude Include="Source\ImportManager.h" />
