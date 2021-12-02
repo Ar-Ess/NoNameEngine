@@ -4,6 +4,7 @@
 #include "ModuleInput.h"
 #include "External/SDL/include/SDL.h"
 #include "ModuleSceneIntro.h"
+#include "glmath.h"
 
 ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -213,4 +214,17 @@ void ModuleCamera3D::CalculateViewMatrix()
 {
 	ViewMatrix = mat4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -dot(X, position), -dot(Y, position), -dot(Z, position), 1.0f);
 	ViewMatrixInverse = inverse(ViewMatrix);
+}
+
+Frustum ModuleCamera3D::CreateFrustum(ModuleCamera3D cam, float aspect, float fovY, float zNear, float zFar)
+{
+	Frustum frustum;
+	const float halfVSide = zFar * tanf(fovY * 0.5f);
+	const float halfHSide = halfVSide * aspect;
+	const vec3 frontMultFar = zFar *lookPoint.z;
+
+	frustum.nearPlane = { position + zNear * lookPoint.z, lookPoint.z };
+	frustum.farPlane = { position + frontMultFar, -lookPoint.z };
+	/*frustum.rightPlane = {position, cross()}*/
+	return frustum;
 }

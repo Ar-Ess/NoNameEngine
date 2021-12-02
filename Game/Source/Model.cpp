@@ -4,7 +4,7 @@
 
 using namespace std;
 
-Model::Model(Point3D pos, float s, Rotation rot) : Shape3D(pos, s, rot, MODEL3D, "Model")
+Model::Model(Point3D pos, Point3D s, Rotation rot) : Shape3D(pos, s, rot, MODEL3D, "Model")
 {
     struct aiLogStream stream;
     stream = aiGetPredefinedLogStream(aiDefaultLogStream_DEBUGGER, nullptr);
@@ -167,7 +167,9 @@ bool Model::Draw()
 
     glTranslatef(position.x, position.y, position.z);
 
-    glScalef(scale, scale, scale);
+    glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
+
+    glScalef(scale.x, scale.y, scale.z);
 
     for (int i = 0; i < meshes.size(); i++)
     {

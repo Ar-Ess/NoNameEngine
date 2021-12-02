@@ -56,4 +56,5 @@ void ImportManager::LoadDefaultImages()
 {
 	imageList.push_back(LoadImageFromFile("Assets/Textures/NNE_Folder_Texture.png", ImageTexture::IMG_FOLDER));
 	imageList.push_back(LoadImageFromFile("Assets/Textures/NNE_File_Texture.png", ImageTexture::IMG_FILE));
+	imageList.erase(imageList.begin());
 }

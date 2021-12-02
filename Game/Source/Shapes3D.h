@@ -43,7 +43,7 @@ public:
 		return rotation;
 	}
 
-	float GetScale() const
+	Point3D GetScale() const
 	{
 		return scale;
 	}
@@ -93,6 +93,21 @@ public:
 		name += nameSet;
 	}
 
+	void SetPosition(Point3D position)
+	{
+		this->position = position;
+	}
+
+	void SetScale(Point3D scale)
+	{
+		this->scale = scale;
+	}
+
+	void SetRotation(Rotation rotation)
+	{
+		this->rotation = rotation;
+	}
+
 
 	bool axis = false;
 	bool edges = true;
@@ -102,7 +117,7 @@ public:
 
 protected:
 
-	Shape3D(Point3D pos, float s, Rotation rot, ShapeType sT, const char* n)
+	Shape3D(Point3D pos, Point3D s, Rotation rot, ShapeType sT, const char* n)
 	{
 		position = pos;
 		rotation = rot;
@@ -150,7 +165,7 @@ protected:
 
 	Point3D position = { 0, 0, 0 };
 	Rotation rotation = { 0, 0, 0, 0};
-	float scale = 1;
+	Point3D scale = { 1, 1, 1 };
 	ShapeType type = NULL3D;
 	string name;
 };
@@ -158,7 +173,7 @@ protected:
 class Cube3D : public Shape3D
 {
 public:
-	Cube3D(Point3D pos = {0.0f, 0.0f, 0.0f}, float s = 1, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, CUBE3D, "Cube")
+	Cube3D(Point3D pos = { 0.0f, 0.0f, 0.0f }, Point3D s = { 1, 1, 1 } , Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, CUBE3D, "Cube")
 	{
 		//for (int i = 0; i < 24; i++)
 		//{
@@ -177,7 +192,8 @@ public:
 	bool Draw()
 	{
 		glTranslatef(position.x, position.y, position.z);
-		glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
+		glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
+		glScalef(scale.x, scale.y, scale.z);
 
 		if (solid) DrawSolid();
 		if (edges) DrawEdges();
@@ -360,7 +376,7 @@ private:
 class Line3D : public Shape3D
 {
 public:
-	Line3D(Point3D vertex0 = { 0, 0, 0 }, Point3D vertex1 = {0, 5, 0}, float lineWidthx = 1) : Shape3D(vertex0, lineWidthx, { 0, 0, 0, 0 }, LINE3D, "Line")
+	Line3D(Point3D vertex0 = { 0, 0, 0 }, Point3D vertex1 = { 0, 5, 0 }, float lineWidthx = 1) : Shape3D(vertex0, { lineWidthx, lineWidthx, lineWidthx }, { 0, 0, 0, 0 }, LINE3D, "Line")
 	{
 		v[0] = vertex0;
 		v[1] = vertex1;
@@ -368,6 +384,9 @@ public:
 
 	bool Draw()
 	{
+		glTranslatef(position.x, position.y, position.z);
+		glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
+
 		if (solid) DrawSolid();
 		if (axis) DrawAxis();
 		return true;
@@ -393,7 +412,7 @@ private:
 	bool DrawSolid()
 	{
 		glColor3f(255, 255, 255);
-		glLineWidth(scale);
+		glLineWidth(scale.x);
 		glBegin(GL_LINES);
 		glVertex3f(v[0].x, v[0].y, v[0].z);
 		glVertex3f(v[1].x, v[1].y, v[1].z);
@@ -410,13 +429,13 @@ class Pyramid3D : public Shape3D
 {
 public:
 
-	Pyramid3D(Point3D pos = { 0.0f, 0.0f, 0.0f }, float h = 1.0f, float s = 1.0f, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, PYRAMID3D, "Pyramid")
+	Pyramid3D(Point3D pos = { 0.0f, 0.0f, 0.0f }, float h = 1.0f, Point3D s = { 1, 1, 1 }, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, PYRAMID3D, "Pyramid")
 	{
 		height = h;
 
 		v[4].y *= height;
 
-		for (int i = 0; i < 15; i++)
+		/*for (int i = 0; i < 15; i++)
 		{
 			float p[3] = { pos.x, pos.y, pos.z };
 			vertex[i] *= s;
@@ -427,11 +446,15 @@ public:
 				v[i] *= s;
 				v[i] += pos;
 			}
-		}
+		}*/
 	}
 
 	bool Draw()
 	{
+		glTranslatef(position.x, position.y, position.z);
+		glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
+		glScalef(scale.x, scale.y, scale.z);
+
 		if (solid) DrawSolid();
 		if (edges) DrawEdges();
 		if (axis) DrawAxis();
@@ -494,7 +517,7 @@ private:
 
 		glEnd();
 
-		glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
+		glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
 	}
 
 	bool DrawEdges()
@@ -533,7 +556,7 @@ private:
 
 		glEnd();
 
-		glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
+		glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
 
 		return true;
 	}
@@ -590,7 +613,7 @@ private:
 class Cylinder3D : public Shape3D
 {
 public:
-	Cylinder3D(Point3D pos = { 0.0f, 0.0f, 0.0f }, int numSegment = 18, float h = 4.0f, float r = 1.0f, float s = 1.0f, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, CYLINDER3D, "Cylinder")
+	Cylinder3D(Point3D pos = { 0.0f, 0.0f, 0.0f }, int numSegment = 18, float h = 4.0f, float r = 1.0f, Point3D s = { 1, 1, 1 }, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, CYLINDER3D, "Cylinder")
 	{
 		segments = numSegment;
 		height = h;
@@ -599,6 +622,10 @@ public:
 
 	bool Draw()
 	{
+		glTranslatef(position.x, position.y, position.z);
+		glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
+		glScalef(scale.x, scale.y, scale.z);
+
 		if (solid) DrawSolid();
 		if (edges) DrawEdges();
 		if (axis) DrawAxis();
@@ -626,23 +653,23 @@ private:
 
 			float theta2 = 2.0f * PI * float(index) / float(segments); //get the current angle
 
-			Point pos1 = { scale * radius * cosf(theta1), scale * radius * sinf(theta1) }; // {x, z}
-			Point pos2 = { scale * radius * cosf(theta2), scale * radius * sinf(theta2) }; // {x, z}
+			Point pos1 = { radius * cosf(theta1), radius * sinf(theta1) }; // {x, z}
+			Point pos2 = { radius * cosf(theta2), radius * sinf(theta2) }; // {x, z}
 
 			glVertex3f(pos1.x + position.x, position.y, pos1.y + position.z);
 			glVertex3f(pos2.x + position.x, position.y, pos2.y + position.z);
 			glVertex3f(0 + position.x, position.y, 0 + position.z);
 
-			glVertex3f(position.x, position.y + (scale * height), position.z);
-			glVertex3f(pos2.x + position.x, position.y + (scale * height), pos2.y + position.z);
-			glVertex3f(pos1.x + position.x, position.y + (scale * height), pos1.y + position.z);
+			glVertex3f(position.x, position.y + (height), position.z);
+			glVertex3f(pos2.x + position.x, position.y + (height), pos2.y + position.z);
+			glVertex3f(pos1.x + position.x, position.y + (height), pos1.y + position.z);
 
 			glVertex3f(pos1.x + position.x, position.y, pos1.y + position.z);
-			glVertex3f(pos2.x + position.x, position.y + (scale * height), pos2.y + position.z);
+			glVertex3f(pos2.x + position.x, position.y + (height), pos2.y + position.z);
 			glVertex3f(pos2.x + position.x, position.y, pos2.y + position.z);
 
-			glVertex3f(pos1.x + position.x, position.y + (scale * height), pos1.y + position.z);
-			glVertex3f(pos2.x + position.x, position.y + (scale * height), pos2.y + position.z);
+			glVertex3f(pos1.x + position.x, position.y + (height), pos1.y + position.z);
+			glVertex3f(pos2.x + position.x, position.y + (height), pos2.y + position.z);
 			glVertex3f(pos1.x + position.x, position.y, pos1.y + position.z);
 
 
@@ -671,30 +698,29 @@ private:
 
 			float theta2 = 2.0f * PI * float(index) / float(segments); //get the current angle
 
-			Point pos1 = { scale * radius * cosf(theta1), scale * radius * sinf(theta1) }; // {x, z}
-			Point pos2 = { scale * radius * cosf(theta2), scale * radius * sinf(theta2) }; // {x, z}
+			Point pos1 = {radius * cosf(theta1), radius * sinf(theta1) }; // {x, z}
+			Point pos2 = {radius * cosf(theta2), radius * sinf(theta2) }; // {x, z}
 
 			glVertex3f(pos1.x + position.x, position.y, pos1.y + position.z);
 			glVertex3f(pos2.x + position.x, position.y, pos2.y + position.z);
 			glVertex3f(0 + position.x, position.y, 0 + position.z);
 
-			glVertex3f(position.x, position.y + (scale * height), position.z);
-			glVertex3f(pos2.x + position.x, position.y + (scale * height), pos2.y + position.z);
-			glVertex3f(pos1.x + position.x, position.y + (scale * height), pos1.y + position.z);
+			glVertex3f(position.x, position.y + (height), position.z);
+			glVertex3f(pos2.x + position.x, position.y + (height), pos2.y + position.z);
+			glVertex3f(pos1.x + position.x, position.y + (height), pos1.y + position.z);
 
 			glVertex3f(pos1.x + position.x, position.y, pos1.y + position.z);
-			glVertex3f(pos2.x + position.x, position.y + (scale * height), pos2.y + position.z);
+			glVertex3f(pos2.x + position.x, position.y + (height), pos2.y + position.z);
 			glVertex3f(pos2.x + position.x, position.y, pos2.y + position.z);
 
-			glVertex3f(pos1.x + position.x, position.y + (scale * height), pos1.y + position.z);
-			glVertex3f(pos2.x + position.x, position.y + (scale * height), pos2.y + position.z);
+			glVertex3f(pos1.x + position.x, position.y + (height), pos1.y + position.z);
+			glVertex3f(pos2.x + position.x, position.y + (height), pos2.y + position.z);
 			glVertex3f(pos1.x + position.x, position.y, pos1.y + position.z);
 
 
 		}
 		glEnd();
 
-		glRotatef(rotation.angle, rotation.planeX, rotation.planeY, rotation.planeZ);
 
 		return true;
 	}
@@ -726,7 +752,7 @@ private:
 class Plane3D : public Shape3D
 {
 public:
-	Plane3D(Point3D pos = { 0, 0, 0 }, Point3D n = { 0, 1, 0 }, float s = 1, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, PLANE3D, "Plane")
+	Plane3D(Point3D pos = { 0, 0, 0 }, Point3D n = { 0, 1, 0 }, Point3D s = { 1,1,1 }, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, PLANE3D, "Plane")
 	{
 		if ((bool)n.x)
 			n.Set(1, 0, 0);
@@ -742,6 +768,9 @@ public:
 
 	bool Draw()
 	{
+		glTranslatef(position.x, position.y, position.z);
+		glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
+
 		if (solid) DrawSolid();
 		if (edges) DrawEdges();
 		if (axis) DrawAxis();
@@ -759,29 +788,36 @@ private:
 
 		glBegin(GL_QUADS);
 
-		float d = scale;
-		float p = scale;
+		float d = 0;
+		float p = 0;
 
 		if ((bool)normal.x)
 		{
-			glVertex3f(position.x, position.y - p, position.z - p);
-			glVertex3f(position.x, position.y - p, position.z + p);
-			glVertex3f(position.x, position.y + p, position.z + p);
-			glVertex3f(position.x, position.y + p, position.z - p);
+			p = scale.y;
+			d = scale.z;
+
+			glVertex3f(position.x, position.y - p, position.z - d);
+			glVertex3f(position.x, position.y - p, position.z + d);
+			glVertex3f(position.x, position.y + p, position.z + d);
+			glVertex3f(position.x, position.y + p, position.z - d);
 		}
 		else if ((bool)normal.y)
 		{
-			glVertex3f(position.x - p, position.y, position.z - p);
-			glVertex3f(position.x - p, position.y, position.z + p);
-			glVertex3f(position.x + p, position.y, position.z + p);
-			glVertex3f(position.x + p, position.y, position.z - p);
+			p = scale.x;
+			d = scale.z;
+			glVertex3f(position.x - p, position.y, position.z - d);
+			glVertex3f(position.x - p, position.y, position.z + d);
+			glVertex3f(position.x + p, position.y, position.z + d);
+			glVertex3f(position.x + p, position.y, position.z - d);
 		}
 		else if ((bool)normal.z)
 		{
-			glVertex3f(position.x - p, position.y - p, position.z);
-			glVertex3f(position.x - p, position.y + p, position.z);
-			glVertex3f(position.x + p, position.y + p, position.z);
-			glVertex3f(position.x + p, position.y - p, position.z);
+			p = scale.x;
+			d = scale.y;
+			glVertex3f(position.x - p, position.y - d, position.z);
+			glVertex3f(position.x - p, position.y + d, position.z);
+			glVertex3f(position.x + p, position.y + d, position.z);
+			glVertex3f(position.x + p, position.y - d, position.z);
 		}
 
 		glEnd();
@@ -797,36 +833,46 @@ private:
 
 		glBegin(GL_LINES);
 
-		float d = scale;
+		float d = 0;
+		float p = 0;
 
 		if ((bool)normal.x)
 		{
 			for (float i = -d; i <= d; i += 1.0f)
 			{
+				p = scale.y;
+				d = scale.z;
+
 				glVertex3f(     position.x,  i + position.y, -d + position.z);
 				glVertex3f(     position.x,  i + position.y,  d + position.z);
-				glVertex3f(     position.x, -d + position.y,  i + position.z);
-				glVertex3f(     position.x,  d + position.y,  i + position.z);
+				glVertex3f(     position.x, -p + position.y,  i + position.z);
+				glVertex3f(     position.x,  p + position.y,  i + position.z);
 			}
 		}
 		else if ((bool)normal.y)
 		{
 			for (float i = -d; i <= d; i += 1.0f)
 			{
+				p = scale.x;
+				d = scale.z;
+
 				glVertex3f( i + position.x,      position.y, -d + position.z);
 				glVertex3f( i + position.x,      position.y,  d + position.z);
-				glVertex3f(-d + position.x,      position.y,  i + position.z);
-				glVertex3f( d + position.x,      position.y,  i + position.z);
+				glVertex3f(-p + position.x,      position.y,  i + position.z);
+				glVertex3f( p + position.x,      position.y,  i + position.z);
 			}
 		}
 		else
 		{
 			for (float i = -d; i <= d; i += 1.0f)
 			{
+				p = scale.x;
+				d = scale.y;
+
 				glVertex3f( i + position.x, -d + position.y,      position.z);
 				glVertex3f( i + position.x,  d + position.y,      position.z);
-				glVertex3f(-d + position.x,  i + position.y,      position.z);
-				glVertex3f( d + position.x,  i + position.y,      position.z);
+				glVertex3f(-p + position.x,  i + position.y,      position.z);
+				glVertex3f( p + position.x,  i + position.y,      position.z);
 			}
 		}
 
@@ -850,7 +896,7 @@ private:
 class Sphere3D : public Shape3D
 {
 public:
-	Sphere3D(Point3D pos = { 0, 0, 0 }, float s = 1.0f, float r = 1.0f, int subd= 1, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, 1, rot, SPHERE3D, "Sphere")
+	Sphere3D(Point3D pos = { 0, 0, 0 }, Point3D s = { 1, 1, 1 }, float r = 1.0f, int subd = 1, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, SPHERE3D, "Sphere")
 	{
 		radius = r;
 		subdivision = subd;
@@ -866,6 +912,10 @@ public:
 
 	bool Draw()
 	{
+		glTranslatef(position.x, position.y, position.z);
+		glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
+		glScalef(scale.x, scale.y, scale.z);
+
 		if (solid) DrawSolid();
 		if (edges) DrawEdges();
 		if (axis) DrawAxis();

@@ -613,51 +613,51 @@ void Application::JsonSaveShapes(JSON_Array* arr)
 		ArrayAppendVector(shapeArray, shape->GetPosition()); // Position (3) - 5
 		json_array_append_number(shapeArray, shape->GetRotation().angle); // Angle (1) - 8
 		ArrayAppendVector(shapeArray, shape->GetRotation().GetPlane()); // Rotation (3) - 9
-		json_array_append_number(shapeArray, shape->GetScale()); // Scale (1) - 12
+		ArrayAppendVector(shapeArray, shape->GetScale()); // Scale (3) - 12
 
-		json_array_append_string(shapeArray, shape->WriteShapeType().c_str()); // Type (1) - 13
-		json_array_append_string(shapeArray, shape->GetName()); // Name (1) - 14
+		json_array_append_string(shapeArray, shape->WriteShapeType().c_str()); // Type (1) - 15
+		json_array_append_string(shapeArray, shape->GetName()); // Name (1) - 16
 
 		switch (shape->GetShapeType())
 		{
 		case LINE3D:
 		{
 			Line3D* l = (Line3D*)shape;
-			ArrayAppendVector(shapeArray, l->GetSecondVertex()); // Second Vertex (3) - 15
+			ArrayAppendVector(shapeArray, l->GetSecondVertex()); // Second Vertex (3) - 17
 			break;
 		}
 		case PYRAMID3D:
 		{
 			Pyramid3D* py = (Pyramid3D*)shape;
-			json_array_append_number(shapeArray, py->GetHeight()); // Height (1) - 15
+			json_array_append_number(shapeArray, py->GetHeight()); // Height (1) - 17
 			break;
 		}
 		case CYLINDER3D:
 		{
 			Cylinder3D* cy = (Cylinder3D*)shape;
-			json_array_append_number(shapeArray, cy->GetHeight()); // Height (1) - 15
-			json_array_append_number(shapeArray, cy->GetRadius()); // Radius (1) - 16
-			json_array_append_number(shapeArray, cy->GetSegments()); // Segments (1) - 17
+			json_array_append_number(shapeArray, cy->GetHeight()); // Height (1) - 17
+			json_array_append_number(shapeArray, cy->GetRadius()); // Radius (1) - 18
+			json_array_append_number(shapeArray, cy->GetSegments()); // Segments (1) - 19
 			break;
 		}
 		case PLANE3D:
 		{
 			Plane3D* p = (Plane3D*)shape;
-			ArrayAppendVector(shapeArray, p->GetNormal()); // Normal (3) - 15
+			ArrayAppendVector(shapeArray, p->GetNormal()); // Normal (3) - 17
 			break;
 		}
 		case SPHERE3D:
 		{
 			Sphere3D* s = (Sphere3D*)shape;
-			json_array_append_number(shapeArray, s->GetRadius()); // Radius (1) - 15
-			json_array_append_number(shapeArray, s->GetSubdivision()); // Subdivisions (1) - 16
+			json_array_append_number(shapeArray, s->GetRadius()); // Radius (1) - 17
+			json_array_append_number(shapeArray, s->GetSubdivision()); // Subdivisions (1) - 18
 			break;
 		}
 		case MODEL3D:
 		{
 			Model* m = (Model*)shape;
-			json_array_append_string(shapeArray, m->filePath.c_str()); // Path File (1) - 15
-			json_array_append_string(shapeArray, m->texturePath.c_str()); // Path File (1) - 16
+			json_array_append_string(shapeArray, m->filePath.c_str()); // Path File (1) - 17
+			json_array_append_string(shapeArray, m->texturePath.c_str()); // Path File (1) - 18
 
 			break;
 		}
@@ -676,7 +676,7 @@ void Application::JsonLoadShapes(JSON_Array* arr)
 
 		Cube3D c({0, 0, 0});
 
-		Point3D position = {}, planeNormal = {};
+		Point3D position = {}, planeNormal = {}, scale = {};
 
 		bool axis = json_array_get_boolean(shapeArray, 0);
 		bool selected = json_array_get_boolean(shapeArray, 1);
@@ -687,14 +687,14 @@ void Application::JsonLoadShapes(JSON_Array* arr)
 		ArrayRetrieveVector(shapeArray, &position, 5, false);
 		float angle = json_array_get_number(shapeArray, 8);
 		ArrayRetrieveVector(shapeArray, &planeNormal, 9, false);
-		float scale = json_array_get_number(shapeArray, 12);
+		ArrayRetrieveVector(shapeArray, &scale, 12, false);
 
-		const char* typeChar = json_array_get_string(shapeArray, 13);
+		const char* typeChar = json_array_get_string(shapeArray, 15);
 		string type = typeChar;
-		const char* nameChar = json_array_get_string(shapeArray, 14);
+		const char* nameChar = json_array_get_string(shapeArray, 16);
 		string name = nameChar;
 
-		switch (c.ReadShapeType(json_array_get_string(shapeArray, 13)))
+		switch (c.ReadShapeType(type.c_str()))
 		{
 		case CUBE3D:
 		{
@@ -704,42 +704,42 @@ void Application::JsonLoadShapes(JSON_Array* arr)
 		case LINE3D:
 		{
 			Point3D secondVertex = {};
-			ArrayRetrieveVector(shapeArray, &secondVertex, 15, false); // Second Vertex (3)
-			scene->shapes.push_back(new Line3D(position, secondVertex, scale));
+			ArrayRetrieveVector(shapeArray, &secondVertex, 17, false); // Second Vertex (3)
+			scene->shapes.push_back(new Line3D(position, secondVertex, scale.x));
 			break;
 		}
 		case PYRAMID3D:
 		{
-			float height = json_array_get_number(shapeArray, 15);
+			float height = json_array_get_number(shapeArray, 17);
 			scene->shapes.push_back(new Pyramid3D(position, height, scale, Rotation{ angle, planeNormal.x, planeNormal.y, planeNormal.z }));
 			break;
 		}
 		case CYLINDER3D:
 		{
-			float height = json_array_get_number(shapeArray, 15);
-			float radius = json_array_get_number(shapeArray, 16);
-			int segments = json_array_get_number(shapeArray, 17);
+			float height = json_array_get_number(shapeArray, 17);
+			float radius = json_array_get_number(shapeArray, 18);
+			int segments = json_array_get_number(shapeArray, 19);
 			scene->shapes.push_back(new Cylinder3D(position, segments, height, radius, scale, Rotation{ angle, planeNormal.x, planeNormal.y, planeNormal.z }));
 			break;
 		}
 		case PLANE3D:
 		{
 			Point3D normal = {};
-			ArrayRetrieveVector(shapeArray, &normal, 15, false); // Normal (3)
+			ArrayRetrieveVector(shapeArray, &normal, 17, false); // Normal (3)
 			scene->shapes.push_back(new Plane3D(position, normal, scale, Rotation{ angle, planeNormal.x, planeNormal.y, planeNormal.z }));
 			break;
 		}
 		case SPHERE3D:
 		{
-			float radius = json_array_get_number(shapeArray, 15);
-			int subdivisions = json_array_get_number(shapeArray, 16);
+			float radius = json_array_get_number(shapeArray, 17);
+			int subdivisions = json_array_get_number(shapeArray, 18);
 			scene->shapes.push_back(new Sphere3D(position, scale, radius, subdivisions, Rotation{ angle, planeNormal.x, planeNormal.y, planeNormal.z }));
 			break;
 		}
 		case MODEL3D:
 		{
-			string filePath = json_array_get_string(shapeArray, 15);
-			string texturePath = json_array_get_string(shapeArray, 16);
+			string filePath = json_array_get_string(shapeArray, 17);
+			string texturePath = json_array_get_string(shapeArray, 18);
 			Model* m = new Model(position, scale, Rotation{ angle, planeNormal.x, planeNormal.y, planeNormal.z });
 			m->LoadModel(filePath.c_str(), texturePath.c_str());
 			scene->shapes.push_back(m);

@@ -12,9 +12,16 @@
 #include "../Source/External/ImGui/imgui_impl_sdl.h"
 #include "../Source/External/ImGui/imgui_impl_opengl3.h"
 #include "../Source/External/ImGui/imgui_stdlib.h"
-
+#include "External/ImGuizmo-master/ImGuizmo.h"
+#include "External/ImGuizmo-master/ImSequencer.h"
+#include "External/ImGuizmo-master/ImZoomSlider.h"
+#include "External/ImGuizmo-master/ImCurveEdit.h"
+#include "External/imgui/imgui_internal.h"
 #include "Shapes3D.h"
 
+#include <math.h>
+#include <vector>
+#include <algorithm>
 #include <stdio.h>
 #include "External/SDL/include/SDL.h"
 #if defined(IMGUI_IMPL_OPENGL_ES2)
@@ -156,6 +163,10 @@ private: // Functions
 
 	// Pop All Shapes on scene
 	void DeleteAllShapes(bool enableMessage = true);
+
+
+	// Guizmo functions
+	void EditTransform(bool editTransformDecomposition);
 
 public: // Variables
 	bool demoWindow = false;

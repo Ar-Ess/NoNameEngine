@@ -6,6 +6,7 @@
 #include "AssetsManager.h"
 #include "FileManager.h"
 #include "stb_image.h"
+#include "glmath.h"
 //#include "External/imgui/imgui.h"
 
 EditorScene::EditorScene(Application* App, vector<Shape3D*>* s, AssetsManager* assetsManager, ImportManager* importManager)
@@ -22,30 +23,30 @@ EditorScene::~EditorScene()
 
 bool EditorScene::Start()
 {
-	Plane3D* p = new Plane3D({ 0, 0, 0 }, {0, 1, 0}, 200);
+	Plane3D* p = new Plane3D({ 0, 0, 0 }, { 0, 1, 0 }, Point3D(200));
 	p->axis = true;
 	p->solid = false;
 	shapes->push_back(p);
 
-	Cube3D* c0 = new Cube3D({ 0, 0, 0 }, 1.0f, { 0, 0, 0, 0 });
+	Cube3D* c0 = new Cube3D({ 0, 0, 0 }, { 1,1,1 }, { 0, 0, 0, 0 });
 	shapes->push_back(c0);
-	Cube3D* c1 = new Cube3D({ 2, 2, 0 }, 1.0f, { 0, 0, 0, 0 });
+	Cube3D* c1 = new Cube3D({ 2, 2, 0 }, { 1,1,1 }, { 0, 0, 0, 0 });
 	shapes->push_back(c1);
-	Cube3D* c2 = new Cube3D({ 1, 0, 4 }, 1.0f, { 0, 0, 0, 0 });
+	Cube3D* c2 = new Cube3D({ 1, 0, 4 }, { 1,1,1 }, { 0, 0, 0, 0 });
 	shapes->push_back(c2);
 
-	Model* m = new Model({ 0, 0, 0 }, 1.0f);
+	Model* m = new Model({ 0, 0, 0 }, { 1,1,1 });
 	m->LoadModel("Assets/Models/cube.fbx");
 
 	assets->ParseFiles();
-	import->LoadDefaultImages();
+	//import->LoadDefaultImages();
 
-	FileManager fM;
+	/*FileManager fM;
 	fM.OpenFile("test").Write((Shape3D*)m);
 	fM.AccessFile("test").Write((Shape3D*)m);
 
 	Shape3D* s = nullptr;
-	fM.AccessFile("test").Read(1, s);
+	fM.AccessFile("test").Read(1, s);*/
 
 	return true;
 }
@@ -570,6 +571,11 @@ bool EditorScene::ShowHierarchyWindow(bool open)
 				if (ImGui::Selectable(buffer, &shapes->at(i)->selected))
 				{
 					for (int a = 0; a < shapes->size(); a++) if (i != a) shapes->at(a)->selected = false;
+					float shape = (float)shapes->at(i)->selected;
+					ImGuizmo::SetOrthographic(false);
+					ImGuizmo::SetDrawlist();
+					ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, (float)ImGui::GetWindowWidth(), (float)ImGui::GetWindowHeight());
+					ImGuizmo::Manipulate(app->camera->GetViewMatrix(), app->camera->GetViewMatrix() , ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, &shape);
 				}
 				AddSpacing(0);
 
@@ -604,32 +610,9 @@ bool EditorScene::ShowInspectorWindow(bool open)
 				sprintf_s(buffer, " Name: %s %d", s->GetName(), selectedShape);
 				ImGui::Text(buffer);
 				AddSpacing(1);
-				AddSeparator(1);
-				AddSpacing(1);
-
-				// TRANSFORM
-				ImGui::Text(" Transform:");
-				AddSpacing(0);
-
-				// Position
-				ImGui::BulletText("Position:");
-				ImGui::Text("    X: %.2f", s->GetPosition().x);
-				ImGui::Text("    Y: %.2f", s->GetPosition().y);
-				ImGui::Text("    Z: %.2f", s->GetPosition().z);
-				AddSpacing(1);
-
-				// Rotation
-				ImGui::BulletText("Rotation:");
-				ImGui::Text("    Angle: %.2f", s->GetRotation().angle);
-				ImGui::Text("    Plane: {%.2f, %.2f, %.2f}", s->GetRotation().planeX, s->GetRotation().planeY, s->GetRotation().planeZ);
-				AddSpacing(1);
-
-				// Scale
-				ImGui::BulletText("Scale: %.3f", s->GetScale());
-				AddSpacing(1);
 
 				// Type
-				ImGui::BulletText("Type: %s", s->WriteShapeType().c_str());
+				ImGui::Text("Type: %s", s->WriteShapeType().c_str());
 				AddSpacing(0);
 				switch (s->GetShapeType())
 				{
@@ -663,6 +646,34 @@ bool EditorScene::ShowInspectorWindow(bool open)
 					break;
 				}
 				}
+
+				// TRANSFORM
+				if(ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					// we create new Point3D so that the transforms of the meshes are modificable
+					Point3D position = s->GetPosition();
+					Rotation rotation = s->GetRotation();
+					Point3D scale = s->GetScale();
+					Point3D rot = rotation.ToEulerAngles();
+
+					if (ImGui::DragFloat3("Position", (float*)&position, 0.25))
+					{
+						s->SetPosition(position);
+					}
+
+					if (ImGui::DragFloat3("Scale", (float*)&scale, 0.25))
+					{
+						s->SetScale(scale);
+					}
+
+					if (ImGui::DragFloat3("Rotation", (float*)&rot, 0.25))
+					{
+						rotation.FromEulerAngles(rot);
+						s->SetRotation(rotation);
+					}
+				}
+				AddSpacing(0);
+
 				AddSpacing(1);
 				AddSeparator(1);
 				AddSpacing(1);
@@ -952,5 +963,27 @@ void EditorScene::DeleteAllShapes(bool enableMessage)
 				app->window->mainWindow
 			);
 		}
+	}
+}
+
+void EditorScene::EditTransform(bool editTransformDecomposition)
+{
+	static ImGuizmo::OPERATION currentOperation(ImGuizmo::TRANSLATE);
+	static ImGuizmo::MODE currentMode(ImGuizmo::LOCAL);
+	static bool useSnap = false;
+	static float snap[3] = { 1.f, 1.f, 1.f };
+	static float bounds[] = { -0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f };
+	static float boundsSnap[] = { 0.1f, 0.1f, 0.1f };
+	static bool boundSizing = false;
+	static bool boundSizingSnap = false;
+
+	if (editTransformDecomposition)
+	{
+		if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+			currentOperation = ImGuizmo::TRANSLATE;
+		if (app->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN)
+			currentOperation = ImGuizmo::ROTATE;
+		if (app->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
+			currentOperation = ImGuizmo::SCALE;
 	}
 }

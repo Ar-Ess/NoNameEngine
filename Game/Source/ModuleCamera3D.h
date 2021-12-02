@@ -3,6 +3,25 @@
 #include "Globals.h"
 #include "glmath.h"
 
+struct Plane;
+struct Frustum;
+
+struct Plane
+{
+	// we create a normal vector and a float with the distance from origin of the plan.
+	vec3 normal = { 0.f, 1.f, 0.f };
+	float distance = 0.f;
+};
+
+struct Frustum
+{
+	Plane topPlane;
+	Plane bottomPlane;
+	Plane rightPlane;
+	Plane leftPlane;
+	Plane farPlane;
+	Plane nearPlane;
+};
 class ModuleCamera3D : public Module
 {
 public:
@@ -41,6 +60,8 @@ public:
 	}
 
 	void CalculateViewMatrix();
+
+	Frustum CreateFrustum(ModuleCamera3D cam, float aspect, float fovY, float zNear, float zFar);
 
 public:
 	

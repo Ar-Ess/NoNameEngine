@@ -43,6 +43,12 @@
     <Filter Include="External\Density">
       <UniqueIdentifier>{26030cc1-70a2-4877-b7aa-9d779fcdfad4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External\ImGuizmo">
+      <UniqueIdentifier>{070cd402-1a62-4671-b20c-a518192636f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\ImGuizmo\Example">
+      <UniqueIdentifier>{09095a7c-b2ca-481d-b921-d686662076f0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\External\imgui\imconfig.h">
@@ -234,6 +240,21 @@
     <ClInclude Include="Source\External\Density\structure\header.h">
       <Filter>External\Density</Filter>
     </ClInclude>
+    <ClInclude Include="Source\External\ImGuizmo-master\ImCurveEdit.h">
+      <Filter>External\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\ImGuizmo-master\ImGradient.h">
+      <Filter>External\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\ImGuizmo-master\ImGuizmo.h">
+      <Filter>External\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\ImGuizmo-master\ImSequencer.h">
+      <Filter>External\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\ImGuizmo-master\ImZoomSlider.h">
+      <Filter>External\ImGuizmo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\External\imgui\imgui_demo.cpp">
@@ -359,10 +380,25 @@
     <ClCompile Include="Source\External\Density\structure\header.c">
       <Filter>External\Density</Filter>
     </ClCompile>
+    <ClCompile Include="Source\External\ImGuizmo-master\ImCurveEdit.cpp">
+      <Filter>External\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\ImGuizmo-master\ImGradient.cpp">
+      <Filter>External\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\ImGuizmo-master\ImGuizmo.cpp">
+      <Filter>External\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\ImGuizmo-master\ImSequencer.cpp">
+      <Filter>External\ImGuizmo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\External\json\json_valueiterator.inl">
       <Filter>External\JSON</Filter>
+    </None>
+    <None Include="Source\External\ImGuizmo-master\.editorconfig">
+      <Filter>External\ImGuizmo</Filter>
     </None>
   </ItemGroup>
 </Project>

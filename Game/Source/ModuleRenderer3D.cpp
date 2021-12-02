@@ -8,6 +8,7 @@
 #include <math.h>
 #include "ModuleSceneIntro.h"
 #include "External/SDL/include/SDL.h"
+#include "External/ImGuizmo-master/ImGuizmo.h"
 #include "physfs.h"
 
 #pragma comment (lib, "Source/External/glew/glew32.lib")    /* link OpenGL Utility lib     */
@@ -133,6 +134,7 @@ update_status ModuleRenderer3D::PreUpdate()
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame(app->window->mainWindow);
 	ImGui::NewFrame();
+	ImGuizmo::BeginFrame();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();

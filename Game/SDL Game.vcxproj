@@ -104,6 +104,11 @@
     <ClInclude Include="Source\External\Density\density_api.h" />
     <ClInclude Include="Source\External\Density\globals.h" />
     <ClInclude Include="Source\External\Density\structure\header.h" />
+    <ClInclude Include="Source\External\ImGuizmo-master\ImCurveEdit.h" />
+    <ClInclude Include="Source\External\ImGuizmo-master\ImGradient.h" />
+    <ClInclude Include="Source\External\ImGuizmo-master\ImGuizmo.h" />
+    <ClInclude Include="Source\External\ImGuizmo-master\ImSequencer.h" />
+    <ClInclude Include="Source\External\ImGuizmo-master\ImZoomSlider.h" />
     <ClInclude Include="Source\External\imgui\imconfig.h" />
     <ClInclude Include="Source\External\imgui\imgui.h" />
     <ClInclude Include="Source\External\imgui\imgui_impl_opengl3.h" />
@@ -161,6 +166,10 @@
     <ClCompile Include="Source\External\Density\buffers\buffer.c" />
     <ClCompile Include="Source\External\Density\globals.c" />
     <ClCompile Include="Source\External\Density\structure\header.c" />
+    <ClCompile Include="Source\External\ImGuizmo-master\ImCurveEdit.cpp" />
+    <ClCompile Include="Source\External\ImGuizmo-master\ImGradient.cpp" />
+    <ClCompile Include="Source\External\ImGuizmo-master\ImGuizmo.cpp" />
+    <ClCompile Include="Source\External\ImGuizmo-master\ImSequencer.cpp" />
     <ClCompile Include="Source\External\imgui\imgui.cpp" />
     <ClCompile Include="Source\External\imgui\imgui_demo.cpp" />
     <ClCompile Include="Source\External\imgui\imgui_draw.cpp" />
@@ -188,6 +197,7 @@
     <ClCompile Include="Source\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Source\External\ImGuizmo-master\.editorconfig" />
     <None Include="Source\External\json\json_valueiterator.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string>
 #include "glmath.h"
+#include <math.h>
 
 #define LOG(format, ...) log(__FILE__, __LINE__, format, __VA_ARGS__);
 
@@ -75,6 +76,7 @@ struct Point3D
 	Point3D(float xx, float yy, float zz) { x = xx; y = yy; z = zz; }
 	Point3D(double xx, double yy, double zz) { x = xx; y = yy; z = zz; }
 	Point3D(vec3 p) { x = p.x; y = p.y; z = p.z; }
+	Point3D(float p) { x = p; y = p; z = p; }
 
 	float x = 0, y = 0, z = 0;
 
@@ -130,6 +132,11 @@ struct Point3D
 	{
 		x = u.x; y = u.y; z = u.z; return *this;
 	}
+
+	float GetMax()
+	{
+		return max(x, y, z);
+	}
 };
 
 class Rotation
@@ -139,19 +146,60 @@ public:
 	Rotation(float anglex, float planeXx, float planeYx, float planeZx)
 	{
 		angle = anglex;
-		planeX = planeXx;
-		planeY = planeYx;
-		planeZ = planeZx;
+		x = planeXx;
+		y = planeYx;
+		z = planeZx;
 	}
 
 	float angle = 0.0f;
-	float planeX = 0;
-	float planeY = 0;
-	float planeZ = 0;
+	float x = 0;
+	float y = 0;
+	float z = 0;
 
 	Point3D GetPlane()
 	{
-		return Point3D{planeX, planeY, planeZ};
+		return Point3D{x, y, z};
+	}
+
+	Point3D ToEulerAngles()
+	{
+		float xx = x, yy = y, zz = z;
+
+		if (x <= 0)
+		{
+			xx = 1;
+		}
+
+		if (y <= 0)
+		{
+			yy = 1;
+		}
+
+		if (z <= 0)
+		{
+			zz = 1;
+		}
+		return Point3D{ angle * xx/ ceil(xx), angle * yy / ceil(yy), angle * zz / ceil(zz) };
+	}
+
+	void FromEulerAngles(Point3D euler)
+	{
+		float max = euler.GetMax();
+
+		if (max == 0)
+		{
+			x = 0; 
+			y = 0;
+			z = 0;
+			angle = 0;
+			return;
+		}
+
+		x = euler.x / max;
+		y = euler.y / max;
+		z = euler.z / max;
+
+		angle = max;
 	}
 };
 

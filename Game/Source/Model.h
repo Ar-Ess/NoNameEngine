@@ -21,7 +21,7 @@ class Model : public Shape3D
 {
 public:
 
-	Model(Point3D pos = { 0, 0, 0 }, float s = 1.0f, Rotation rot = {0, 0, 0, 0});
+	Model(Point3D pos = { 0, 0, 0 }, Point3D s = { 1, 1, 1 }, Rotation rot = { 0, 0, 0, 0 });
 
 	~Model();
 
