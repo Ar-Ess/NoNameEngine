@@ -1,4 +1,7 @@
-#define FILE_EXTENSION ".nne"
+#define FILEM_EXTENSION ".nne"
+#define FILEM_STARTING_POINT 28
+#define FILEM_SHAPE_INDEX_POINT 9
+#define FILEM_SHAPE_INFO_START_POINT 9
 
 #ifndef __FILE_MANAGER__
 #define __FILE_MANAGER__
@@ -12,17 +15,31 @@ struct FileEditor;
 
 class FileManager
 {
+	enum class FileFunctionCall
+	{
+		OPEN_FILE_FUNCTION,
+		ACCESS_FILE_FUNCTION
+	};
+
 	struct FileEditor
 	{
-		FileEditor(const char* name, FILE* f, int* i)
+		FileEditor(const char* name, FILE* f, int* i, FileFunctionCall ffC, bool exist = true)
 		{
 			fileName = name;
 			file = f;
 			numberOfShapesSaved = i;
+			exists = exist;
+			fileFunction = ffC;
 		}
 
 		bool Write(Shape3D* shape)
 		{
+			if (!exists)
+			{
+				LOG("FILE DOES NOT EXIST. USE OpenFile() TO CREATE A NEW FILE");
+				return false;
+			}
+
 			fopen_s(&file, fileName.c_str(), "a");
 
 			switch (shape->GetShapeType())
@@ -31,7 +48,8 @@ class FileManager
 			{
 				Model* m = (Model*)shape;
 
-				fprintf_s(file, "-- Shape %d --", *numberOfShapesSaved);
+				fprintf_s(file, "\n>> Shape %d <<", *numberOfShapesSaved);
+				fprintf_s(file, "\nMeshes: %d", m->meshes.size());
 
 				for (int i = 0; i < m->meshes.size(); i++)
 				{
@@ -81,7 +99,8 @@ class FileManager
 					fprintf_s(file, "%d\n", tID.width);
 					fprintf_s(file, "%d\n", tID.height);
 					fprintf_s(file, "%d\n", (int)tID.textCoordArraySizeinBytes);
-					fprintf_s(file, "%d\n", tID.channelsPerPixel);
+					fprintf_s(file, "%d", tID.channelsPerPixel);
+
 					//// Example
 					//uint_fast64_t compress_safe_size = density_compress_safe_size(dataNum);
 					////uint_fast64_t decompress_safe_size = density_decompress_safe_size(datanum);
@@ -120,22 +139,93 @@ class FileManager
 			*numberOfShapesSaved += 1;
 
 			if (fclose(file) != 0) return false;
-
 			return true;
 		}
 
-	private:
+		bool Read(unsigned int index, Shape3D* shape)
+		{
+			if (!exists)
+			{
+				LOG("FILE DOES NOT EXIST. USE OpenFile() TO CREATE A NEW FILE");
+				return false;
+			}
+			if (fileFunction == FileFunctionCall::OPEN_FILE_FUNCTION)
+			{
+				LOG("CAN NOT READ AN OPENED FILE, USE AccessFile(). OpenFile() GENERATES A NEW BLANK FILE, CAN NOT READ SOMETHING EMPTY");
+				return false;
+			}
+			if (index > *numberOfShapesSaved)
+			{
+				LOG("NO SHAPE EXIST IN THE INDEX GIVEN");
+				return false;
+			}
+
+			fopen_s(&file, fileName.c_str(), "r");
+			fseek(file, 0, SEEK_END);
+			size = ftell(file);
+			fseek(file, 0, SEEK_SET);
+			// Setting file to starting point to read
+			fseek(file, FILEM_STARTING_POINT + 2, SEEK_SET);
+
+			// Search for the index shape setted
+			for (int i = 0; i < *numberOfShapesSaved; i++)
+			{
+				fseek(file, FILEM_SHAPE_INDEX_POINT, SEEK_CUR);
+				int idx = -1;
+				fscanf_s(file, "%d", &idx);
+				if (idx == index)
+				{
+					int sum = (int)floor((float)index / 10);
+					fseek(file, FILEM_SHAPE_INFO_START_POINT + sum, SEEK_CUR);
+					break;
+				}
+				fseek(file, -FILEM_SHAPE_INDEX_POINT, SEEK_CUR);
+
+				int movePos = FindNextChar('>', 2);
+				fseek(file, movePos, SEEK_CUR);
+			}
+
+			// Checking 
+			if (fclose(file) != 0) return false;
+			return true;
+		}
+
+	private: // Functions
+		int FindNextChar(char character, unsigned int offset = 0)
+		{
+			char a = fgetc(file);
+			if (offset != 0) fseek(file, offset - 1, SEEK_CUR);
+			char b = fgetc(file);
+			int end = (size - ftell(file));
+
+			for (int i = 0; i < end; i++)
+			{
+				if (fgetc(file) == character) return i;
+				fseek(file, 1, SEEK_CUR);
+			}
+
+			return -1;
+		}
+
+	private: // Variables
 		std::string fileName;
 		FILE* file;
 		int* numberOfShapesSaved = nullptr;
+		int size = 0;
+		bool exists = true;
+		FileFunctionCall fileFunction;
 	};
 
 public:
 
+	// Opens an new access to file to write or read.
+	// Checks if the file exists:
+	//    - True: Removes the file named "fileName" and generates a new file with "fileName" as name
+	//    - False: Generates a new file with "fileName" as name
 	FileEditor OpenFile(const char* fileName)
 	{
 		std::string name = fileName;
-		name += FILE_EXTENSION;
+		name += FILEM_EXTENSION;
 
 		FILE* file = nullptr;
 		fopen_s(&file, name.c_str(), "r");
@@ -147,10 +237,32 @@ public:
 		}
 
 		fopen_s(&file, name.c_str(), "w");
-		fprintf_s(file, "PROJECT FILE: %s\n-------------------------------\n", name.c_str());
+		fprintf_s(file, "PROJECT FILE:\n-------------");
 		fclose(file);
 
-		return FileEditor(name.c_str(), file, &numberOfShapesSaved);
+		numberOfShapesSaved = 0;
+
+		return FileEditor(name.c_str(), file, &numberOfShapesSaved, FileFunctionCall::OPEN_FILE_FUNCTION);
+	}
+
+	// Opens an existent access to file to write or read.
+	// Checks if the file exists:
+	//    - True: Appends the new information to the file
+	//    - False: Exits any function derivated from it
+	FileEditor AccessFile(const char* fileName)
+	{
+		bool exist = true;
+		std::string name = fileName;
+		name += FILEM_EXTENSION;
+
+		FILE* file = nullptr;
+		fopen_s(&file, name.c_str(), "r");
+
+		if (file == nullptr) exist = false;
+		else
+			fclose(file);
+
+		return FileEditor(name.c_str(), file, &numberOfShapesSaved, FileFunctionCall::ACCESS_FILE_FUNCTION, exist);
 	}
 
 private:
