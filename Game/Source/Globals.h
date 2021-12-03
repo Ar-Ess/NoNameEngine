@@ -143,6 +143,8 @@ class Rotation
 {
 public:
 
+	Rotation() {}
+
 	Rotation(float anglex, float planeXx, float planeYx, float planeZx)
 	{
 		angle = anglex;

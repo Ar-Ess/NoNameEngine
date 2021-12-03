@@ -41,12 +41,12 @@ bool EditorScene::Start()
 	assets->ParseFiles();
 	//import->LoadDefaultImages();
 
-	/*FileManager fM;
+	FileManager fM;
 	fM.OpenFile("test").Write((Shape3D*)m);
 	fM.AccessFile("test").Write((Shape3D*)m);
 
 	Shape3D* s = nullptr;
-	fM.AccessFile("test").Read(1, s);*/
+	fM.AccessFile("test").Read(1, s);
 
 	return true;
 }

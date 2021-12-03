@@ -1,7 +1,7 @@
 #define FILEM_EXTENSION ".nne"
 #define FILEM_STARTING_POINT 28
-#define FILEM_SHAPE_INDEX_POINT 9
-#define FILEM_SHAPE_INFO_START_POINT 9
+#define FILEM_SHAPE_INDEX_POINT 7
+#define FILEM_SHAPE_INFO_START_POINT 3
 
 #ifndef __FILE_MANAGER__
 #define __FILE_MANAGER__
@@ -42,64 +42,80 @@ class FileManager
 
 			fopen_s(&file, fileName.c_str(), "a");
 
+			fprintf_s(file, "\n>Shape %d<", *numberOfShapesSaved);
+
+			fprintf_s(file, "\nName: %s<", shape->GetName());
+			fprintf_s(file, "\nType: %s<", shape->WriteShapeType().c_str());
+			//Transform information
+			fprintf_s(file, "\nTransform:", *numberOfShapesSaved);
+			fprintf_s(file, "\n - Position:");
+			Point3D p = shape->GetPosition();
+			fprintf_s(file, "\n%f<%f<%f<", p.x, p.y, p.z);
+			fprintf_s(file, "\n - Rotation:");
+			Rotation r = shape->GetRotation();
+			fprintf_s(file, "\n%f<%f<%f<%f<", r.angle, r.x, r.y, r.z);
+			fprintf_s(file, "\n - Scale:");
+			Point3D s = shape->GetScale();
+			fprintf_s(file, "\n%f<%f<%f<", s.x, s.y, s.z);
+
 			switch (shape->GetShapeType())
 			{
 			case MODEL3D:
 			{
 				Model* m = (Model*)shape;
 
-				fprintf_s(file, "\n>> Shape %d <<", *numberOfShapesSaved);
-				fprintf_s(file, "\nMeshes: %d", m->meshes.size());
+				fprintf_s(file, "\nMeshes: %d<", m->meshes.size());
 
 				for (int i = 0; i < m->meshes.size(); i++)
 				{
 					Mesh* mh = m->meshes[i];
 
 					// Vertex
-					fprintf_s(file, "\nMesh %d\n - Vertex: %d\n", i, mh->GetNum(MeshData::VERTEX));
+					fprintf_s(file, "\nMesh %d<\n - Vertex: %d<\n", i, mh->GetNum(MeshData::VERTEX));
 					for (struct { int a; float* v; void Add() {++a; v += 1;}; } s = { 0, mh->GetVertexPtr() };
 						s.a < mh->GetNum(MeshData::VERTEX);
 						s.Add())
 					{
-						fprintf_s(file, "%f ", *s.v);
+						fprintf_s(file, "%f<", *s.v);
 					}
 
 					// Index
-					fprintf_s(file, "\n - Index: %d\n", mh->GetNum(MeshData::INDEX));
+					fprintf_s(file, "\n - Index: %d<\n", mh->GetNum(MeshData::INDEX));
 					for (struct { int a; uint* idx; void Add() { ++a; idx += 1; }; } s = { 0, mh->GetIndexPtr() };
 						s.a < mh->GetNum(MeshData::INDEX);
 						s.Add())
 					{
-						fprintf_s(file, "%d ", *s.idx);
+						fprintf_s(file, "%d<", *s.idx);
 					}
 
 					// Normals
-					fprintf_s(file, "\n - Normals: %d\n", mh->GetNum(MeshData::NORMAL));
+					fprintf_s(file, "\n - Normals: %d<\n", mh->GetNum(MeshData::NORMAL));
 					for (struct { int a; float* n; void Add() { ++a; n += 1; }; } s = { 0, mh->GetNormalPtr() };
 						s.a < mh->GetNum(MeshData::NORMAL);
 						s.Add())
 					{
-						fprintf_s(file, "%f ", *s.n);
+						fprintf_s(file, "%f<", *s.n);
 					}
 
 					// Texture Coords
-					fprintf_s(file, "\n - Texture Coords: %d\n", mh->GetNum(MeshData::TEXTURE_COORDS));
+					fprintf_s(file, "\n - Texture Coords: %d<\n", mh->GetNum(MeshData::TEXTURE_COORDS));
 					for (struct { int a; float* t; void Add() { ++a; t += 1; }; } s = { 0, mh->GetTexturePtr() };
 						s.a < mh->GetNum(MeshData::TEXTURE_COORDS);
 						s.Add())
 					{
-						fprintf_s(file, "%f ", *s.t);
+						fprintf_s(file, "%f<", *s.t);
 					}
 
 					// Texture Internal Data
-					fprintf_s(file, "\n - Texture Internal Data: (Pixels, InternalFormat, Width, Height, TextCoordArraySize in Bytes, ChannelsPerPixel)\n");
+					fprintf_s(file, "\n - Texture Internal Data: \n"); // Pixels, InternalFormat, Width, Height, TextCoordArraySize in Bytes, ChannelsPerPixel
 					TextureInternalData tID = mh->GetInternalData();
 					int dataNum = tID.width * tID.height * tID.channelsPerPixel;
-					fprintf_s(file, "%d\n", (int)tID.internalFormat);
-					fprintf_s(file, "%d\n", tID.width);
-					fprintf_s(file, "%d\n", tID.height);
-					fprintf_s(file, "%d\n", (int)tID.textCoordArraySizeinBytes);
-					fprintf_s(file, "%d", tID.channelsPerPixel);
+					// Miss Pixels
+					fprintf_s(file, "%d<\n", (int)tID.internalFormat);
+					fprintf_s(file, "%d<\n", tID.width);
+					fprintf_s(file, "%d<\n", tID.height);
+					fprintf_s(file, "%d<\n", (int)tID.textCoordArraySizeinBytes);
+					fprintf_s(file, "%d<", tID.channelsPerPixel);
 
 					//// Example
 					//uint_fast64_t compress_safe_size = density_compress_safe_size(dataNum);
@@ -160,10 +176,14 @@ class FileManager
 				return false;
 			}
 
+			// Open the file to read
 			fopen_s(&file, fileName.c_str(), "r");
+
+			// Find the total size
 			fseek(file, 0, SEEK_END);
 			size = ftell(file);
 			fseek(file, 0, SEEK_SET);
+
 			// Setting file to starting point to read
 			fseek(file, FILEM_STARTING_POINT + 2, SEEK_SET);
 
@@ -173,38 +193,123 @@ class FileManager
 				fseek(file, FILEM_SHAPE_INDEX_POINT, SEEK_CUR);
 				int idx = -1;
 				fscanf_s(file, "%d", &idx);
+				fseek(file, -1, SEEK_CUR);
 				if (idx == index)
 				{
 					int sum = (int)floor((float)index / 10);
-					fseek(file, FILEM_SHAPE_INFO_START_POINT + sum, SEEK_CUR);
+					fseek(file, FILEM_SHAPE_INFO_START_POINT + sum + 1, SEEK_CUR);
 					break;
 				}
 				fseek(file, -FILEM_SHAPE_INDEX_POINT, SEEK_CUR);
-
-				int movePos = FindNextChar('>', 2);
-				fseek(file, movePos, SEEK_CUR);
+				if (!GoNextChar('>', 1))
+				{
+					LOG("DID NOT FIND ANY CHARACTER AS SPECIFIED IN THE GIVEN FILE");
+					return false;
+				}
 			}
 
-			// Checking 
+			// Read shape name
+			fseek(file, 6, SEEK_CUR); // Advance "Name: "
+			int n = FindNextChar('<');
+			char name[300] = {};
+			fread_s(name, n + 1, n, sizeof(char), file);
+			fseek(file, 3, SEEK_CUR);
+
+			// Read shape type
+			fseek(file, 6, SEEK_CUR); // Advance "Type: "
+			n = FindNextChar('<');
+			char type[300] = {};
+			fread_s(type, n + 1, n, sizeof(char), file);
+			fseek(file, 3, SEEK_CUR);
+
+			// Initialize shape
+			ShapeType sT = shape->ReadShapeType(type);
+			switch (sT)
+			{
+			case CUBE3D: shape = new Cube3D(); break;
+			case LINE3D: shape = new Line3D(); break;
+			case PYRAMID3D: shape = new Pyramid3D(); break;
+			case CYLINDER3D: shape = new Cylinder3D(); break;
+			case PLANE3D: shape = new Plane3D(); break;
+			case SPHERE3D: shape = new Sphere3D(); break;
+			case MODEL3D: shape = new Model(); break;
+			}
+			shape->SetName(name);
+
+			// Read transform info
+			fseek(file, 12, SEEK_CUR); // Advance "Transform: "
+
+			// Read position info
+			fseek(file, 14, SEEK_CUR); // Advance " - Position: "
+			Point3D point = {};
+			fscanf_s(file, "%f<%f<%f", &point.x, &point.y, &point.z);
+			shape->SetPosition(point);
+			fseek(file, 3, SEEK_CUR);
+
+			// Read rotation info
+			fseek(file, 14, SEEK_CUR); // Advance " - Rotation: "
+			Rotation rot = {};
+			fscanf_s(file, "%f<%f<%f<%f", &rot.angle, &rot.x, &rot.y, &rot.z);
+			shape->SetRotation(rot);
+			fseek(file, 3, SEEK_CUR);
+
+			// Read scale info
+			fseek(file, 11, SEEK_CUR); // Advance " - Scale: "
+			fscanf_s(file, "%f<%f<%f", &point.x, &point.y, &point.z);
+			shape->SetScale(point);
+			fseek(file, 3, SEEK_CUR);
+
+			// Read meshes info 
+
+			// Close the file
 			if (fclose(file) != 0) return false;
 			return true;
 		}
 
 	private: // Functions
-		int FindNextChar(char character, unsigned int offset = 0)
+		bool GoNextChar(char character, unsigned int offset = 0)
 		{
-			char a = fgetc(file);
-			if (offset != 0) fseek(file, offset - 1, SEEK_CUR);
-			char b = fgetc(file);
+			if (offset != 0) fseek(file, offset, SEEK_CUR);
+
 			int end = (size - ftell(file));
 
 			for (int i = 0; i < end; i++)
 			{
-				if (fgetc(file) == character) return i;
-				fseek(file, 1, SEEK_CUR);
+				if (fgetc(file) == character)
+				{
+					fseek(file, -1, SEEK_CUR);
+					return true;
+				}
 			}
 
+			fseek(file, -(end + 1), SEEK_CUR);
+			return false;
+		}
+
+		int FindNextChar(char character, unsigned int offset = 0)
+		{
+			if (offset != 0) fseek(file, offset, SEEK_CUR);
+			int pos = ftell(file);
+			int end = (size - pos);
+
+			for (int i = 0; i < end; i++)
+			{
+				if (fgetc(file) == character)
+				{
+					fseek(file, pos, SEEK_SET);
+					return i;
+				}
+			}
+
+			fseek(file, -(end + 1), SEEK_CUR);
 			return -1;
+		}
+
+		char DebugChar()
+		{
+			char c = fgetc(file);
+			fseek(file, -1, SEEK_CUR);
+			return c;
 		}
 
 	private: // Variables
