@@ -160,7 +160,7 @@ bool Model::LoadTexture(const char* pathTex)
 bool Model::Draw()
 {
     bool ret = true;
-
+    glLineWidth(1.0f);
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
     if (showTexture) glEnableClientState(GL_TEXTURE_COORD_ARRAY);

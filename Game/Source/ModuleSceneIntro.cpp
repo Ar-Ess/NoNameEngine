@@ -7,7 +7,7 @@
 ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	// Create Scenes
-	editor = new EditorScene(app, &shapes, new AssetsManager("/Assets"), new ImportManager());
+	editor = new EditorScene(app, &shapes, new AssetsManager("/Assets"), new ImportManager(), new FileManager());
 }
 
 ModuleScene::~ModuleScene()
@@ -19,7 +19,7 @@ bool ModuleScene::Start()
 	bool ret = true;
 	//app->render->camera.x = app->render->camera.y = 0;
 
-	editor->Start();
+	ret = editor->Start();
 
 	return ret;
 }

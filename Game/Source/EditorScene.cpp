@@ -3,18 +3,17 @@
 #include "ModuleSceneIntro.h"
 #include "ModuleInput.h"
 #include "ModuleCamera3D.h"
-#include "AssetsManager.h"
-#include "FileManager.h"
 #include "stb_image.h"
 #include "glmath.h"
 //#include "External/imgui/imgui.h"
 
-EditorScene::EditorScene(Application* App, vector<Shape3D*>* s, AssetsManager* assetsManager, ImportManager* importManager)
+EditorScene::EditorScene(Application* App, vector<Shape3D*>* s, AssetsManager* assetsManager, ImportManager* importManager, FileManager* fileManager)
 {
 	this->app = App;
 	this->shapes = s;
 	this->assets = assetsManager;
 	this->import = importManager;
+	this->file = fileManager;
 }
 
 EditorScene::~EditorScene()
@@ -23,37 +22,40 @@ EditorScene::~EditorScene()
 
 bool EditorScene::Start()
 {
+	bool ret = true;
+
 	Plane3D* p = new Plane3D({ 0, 0, 0 }, { 0, 1, 0 }, Point3D(200));
 	p->axis = true;
 	p->solid = false;
 	shapes->push_back(p);
 
-	Cube3D* c0 = new Cube3D({ 0, 0, 0 }, { 1,1,1 }, { 0, 0, 0, 0 });
-	shapes->push_back(c0);
-	Cube3D* c1 = new Cube3D({ 2, 2, 0 }, { 1,1,1 }, { 0, 0, 0, 0 });
-	shapes->push_back(c1);
-	Cube3D* c2 = new Cube3D({ 1, 0, 4 }, { 1,1,1 }, { 0, 0, 0, 0 });
-	shapes->push_back(c2);
-
 	Model* m = new Model({ 0, 0, 0 }, { 1,1,1 });
-	m->LoadModel("Assets/Models/cube.fbx");
+	m->LoadModel("Assets/Models/bakerhouse.fbx");
 
 	assets->ParseFiles();
 	//import->LoadDefaultImages();
 
-	FileManager fM;
-	fM.OpenFile("test").Write((Shape3D*)m);
-	fM.AccessFile("test").Write((Shape3D*)m);
+	ret = file->OpenFile("test").Write((Shape3D*)m);
 
-	Shape3D* s = nullptr;
-	fM.AccessFile("test").Read(1, s);
-
-	return true;
+	return ret;
 }
 
 bool EditorScene::Update()
 {
 	bool ret = true;
+
+	//if (iq)
+	//{
+	//	Shape3D* s = nullptr;
+	//	ret = file->AccessFile("test").Read(0, &s);
+	//	shapes->push_back(s);
+	//	iq = false;
+	//}
+
+	if (app->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
+	{
+		PushShape3DAsChild(0, new Cube3D({8, 0, 0}));
+	}
 
 	onWindow = ImGui::IsAnyItemHovered();
 	if (!onWindow) onWindow = ImGui::IsAnyItemActive();
@@ -552,36 +554,46 @@ bool EditorScene::ShowHierarchyWindow(bool open)
 			AddSeparator(2);
 			AddSpacing(1);
 			selectedShape = 0;
-			for (int i = 1; i < shapes->size(); i++)
-			{
-				char buffer[24] = {};
-				sprintf_s(buffer, " %s %d", shapes->at(i)->GetName(), i);
 
-				// Multiselection
-				/*if (ImGui::Selectable(buffer, &shapes->at(i)->selected))
-				{
-					if (app->input->GetKey(SDL_SCANCODE_LSHIFT) != KEY_REPEAT && app->input->GetKey(SDL_SCANCODE_LSHIFT) != KEY_DOWN)
-						if (shapes->at(i)->selected)
-						{
-							for (int a = 0; a < shapes->size(); a++) if (i != a) shapes->at(a)->selected = false;
-						}
-				}*/
+			TravelShapes(*shapes);
 
-				// Uniselection
-				if (ImGui::Selectable(buffer, &shapes->at(i)->selected))
-				{
-					for (int a = 0; a < shapes->size(); a++) if (i != a) shapes->at(a)->selected = false;
-					float shape = (float)shapes->at(i)->selected;
-					ImGuizmo::SetOrthographic(false);
-					ImGuizmo::SetDrawlist();
-					ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, (float)ImGui::GetWindowWidth(), (float)ImGui::GetWindowHeight());
-					ImGuizmo::Manipulate(app->camera->GetViewMatrix(), app->camera->GetViewMatrix() , ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, &shape);
-				}
-				AddSpacing(0);
-
-
-				if (selectedShape == 0 && shapes->at(i)->selected) selectedShape = i;
-			}
+			//for (int i = 1; i < shapes->size(); i++)
+			//{
+			//	Shape3D* s = shapes->at(i);
+			//	char buffer[24] = {};
+			//	sprintf_s(buffer, "%s %d", s->GetName(), i);
+			//
+			//	// Multiselection
+			//	/*if (ImGui::Selectable(buffer, &shapes->at(i)->selected))
+			//	{
+			//		if (app->input->GetKey(SDL_SCANCODE_LSHIFT) != KEY_REPEAT && app->input->GetKey(SDL_SCANCODE_LSHIFT) != KEY_DOWN)
+			//			if (shapes->at(i)->selected)
+			//			{
+			//				for (int a = 0; a < shapes->size(); a++) if (i != a) shapes->at(a)->selected = false;
+			//			}
+			//	}*/
+			//
+			//	// Uniselection
+			//
+			//	ImGui::PushID(i + 100);
+			//	ImGui::Checkbox("", &s->draw);
+			//	ImGui::PopID();
+			//	ImGui::SameLine();
+			//
+			//	if (ImGui::Selectable(buffer, &s->selected))
+			//	{
+			//		DiselectShapes(*shapes, s);
+			//		float shape = (float)s->selected;
+			//		ImGuizmo::SetOrthographic(false);
+			//		ImGuizmo::SetDrawlist();
+			//		ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, (float)ImGui::GetWindowWidth(), (float)ImGui::GetWindowHeight());
+			//		ImGuizmo::Manipulate(app->camera->GetViewMatrix(), app->camera->GetViewMatrix() , ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, &shape);
+			//	}
+			//	AddSpacing(0);
+			//
+			//
+			//	if (selectedShape == 0 && s->selected) selectedShape = i;
+			//}
 			
 		}
 		ImGui::End();
@@ -900,6 +912,13 @@ void EditorScene::PushShape3D(Shape3D* s3D)
 	shapes->push_back(s3D);
 }
 
+void EditorScene::PushShape3DAsChild(int index, Shape3D* child)
+{
+	index += 1;
+	if (index >= shapes->size()) return;
+	shapes->at(index)->childs.push_back(child);
+}
+
 void EditorScene::DuplicateSelectedShape()
 {
 	int size = shapes->size();
@@ -985,5 +1004,53 @@ void EditorScene::EditTransform(bool editTransformDecomposition)
 			currentOperation = ImGuizmo::ROTATE;
 		if (app->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
 			currentOperation = ImGuizmo::SCALE;
+	}
+}
+
+void EditorScene::TravelShapes(vector<Shape3D*> shapeVect, int depth)
+{
+	int startingPoint = 0;
+	if (depth == 0) startingPoint = 1;
+	for (int i = startingPoint; i < shapeVect.size(); i++)
+	{
+		ImGui::Dummy({ float(depth * 7), 0.0f });
+		ImGui::SameLine();
+		Shape3D* s = shapeVect[i];
+		char buffer[24] = {};
+		if (depth == 0) sprintf_s(buffer, "%s %d", s->GetName(), i);
+		else
+			sprintf_s(buffer, "%s %d.%d", s->GetName(), i, depth);
+
+		ImGui::PushID(i);
+		ImGui::Checkbox("", &s->draw);
+		ImGui::PopID();
+		ImGui::SameLine();
+		if (ImGui::Selectable(buffer, &s->selected))
+		{
+			DiselectShapes(*shapes, s);
+			float shape = (float)s->selected;
+			ImGuizmo::SetOrthographic(false);
+			ImGuizmo::SetDrawlist();
+			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, (float)ImGui::GetWindowWidth(), (float)ImGui::GetWindowHeight());
+			ImGuizmo::Manipulate(app->camera->GetViewMatrix(), app->camera->GetViewMatrix(), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, &shape);
+		}
+
+		if (selectedShape == 0 && s->selected) selectedShape = i;
+
+		if (!s->childs.empty()) TravelShapes(s->childs, (depth + 1));
+
+		AddSpacing(0);
+	}
+}
+
+void EditorScene::DiselectShapes(vector<Shape3D*> shapes, Shape3D* ref)
+{
+	for (int a = 0; a < shapes.size(); a++)
+	{
+		if (shapes[a] != ref) shapes[a]->selected = false;
+		if (!shapes[a]->childs.empty())
+		{
+			DiselectShapes(shapes[a]->childs, ref);
+		}
 	}
 }

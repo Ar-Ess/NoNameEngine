@@ -529,4 +529,4 @@ mat4x4 perspective(float fovy, float aspect, float n, float f);
 mat4x4 rotate(float angle, const vec3 &u);
 mat4x4 scale(float x, float y, float z);
 mat4x4 translate(float x, float y, float z);
-mat4x4 transpose(const mat4x4 &Matrix);
+mat4x4 transpose(const mat4x4& Matrix);

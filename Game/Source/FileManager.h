@@ -1,7 +1,11 @@
 #define FILEM_EXTENSION ".nne"
 #define FILEM_STARTING_POINT 28
 #define FILEM_SHAPE_INDEX_POINT 7
-#define FILEM_SHAPE_INFO_START_POINT 3
+#define FILEM_SHAPE_INFO_START_POINT 4
+#define FILEM_MESH_COUNT_POINT 8
+#define FILEM_MESH_COUNT_START_POINT 3
+//#define FILEM_MESH_INDEX_POINT 7
+#define FILEM_MESH_INFO_START_POINT 9
 
 #ifndef __FILE_MANAGER__
 #define __FILE_MANAGER__
@@ -10,8 +14,8 @@
 #include <string>
 #include <iterator>
 #include "External/Density/density_api.h"
-
-struct FileEditor;
+#include "Shapes3D.h"
+#include "Model.h"
 
 class FileManager
 {
@@ -107,14 +111,14 @@ class FileManager
 					}
 
 					// Texture Internal Data
-					fprintf_s(file, "\n - Texture Internal Data: \n"); // Pixels, InternalFormat, Width, Height, TextCoordArraySize in Bytes, ChannelsPerPixel
+					fprintf_s(file, "\n - TID: \n"); // Pixels, InternalFormat, Width, Height, TextCoordArraySize in Bytes, ChannelsPerPixel
 					TextureInternalData tID = mh->GetInternalData();
 					int dataNum = tID.width * tID.height * tID.channelsPerPixel;
 					// Miss Pixels
-					fprintf_s(file, "%d<\n", (int)tID.internalFormat);
-					fprintf_s(file, "%d<\n", tID.width);
-					fprintf_s(file, "%d<\n", tID.height);
-					fprintf_s(file, "%d<\n", (int)tID.textCoordArraySizeinBytes);
+					fprintf_s(file, "%d<", (int)tID.internalFormat);
+					fprintf_s(file, "%d<", tID.width);
+					fprintf_s(file, "%d<", tID.height);
+					fprintf_s(file, "%d<", (int)tID.textCoordArraySizeinBytes);
 					fprintf_s(file, "%d<", tID.channelsPerPixel);
 
 					//// Example
@@ -147,6 +151,7 @@ class FileManager
 					////	fprintf_s(file, "%d ", *s.p);
 					////}
 				}
+				fprintf_s(file, "\nMeshes:<");
 
 				break;
 			}
@@ -158,7 +163,7 @@ class FileManager
 			return true;
 		}
 
-		bool Read(unsigned int index, Shape3D* shape)
+		bool Read(unsigned int index, Shape3D** s)
 		{
 			if (!exists)
 			{
@@ -197,7 +202,7 @@ class FileManager
 				if (idx == index)
 				{
 					int sum = (int)floor((float)index / 10);
-					fseek(file, FILEM_SHAPE_INFO_START_POINT + sum + 1, SEEK_CUR);
+					fseek(file, FILEM_SHAPE_INFO_START_POINT + sum, SEEK_CUR);
 					break;
 				}
 				fseek(file, -FILEM_SHAPE_INDEX_POINT, SEEK_CUR);
@@ -218,11 +223,12 @@ class FileManager
 			// Read shape type
 			fseek(file, 6, SEEK_CUR); // Advance "Type: "
 			n = FindNextChar('<');
-			char type[300] = {};
+			char type[12] = {};
 			fread_s(type, n + 1, n, sizeof(char), file);
 			fseek(file, 3, SEEK_CUR);
 
 			// Initialize shape
+			Shape3D* shape = nullptr;
 			ShapeType sT = shape->ReadShapeType(type);
 			switch (sT)
 			{
@@ -234,6 +240,7 @@ class FileManager
 			case SPHERE3D: shape = new Sphere3D(); break;
 			case MODEL3D: shape = new Model(); break;
 			}
+
 			shape->SetName(name);
 
 			// Read transform info
@@ -259,7 +266,85 @@ class FileManager
 			shape->SetScale(point);
 			fseek(file, 3, SEEK_CUR);
 
-			// Read meshes info 
+			// Read number of meshes
+			Model* m = (Model*)shape;
+			fseek(file, FILEM_MESH_COUNT_POINT, SEEK_CUR);
+			int meshSize = -1;
+			fscanf_s(file, "%d", &meshSize);
+			fseek(file, FILEM_MESH_COUNT_START_POINT, SEEK_CUR);
+
+			for (int i = 0; i < meshSize; i++)
+			{
+				// Read mesh info
+				fseek(file, FILEM_MESH_INFO_START_POINT + 11, SEEK_CUR); // MESH INFO START POINT + ADVANCE " - Vertex: "
+				// Read vertex
+				int vertexsSize = -1;
+				fscanf_s(file, "%d", &vertexsSize);
+				fseek(file, 3, SEEK_CUR);
+				float* vertexs = new float[vertexsSize];
+				float* vPtr = vertexs;
+				for (int i = 0; i < vertexsSize; i++)
+				{
+					fscanf_s(file, "%f<", vPtr);
+					vPtr += 1;
+				}
+
+				// Read index
+				fseek(file, 2 + 10, SEEK_CUR); // Advance \n x 2 + ADVANCE " - Index: "
+				int indexSize = -1;
+				fscanf_s(file, "%d", &indexSize);
+				fseek(file, 3, SEEK_CUR);
+				uint* indexs = new uint[indexSize];
+				uint* iPtr = indexs;
+				for (int i = 0; i < indexSize; i++)
+				{
+					fscanf_s(file, "%u<", iPtr);
+					iPtr += 1;
+				}
+
+				// Read normals
+				fseek(file, 2 + 12, SEEK_CUR); // Advance \n x 2 + ADVANCE " - Normals: "
+				int normalsSize = -1;
+				fscanf_s(file, "%d", &normalsSize);
+				fseek(file, 3, SEEK_CUR);
+				float* normals = new float[normalsSize];
+				float* nPtr = normals;
+				for (int i = 0; i < normalsSize; i++)
+				{
+					fscanf_s(file, "%f<", nPtr);
+					nPtr += 1;
+					LOG("%f", normals[i]);
+				}
+
+				// Read texture coords
+				fseek(file, 2 + 19, SEEK_CUR); // Advance \n x 2 + ADVANCE " - Texture Coords: "
+				int texSize = -1;
+				fscanf_s(file, "%d", &texSize);
+				fseek(file, 3, SEEK_CUR);
+				float* texCoords = new float[texSize];
+				float* tPtr = texCoords;
+				for (int i = 0; i < texSize; i++)
+				{
+					fscanf_s(file, "%f<", tPtr);
+					tPtr += 1;
+				}
+
+				// Read TID
+				fseek(file, 2 + 7 + 2, SEEK_CUR); // Advance \n x 2 + ADVANCE " - TID:" + Advance \n x 2
+				TextureInternalData tID = {};
+				tID.pixels = nullptr;
+				fscanf_s(file, "%d<", &tID.internalFormat);
+				fscanf_s(file, "%d<", &tID.width);
+				fscanf_s(file, "%d<", &tID.height);
+				fscanf_s(file, "%d<", &tID.textCoordArraySizeinBytes);
+				fscanf_s(file, "%d", &tID.channelsPerPixel);
+
+				m->meshes.push_back(new Mesh(vertexs, (uint)vertexsSize, indexs, (uint)indexSize, normals, (uint)normalsSize, texCoords, (uint)texSize, tID));
+
+				if (i < (meshSize - 1)) fseek(file, 3, SEEK_CUR);
+			}
+
+			*s = shape;
 
 			// Close the file
 			if (fclose(file) != 0) return false;

@@ -98,14 +98,17 @@ public:
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, texCoordID);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, tID.textCoordArraySizeinBytes, texture, GL_STATIC_DRAW);
 
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		glGenTextures(1, &textureID);
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tID.width, tID.height, 0, tID.internalFormat, GL_UNSIGNED_BYTE, tID.pixels);
+		if (tID.pixels != nullptr)
+		{
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+			glGenTextures(1, &textureID);
+			glBindTexture(GL_TEXTURE_2D, textureID);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tID.width, tID.height, 0, tID.internalFormat, GL_UNSIGNED_BYTE, tID.pixels);
+		}
 
 		//textureInternalData.Reset();
 	}

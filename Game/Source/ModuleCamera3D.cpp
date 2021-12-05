@@ -104,11 +104,7 @@ update_status ModuleCamera3D::PostUpdate()
 		if (shift) newPosition.y += frameSpeed;
 		else
 		{
-			if (lclick) newPosition -= Z * frameSpeed;
-			else
-			{
-				newPosition.z += frameSpeed;
-			}
+			newPosition -= Z * frameSpeed;
 		}
 	}
 	if (app->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT)
@@ -116,11 +112,7 @@ update_status ModuleCamera3D::PostUpdate()
 		if (shift) newPosition.y -= frameSpeed;
 		else
 		{
-			if (lclick) newPosition += Z * frameSpeed;
-			else
-			{
-				newPosition.z -= frameSpeed;
-			}
+			newPosition += Z * frameSpeed;
 		}
 	}
 	if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) newPosition -= X * frameSpeed;

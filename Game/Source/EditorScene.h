@@ -4,6 +4,7 @@
 #include "ModuleRender.h"
 #include "AssetsManager.h"
 #include "ImportManager.h"
+#include "FileManager.h"
 #include "Model.h"
 #include "Globals.h"
 #include <string>
@@ -32,16 +33,13 @@
 
 #define YELLOW {1.0f, 1.0f, 0.0f, 1.0f}
 
-class Plane3D;
-class Cube3D;
-class Cylinder3D;
-class Pyramid3D;
 class Image;
 
 class EditorScene
 {
 public:
-	EditorScene(Application* app, vector<Shape3D*>* shapes, AssetsManager* assetsManager, ImportManager* importManager);
+	bool iq = true;
+	EditorScene(Application* app, vector<Shape3D*>* shapes, AssetsManager* assetsManager, ImportManager* importManager, FileManager* fileManager);
 	~EditorScene();
 
 	bool Start();
@@ -155,6 +153,9 @@ private: // Functions
 	// Push Back of a Shape3D
 	void PushShape3D(Shape3D* s3D);
 
+	// Push Back of a Shape3D
+	void PushShape3DAsChild(int index, Shape3D* child);
+
 	// Duplicates selected shape
 	void DuplicateSelectedShape();
 
@@ -164,9 +165,12 @@ private: // Functions
 	// Pop All Shapes on scene
 	void DeleteAllShapes(bool enableMessage = true);
 
-
 	// Guizmo functions
 	void EditTransform(bool editTransformDecomposition);
+
+	void TravelShapes(vector<Shape3D*> shapes, int depth = 0);
+
+	void DiselectShapes(vector<Shape3D*> shapes, Shape3D* ref);
 
 public: // Variables
 	bool demoWindow = false;
@@ -217,6 +221,7 @@ private: // Variables
 	vector<Shape3D*>* shapes = nullptr;
 	AssetsManager* assets = nullptr;
 	ImportManager* import = nullptr;
+	FileManager* file = nullptr;
 	ImGuiID dockSpaceId = {};
 	int selectedShape = 0;
 

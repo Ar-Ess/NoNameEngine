@@ -108,12 +108,14 @@ public:
 		this->rotation = rotation;
 	}
 
-
 	bool axis = false;
 	bool edges = true;
 	bool solid = true;
 	bool normals = false;
 	bool selected = false;
+	bool draw = true;
+
+	vector<Shape3D*> childs;
 
 protected:
 
@@ -191,13 +193,23 @@ public:
 
 	bool Draw()
 	{
+		if (!draw) return true;
 		glTranslatef(position.x, position.y, position.z);
 		glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
 		glScalef(scale.x, scale.y, scale.z);
+		glLineWidth(1.0f);
 
 		if (solid) DrawSolid();
 		if (edges) DrawEdges();
 		if (axis) DrawAxis();
+
+		if (!childs.empty())
+		{
+			for (int i = 0; i < childs.size(); i++)
+			{
+				childs[i]->Draw();
+			}
+		}
 
 		return true;
 
@@ -384,6 +396,8 @@ public:
 
 	bool Draw()
 	{
+		if (!draw) return true;
+
 		glTranslatef(position.x, position.y, position.z);
 		glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
 
@@ -451,9 +465,12 @@ public:
 
 	bool Draw()
 	{
+		if (!draw) return true;
+
 		glTranslatef(position.x, position.y, position.z);
 		glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
 		glScalef(scale.x, scale.y, scale.z);
+		glLineWidth(1.0f);
 
 		if (solid) DrawSolid();
 		if (edges) DrawEdges();
@@ -516,10 +533,7 @@ private:
 		glVertex3f(v[0].x, v[0].y, v[0].z); // v0
 
 		glEnd();
-
-		glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
 	}
-
 	bool DrawEdges()
 	{
 		glColor3f(255, 0, 0);
@@ -555,8 +569,6 @@ private:
 		glVertex3f(v[0].x, v[0].y, v[0].z); // v0
 
 		glEnd();
-
-		glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
 
 		return true;
 	}
@@ -622,9 +634,12 @@ public:
 
 	bool Draw()
 	{
+		if (!draw) return true;
+
 		glTranslatef(position.x, position.y, position.z);
 		glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
 		glScalef(scale.x, scale.y, scale.z);
+		glLineWidth(1.0f);
 
 		if (solid) DrawSolid();
 		if (edges) DrawEdges();
@@ -679,7 +694,6 @@ private:
 
 		return true;
 	}
-
 	bool DrawEdges()
 	{
 		glColor3f(255, 0, 0);
@@ -768,8 +782,11 @@ public:
 
 	bool Draw()
 	{
+		if (!draw) return true;
+
 		glTranslatef(position.x, position.y, position.z);
 		glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
+		glLineWidth(1.0f);
 
 		if (solid) DrawSolid();
 		if (edges) DrawEdges();
@@ -824,7 +841,6 @@ private:
 
 		return true;
 	}
-
 	bool DrawEdges()
 	{
 		glColor3f(255, 255, 255);
@@ -912,9 +928,12 @@ public:
 
 	bool Draw()
 	{
+		if (!draw) return true;
+
 		glTranslatef(position.x, position.y, position.z);
 		glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
 		glScalef(scale.x, scale.y, scale.z);
+		glLineWidth(1.0f);
 
 		if (solid) DrawSolid();
 		if (edges) DrawEdges();
@@ -928,7 +947,6 @@ private:
 	bool DrawSolid()
 	{
 		glColor3f(255, 255, 255);
-
 		glEnable(GL_POLYGON_OFFSET_FILL);
 		glPolygonOffset(1.0, 1.0f);
 		// interleaved array
@@ -950,7 +968,6 @@ private:
 
 		return true;
 	}
-
 	bool DrawEdges()
 	{
 		// set line colour
