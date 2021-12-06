@@ -147,23 +147,77 @@ private: // Functions
 		return false;
 	}
 
+	Shape3D* GetShapeFromId(vector<Shape3D*> shapes, int id, int* index = nullptr)
+	{
+		for (int a = 0; a < shapes.size(); a++)
+		{
+			if (shapes[a]->id == id)
+			{
+				if (index != nullptr) *index = a;
+				return shapes[a];
+			}
+
+			if (!shapes[a]->childs.empty())
+			{
+				Shape3D* s = GetShapeFromId(shapes[a]->childs, id, index);
+				if (s != nullptr) return s;
+			}
+		}
+
+		return nullptr;
+	}
+
+	bool DeleteShapeFromId(vector<Shape3D*>* shapes, int id)
+	{
+		int size = shapes->size();
+		for (int a = 0; a < size; a++)
+		{
+			if (shapes->at(a)->id == id)
+			{
+				shapes->at(a)->~Shape3D();
+				shapes->erase(shapes->begin() + a);
+				if (shapes->size() == 0) shapes->clear();
+				return true;
+			}
+
+			if (!shapes->at(a)->childs.empty())
+			{
+				bool deleted = DeleteShapeFromId(&shapes->at(a)->childs, id);
+				if (deleted) return true;
+			}
+		}
+
+		return false;
+	}
+
 	// Create a default primitive
 	void CreatePrimitive(ShapeType sT);
 
 	// Push Back of a Shape3D
 	void PushShape3D(Shape3D* s3D);
 
-	// Push Back of a Shape3D
-	void PushShape3DAsChild(int index, Shape3D* child);
-
 	// Duplicates selected shape
 	void DuplicateSelectedShape();
 
 	// Pop First of a Shape3D
-	void PopShape();
+	void DeleteShape();
 
 	// Pop All Shapes on scene
 	void DeleteAllShapes(bool enableMessage = true);
+
+	void DeleteAll(vector<Shape3D*>* shapes, int offset = 0)
+	{
+		for (int i = (shapes->size() - 1); i >= offset; i--)
+		{
+			Shape3D* s = shapes->at(i);
+			if (!s->childs.empty()) DeleteAll(&s->childs);
+
+			s->~Shape3D();
+			shapes->erase(shapes->begin() + i);
+		}
+
+		if (offset == 0) shapes->clear();
+	}
 
 	// Guizmo functions
 	void EditTransform(bool editTransformDecomposition);
@@ -171,6 +225,8 @@ private: // Functions
 	void TravelShapes(vector<Shape3D*> shapes, int depth = 0);
 
 	void DiselectShapes(vector<Shape3D*> shapes, Shape3D* ref);
+
+	int SetValidId(vector<Shape3D*> s, int size = 0);
 
 public: // Variables
 	bool demoWindow = false;
@@ -223,7 +279,10 @@ private: // Variables
 	ImportManager* import = nullptr;
 	FileManager* file = nullptr;
 	ImGuiID dockSpaceId = {};
-	int selectedShape = 0;
+	int selectId = 0;
+	int prevSelectId = -1;
+	Shape3D* prevShape = nullptr;
+
 
 	Image folderImage = { ImageTexture::IMG_NO_IMAGE };
 	Image fileImage = { ImageTexture::IMG_NO_IMAGE };

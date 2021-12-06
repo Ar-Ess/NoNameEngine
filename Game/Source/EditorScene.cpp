@@ -5,6 +5,7 @@
 #include "ModuleCamera3D.h"
 #include "stb_image.h"
 #include "glmath.h"
+#include <algorithm>
 //#include "External/imgui/imgui.h"
 
 EditorScene::EditorScene(Application* App, vector<Shape3D*>* s, AssetsManager* assetsManager, ImportManager* importManager, FileManager* fileManager)
@@ -37,25 +38,14 @@ bool EditorScene::Start()
 
 	ret = file->OpenFile("test").Write((Shape3D*)m);
 
+	SetValidId(*shapes);
+
 	return ret;
 }
 
 bool EditorScene::Update()
 {
 	bool ret = true;
-
-	//if (iq)
-	//{
-	//	Shape3D* s = nullptr;
-	//	ret = file->AccessFile("test").Read(0, &s);
-	//	shapes->push_back(s);
-	//	iq = false;
-	//}
-
-	if (app->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
-	{
-		PushShape3DAsChild(0, new Cube3D({8, 0, 0}));
-	}
 
 	onWindow = ImGui::IsAnyItemHovered();
 	if (!onWindow) onWindow = ImGui::IsAnyItemActive();
@@ -112,7 +102,7 @@ bool EditorScene::DrawMenuBar()
 			AddSeparator(1);
 
 			if (ImGui::MenuItem("Delete", " Supr"))
-				PopShape();
+				DeleteShape();
 
 			if (ImGui::MenuItem("Delete All", " Supr + Shift"))
 				DeleteAllShapes();
@@ -553,48 +543,8 @@ bool EditorScene::ShowHierarchyWindow(bool open)
 			if (!onWindow) onWindow = ImGui::IsWindowHovered();
 			AddSeparator(2);
 			AddSpacing(1);
-			selectedShape = 0;
-
+			selectId = 0;
 			TravelShapes(*shapes);
-
-			//for (int i = 1; i < shapes->size(); i++)
-			//{
-			//	Shape3D* s = shapes->at(i);
-			//	char buffer[24] = {};
-			//	sprintf_s(buffer, "%s %d", s->GetName(), i);
-			//
-			//	// Multiselection
-			//	/*if (ImGui::Selectable(buffer, &shapes->at(i)->selected))
-			//	{
-			//		if (app->input->GetKey(SDL_SCANCODE_LSHIFT) != KEY_REPEAT && app->input->GetKey(SDL_SCANCODE_LSHIFT) != KEY_DOWN)
-			//			if (shapes->at(i)->selected)
-			//			{
-			//				for (int a = 0; a < shapes->size(); a++) if (i != a) shapes->at(a)->selected = false;
-			//			}
-			//	}*/
-			//
-			//	// Uniselection
-			//
-			//	ImGui::PushID(i + 100);
-			//	ImGui::Checkbox("", &s->draw);
-			//	ImGui::PopID();
-			//	ImGui::SameLine();
-			//
-			//	if (ImGui::Selectable(buffer, &s->selected))
-			//	{
-			//		DiselectShapes(*shapes, s);
-			//		float shape = (float)s->selected;
-			//		ImGuizmo::SetOrthographic(false);
-			//		ImGuizmo::SetDrawlist();
-			//		ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, (float)ImGui::GetWindowWidth(), (float)ImGui::GetWindowHeight());
-			//		ImGuizmo::Manipulate(app->camera->GetViewMatrix(), app->camera->GetViewMatrix() , ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, &shape);
-			//	}
-			//	AddSpacing(0);
-			//
-			//
-			//	if (selectedShape == 0 && s->selected) selectedShape = i;
-			//}
-			
 		}
 		ImGui::End();
 	}
@@ -610,16 +560,19 @@ bool EditorScene::ShowInspectorWindow(bool open)
 		{
 			if (!onWindow) onWindow = ImGui::IsWindowHovered();
 
-			if (selectedShape != 0)
+			if (selectId != 0)
 			{
-				Shape3D* s = shapes->at(selectedShape);
+				Shape3D* s = prevShape; 
+				if (selectId != prevSelectId) s = GetShapeFromId(*shapes, selectId);
+				prevSelectId = selectId;
+				prevShape = s;
 
 				AddSeparator(2);
 				AddSpacing(0);
 
 				// NAME
 				char buffer[24] = {};
-				sprintf_s(buffer, " Name: %s %d", s->GetName(), selectedShape);
+				sprintf_s(buffer, " Name: %s %d", s->GetName(), selectId);
 				ImGui::Text(buffer);
 				AddSpacing(1);
 
@@ -871,7 +824,7 @@ bool EditorScene::ShortCuts()
 
 	if (!shift && !ctrl) // NO CLICK
 	{
-		if (app->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN) PopShape();
+		if (app->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN) DeleteShape();
 	}
 	else if (shift && !ctrl) // SHIFT
 	{
@@ -910,52 +863,36 @@ void EditorScene::PushShape3D(Shape3D* s3D)
 {
 	s3D->selected = false;
 	shapes->push_back(s3D);
-}
-
-void EditorScene::PushShape3DAsChild(int index, Shape3D* child)
-{
-	index += 1;
-	if (index >= shapes->size()) return;
-	shapes->at(index)->childs.push_back(child);
+	SetValidId(*shapes);
 }
 
 void EditorScene::DuplicateSelectedShape()
 {
 	int size = shapes->size();
-	for (int i = 1; i < size; i++)
+	Shape3D* select = GetShapeFromId(*shapes, selectId);
+
+	if (select != nullptr && select->selected)
 	{
-		if (shapes->at(i)->selected)
+		switch (select->GetShapeType())
 		{
-			switch (shapes->at(i)->GetShapeType())
-			{
-				case CUBE3D: PushShape3D(new Cube3D(*(Cube3D*)shapes->at(i))); break;
-				case LINE3D: PushShape3D(new Line3D(*(Line3D*)shapes->at(i))); break;
-				case PYRAMID3D: PushShape3D(new Pyramid3D(*(Pyramid3D*)shapes->at(i))); break;
-				case CYLINDER3D: PushShape3D(new Cylinder3D(*(Cylinder3D*)shapes->at(i))); break;
-				case PLANE3D: PushShape3D(new Plane3D(*(Plane3D*)shapes->at(i))); break;
-				case SPHERE3D: PushShape3D(new Sphere3D(*(Sphere3D*)shapes->at(i))); break;
-				case MODEL3D: PushShape3D(new Model(*(Model*)shapes->at(i))); break;
-			}
+		case CUBE3D: PushShape3D(new Cube3D(*(Cube3D*)select)); break;
+		case LINE3D: PushShape3D(new Line3D(*(Line3D*)select)); break;
+		case PYRAMID3D: PushShape3D(new Pyramid3D(*(Pyramid3D*)select)); break;
+		case CYLINDER3D: PushShape3D(new Cylinder3D(*(Cylinder3D*)select)); break;
+		case PLANE3D: PushShape3D(new Plane3D(*(Plane3D*)select)); break;
+		case SPHERE3D: PushShape3D(new Sphere3D(*(Sphere3D*)select)); break;
+		case MODEL3D: PushShape3D(new Model(*(Model*)select)); break;
 		}
 	}
 }
 
-void EditorScene::PopShape()
+void EditorScene::DeleteShape()
 {
-	int select = -1;
-	for (int i = 1; i < shapes->size(); i++)
+	Shape3D* erase = GetShapeFromId(*shapes, selectId);
+	if (erase != nullptr && erase->selected)
 	{
-		if (shapes->at(i)->selected)
-		{
-			select = i; 
-			break;
-		}
-	}
-
-	if (select != -1)
-	{
-		shapes->at(select)->~Shape3D();
-		shapes->erase(shapes->begin() + select);
+		DeleteShapeFromId(shapes, selectId);
+		SetValidId(*shapes);
 	}
 	else
 	{
@@ -970,7 +907,11 @@ void EditorScene::PopShape()
 
 void EditorScene::DeleteAllShapes(bool enableMessage)
 {
-	if (shapes->size() > 1) shapes->erase(shapes->begin() + 1, shapes->end());
+	if (shapes->size() > 1)
+	{
+		DeleteAll(shapes, 1);
+		SetValidId(*shapes);
+	}
 	else
 	{
 		if (enableMessage)
@@ -978,7 +919,7 @@ void EditorScene::DeleteAllShapes(bool enableMessage)
 			SDL_ShowSimpleMessageBox(
 				SDL_MESSAGEBOX_INFORMATION,
 				"Shapes Error",
-				"\nCan not delete a Model\nNo shape left in the scene",
+				"\nNo shape left in the scene",
 				app->window->mainWindow
 			);
 		}
@@ -1013,7 +954,7 @@ void EditorScene::TravelShapes(vector<Shape3D*> shapeVect, int depth)
 	if (depth == 0) startingPoint = 1;
 	for (int i = startingPoint; i < shapeVect.size(); i++)
 	{
-		ImGui::Dummy({ float(depth * 7), 0.0f });
+		ImGui::Dummy({ float(depth * 10), 0.0f });
 		ImGui::SameLine();
 		Shape3D* s = shapeVect[i];
 		char buffer[24] = {};
@@ -1023,8 +964,9 @@ void EditorScene::TravelShapes(vector<Shape3D*> shapeVect, int depth)
 
 		ImGui::PushID(i);
 		ImGui::Checkbox("", &s->draw);
-		ImGui::PopID();
 		ImGui::SameLine();
+		ImGui::PopID();
+
 		if (ImGui::Selectable(buffer, &s->selected))
 		{
 			DiselectShapes(*shapes, s);
@@ -1035,7 +977,43 @@ void EditorScene::TravelShapes(vector<Shape3D*> shapeVect, int depth)
 			ImGuizmo::Manipulate(app->camera->GetViewMatrix(), app->camera->GetViewMatrix(), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, &shape);
 		}
 
-		if (selectedShape == 0 && s->selected) selectedShape = i;
+		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+		{
+			ImGui::SetDragDropPayload("DragDropHierarchy", &s->id, sizeof(int), ImGuiCond_Once);
+			ImGui::Text(buffer);
+			ImGui::EndDragDropSource();
+		}
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			bool dropped = false;
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DragDropHierarchy"))
+			{
+				IM_ASSERT(payload->DataSize == sizeof(Shape3D*));
+				int droppedId = *(const int*)payload->Data;
+				int index = -1;
+				Shape3D* drop = GetShapeFromId(*shapes, droppedId, &index);
+				if (drop && index != 0)
+				{
+					std::vector<Shape3D*>* v = shapes;
+					if (drop->hasParent)
+					{
+						v = &drop->parent->childs;
+					}
+
+					v->erase(v->begin() + index);
+					drop->hasParent = true;
+					drop->parent = s;
+					s->childs.push_back(drop);
+					SetValidId(*shapes);
+					dropped = true;
+				}
+			}
+			ImGui::EndDragDropTarget();
+			if (dropped) return;
+		}
+
+		if (selectId == 0 && s->selected) selectId = s->id;
 
 		if (!s->childs.empty()) TravelShapes(s->childs, (depth + 1));
 
@@ -1053,4 +1031,17 @@ void EditorScene::DiselectShapes(vector<Shape3D*> shapes, Shape3D* ref)
 			DiselectShapes(shapes[a]->childs, ref);
 		}
 	}
+}
+
+int EditorScene::SetValidId(vector<Shape3D*> shapes, int size)
+{
+	int s = size;
+	for (int a = 0; a < shapes.size(); a++)
+	{
+		shapes[a]->id = s;
+		s++;
+		if (!shapes[a]->childs.empty()) s = SetValidId(shapes[a]->childs, s);
+	}
+
+	return s;
 }

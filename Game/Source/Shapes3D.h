@@ -114,8 +114,11 @@ public:
 	bool normals = false;
 	bool selected = false;
 	bool draw = true;
+	bool hasParent = false;
 
 	vector<Shape3D*> childs;
+	Shape3D* parent = nullptr;
+	int id = 0;
 
 protected:
 
@@ -203,13 +206,7 @@ public:
 		if (edges) DrawEdges();
 		if (axis) DrawAxis();
 
-		if (!childs.empty())
-		{
-			for (int i = 0; i < childs.size(); i++)
-			{
-				childs[i]->Draw();
-			}
-		}
+		for (int i = 0; !childs.empty() && i < childs.size(); i++) childs[i]->Draw();
 
 		return true;
 
@@ -403,6 +400,9 @@ public:
 
 		if (solid) DrawSolid();
 		if (axis) DrawAxis();
+
+		for (int i = 0; !childs.empty() && i < childs.size(); i++) childs[i]->Draw();
+
 		return true;
 	}
 
@@ -475,6 +475,9 @@ public:
 		if (solid) DrawSolid();
 		if (edges) DrawEdges();
 		if (axis) DrawAxis();
+
+
+		for (int i = 0; !childs.empty() && i < childs.size(); i++) childs[i]->Draw();
 		
 		return true;
 
@@ -645,6 +648,8 @@ public:
 		if (edges) DrawEdges();
 		if (axis) DrawAxis();
 
+		for (int i = 0; !childs.empty() && i < childs.size(); i++) childs[i]->Draw();
+
 		return true;
 	}
 
@@ -792,6 +797,8 @@ public:
 		if (edges) DrawEdges();
 		if (axis) DrawAxis();
 
+		for (int i = 0; !childs.empty() && i < childs.size(); i++) childs[i]->Draw();
+
 		return true;
 	}
 
@@ -938,6 +945,8 @@ public:
 		if (solid) DrawSolid();
 		if (edges) DrawEdges();
 		if (axis) DrawAxis();
+
+		for (int i = 0; !childs.empty() && i < childs.size(); i++) childs[i]->Draw();
 
 		return true;
 	}
