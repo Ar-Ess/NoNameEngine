@@ -222,7 +222,7 @@ private: // Functions
 	// Guizmo functions
 	void EditTransform(bool editTransformDecomposition);
 
-	void TravelShapes(vector<Shape3D*> shapes, int depth = 0);
+	void TravelShapes(vector<Shape3D*>* shapes, int depth = 0);
 
 	void DiselectShapes(vector<Shape3D*> shapes, Shape3D* ref);
 

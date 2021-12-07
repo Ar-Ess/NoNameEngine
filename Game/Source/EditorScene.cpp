@@ -30,13 +30,11 @@ bool EditorScene::Start()
 	p->solid = false;
 	shapes->push_back(p);
 
-	Model* m = new Model({ 0, 0, 0 }, { 1,1,1 });
-	m->LoadModel("Assets/Models/bakerhouse.fbx");
-
-	assets->ParseFiles();
-	//import->LoadDefaultImages();
-
-	ret = file->OpenFile("test").Write((Shape3D*)m);
+	//Model* m = new Model({ 0, 0, 0 }, { 1,1,1 });
+	//m->LoadModel("Assets/Models/bakerhouse.fbx");
+	//assets->ParseFiles();
+	////import->LoadDefaultImages();
+	//ret = file->OpenFile("test").Write((Shape3D*)m);
 
 	SetValidId(*shapes);
 
@@ -544,7 +542,7 @@ bool EditorScene::ShowHierarchyWindow(bool open)
 			AddSeparator(2);
 			AddSpacing(1);
 			selectId = 0;
-			TravelShapes(*shapes);
+			TravelShapes(shapes);
 		}
 		ImGui::End();
 	}
@@ -948,15 +946,15 @@ void EditorScene::EditTransform(bool editTransformDecomposition)
 	}
 }
 
-void EditorScene::TravelShapes(vector<Shape3D*> shapeVect, int depth)
+void EditorScene::TravelShapes(vector<Shape3D*>* shapeVect, int depth)
 {
 	int startingPoint = 0;
 	if (depth == 0) startingPoint = 1;
-	for (int i = startingPoint; i < shapeVect.size(); i++)
+	for (int i = startingPoint; i < shapeVect->size(); i++)
 	{
 		ImGui::Dummy({ float(depth * 10), 0.0f });
 		ImGui::SameLine();
-		Shape3D* s = shapeVect[i];
+		Shape3D* s = shapeVect->at(i);
 		char buffer[24] = {};
 		if (depth == 0) sprintf_s(buffer, "%s %d", s->GetName(), i);
 		else
@@ -1015,7 +1013,7 @@ void EditorScene::TravelShapes(vector<Shape3D*> shapeVect, int depth)
 
 		if (selectId == 0 && s->selected) selectId = s->id;
 
-		if (!s->childs.empty()) TravelShapes(s->childs, (depth + 1));
+		if (!s->childs.empty()) TravelShapes(&s->childs, (depth + 1));
 
 		AddSpacing(0);
 	}

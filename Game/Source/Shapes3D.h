@@ -861,10 +861,10 @@ private:
 
 		if ((bool)normal.x)
 		{
+			p = scale.y;
+			d = scale.z;
 			for (float i = -d; i <= d; i += 1.0f)
 			{
-				p = scale.y;
-				d = scale.z;
 
 				glVertex3f(     position.x,  i + position.y, -d + position.z);
 				glVertex3f(     position.x,  i + position.y,  d + position.z);
@@ -874,10 +874,10 @@ private:
 		}
 		else if ((bool)normal.y)
 		{
+			p = scale.x;
+			d = scale.z;
 			for (float i = -d; i <= d; i += 1.0f)
 			{
-				p = scale.x;
-				d = scale.z;
 
 				glVertex3f( i + position.x,      position.y, -d + position.z);
 				glVertex3f( i + position.x,      position.y,  d + position.z);
@@ -887,10 +887,10 @@ private:
 		}
 		else
 		{
+			p = scale.x;
+			d = scale.y;
 			for (float i = -d; i <= d; i += 1.0f)
 			{
-				p = scale.x;
-				d = scale.y;
 
 				glVertex3f( i + position.x, -d + position.y,      position.z);
 				glVertex3f( i + position.x,  d + position.y,      position.z);
