@@ -542,7 +542,38 @@ bool EditorScene::ShowHierarchyWindow(bool open)
 			AddSeparator(2);
 			AddSpacing(1);
 			selectId = 0;
+			int nullId = -2;
+
 			TravelShapes(shapes);
+			bool test = false;
+			ImGui::Selectable("", &test, ImGuiSelectableFlags_Disabled, ImVec2{ImGui::GetItemRectMax()});
+
+			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+			{
+				ImGui::SetDragDropPayload("DragDropHierarchy", &nullId, sizeof(int), ImGuiCond_Once);
+				ImGui::EndDragDropSource();
+			}
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DragDropHierarchy"))
+				{
+					IM_ASSERT(payload->DataSize == sizeof(Shape3D*));
+					int droppedId = *(const int*)payload->Data;
+					int index = -1;
+					Shape3D* drop = GetShapeFromId(*shapes, droppedId, &index);
+					if (drop && drop->hasParent && index != -1)
+					{
+						std::vector<Shape3D*>* v = &drop->parent->childs;
+						v->erase(v->begin() + index);
+						drop->hasParent = false;
+						drop->parent = nullptr;
+						shapes->push_back(drop);
+						SetValidId(*shapes);
+					}
+				}
+				ImGui::EndDragDropTarget();
+			}
 		}
 		ImGui::End();
 	}

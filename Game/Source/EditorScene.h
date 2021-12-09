@@ -282,7 +282,6 @@ private: // Variables
 	int prevSelectId = -1;
 	Shape3D* prevShape = nullptr;
 
-
 	Image folderImage = { ImageTexture::IMG_NO_IMAGE };
 	Image fileImage = { ImageTexture::IMG_NO_IMAGE };
 };
