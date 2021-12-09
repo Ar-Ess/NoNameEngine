@@ -673,6 +673,7 @@ bool EditorScene::ShowInspectorWindow(bool open)
 				// Type
 				ImGui::Text("Type: %s", s->WriteShapeType().c_str());
 				AddSpacing(0);
+
 				switch (s->GetShapeType())
 				{
 				case PYRAMID3D:

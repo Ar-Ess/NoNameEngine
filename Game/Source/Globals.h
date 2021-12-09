@@ -137,6 +137,11 @@ struct Point3D
 	{
 		return max(x, y, z);
 	}
+
+	float GetMaxAbs()
+	{
+		return max(abs(x), abs(y), abs(z));
+	}
 };
 
 class Rotation
@@ -165,28 +170,12 @@ public:
 
 	Point3D ToEulerAngles()
 	{
-		float xx = x, yy = y, zz = z;
-
-		if (x <= 0)
-		{
-			xx = 1;
-		}
-
-		if (y <= 0)
-		{
-			yy = 1;
-		}
-
-		if (z <= 0)
-		{
-			zz = 1;
-		}
-		return Point3D{ angle * xx/ ceil(xx), angle * yy / ceil(yy), angle * zz / ceil(zz) };
+		return Point3D{ angle * x, angle * y, angle * z };
 	}
 
 	void FromEulerAngles(Point3D euler)
 	{
-		float max = euler.GetMax();
+		float max = euler.GetMaxAbs();
 
 		if (max == 0)
 		{
