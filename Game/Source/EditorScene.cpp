@@ -23,16 +23,18 @@ EditorScene::~EditorScene()
 bool EditorScene::Start()
 {
 	bool ret = true;
+	//ret = file->OpenFile("test").Write((Shape3D*)m);
+
+	assets->ParseFiles();
+	import->LoadDefaultImages();
 
 	Plane3D* p = new Plane3D({ 0, 0, 0 }, { 0, 1, 0 }, Point3D(200));
 	p->solid = false;
 	shapes->push_back(p);
 
-	//Model* m = new Model({ 0, 0, 0 }, { 1,1,1 });
-	//m->LoadModel("Assets/Models/bakerhouse.fbx");
-	//assets->ParseFiles();
-	////import->LoadDefaultImages();
-	//ret = file->OpenFile("test").Write((Shape3D*)m);
+	Model* m = new Model({ 0, 0, 0 }, { 1,1,1 });
+	m->LoadModel("Assets/Models/street_environment_V01.FBX");
+	shapes->push_back(m);
 
 	SetValidId(*shapes);
 
@@ -934,6 +936,7 @@ bool EditorScene::ShortCuts()
 			app->Load("NNE_Project_Saving", FileContent::PROJECT);
 		}
 		if (app->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN) DuplicateSelectedShape();
+		if (app->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN) app->scene->SetGeometryView(GeometryView::TEXTURE_2D, !app->scene->GetGeometryView(GeometryView::TEXTURE_2D));
 	}
 
 	return ret;

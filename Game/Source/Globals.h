@@ -135,12 +135,18 @@ struct Point3D
 
 	float GetMax()
 	{
-		return max(x, y, z);
+		float m1 = max(x, y);
+		float m2 = max(y, z);
+		if (m1 == m2) return m1;
+		return max(m1, m2);
 	}
 
 	float GetMaxAbs()
 	{
-		return max(abs(x), abs(y), abs(z));
+		float m1 = max(abs(x), abs(y));
+		float m2 = max(abs(y), abs(z));
+		if (m1 == m2) return m1;
+		return max(m1, m2);
 	}
 };
 

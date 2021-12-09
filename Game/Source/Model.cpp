@@ -95,10 +95,13 @@ bool Model::LoadModel(const char* pathFile, const char* pathTex)
         tID.textCoordArraySizeinBytes = numTexCoord * sizeof(float) * 2;
         float* texture = (float*)malloc(tID.textCoordArraySizeinBytes);
         aiVector3D* coords = aiMesh->mTextureCoords[0];
-        for (int i = 0; i < numTexCoord; i++)
+        if (coords != nullptr)
         {
-            *(texture + i * 2) = coords[i].x;
-            *(texture + i * 2 + 1) = 1.0 - coords[i].y; //this coord image is inverted in the library
+            for (int i = 0; i < numTexCoord; i++)
+            {
+                *(texture + i * 2) = coords[i].x;
+                *(texture + i * 2 + 1) = 1.0 - coords[i].y; //this coord image is inverted in the library
+            }
         }
 
         tID.pixels = stbi_load(pathTex, &tID.width, &tID.height, &compPerPixel, STBI_rgb);
