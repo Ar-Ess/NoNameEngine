@@ -15,7 +15,7 @@ using namespace std;
 
 enum ShapeType
 {
-	NULL3D,
+	EMPTY3D,
 	CUBE3D,
 	LINE3D,
 	PYRAMID3D,
@@ -79,7 +79,7 @@ public:
 		if (SameString(type, "Sphere 3D")) return SPHERE3D;
 		if (SameString(type, "Model 3D")) return MODEL3D;
 
-		return NULL3D;
+		return EMPTY3D;
 	}
 
 	const char* GetName() const
@@ -171,8 +171,30 @@ protected:
 	Point3D position = { 0, 0, 0 };
 	Rotation rotation = { 0, 0, 0, 0};
 	Point3D scale = { 1, 1, 1 };
-	ShapeType type = NULL3D;
+	ShapeType type = EMPTY3D;
 	string name;
+};
+
+class Empty3D : public Shape3D
+{
+public:
+	Empty3D(Point3D pos = { 0.0f, 0.0f, 0.0f }, Point3D s = { 1, 1, 1 }, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, EMPTY3D, "Empty")
+	{
+	}
+
+	bool Draw()
+	{
+		if (!draw) return true;
+
+		if (axis) DrawAxis();
+
+		for (int i = 0; !childs.empty() && i < childs.size(); i++) childs[i]->Draw();
+
+		return true;
+	}
+
+private:
+
 };
 
 class Cube3D : public Shape3D

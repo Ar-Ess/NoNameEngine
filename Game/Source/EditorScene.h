@@ -38,7 +38,6 @@ class Image;
 class EditorScene
 {
 public:
-	bool iq = true;
 	EditorScene(Application* app, vector<Shape3D*>* shapes, AssetsManager* assetsManager, ImportManager* importManager, FileManager* fileManager);
 	~EditorScene();
 

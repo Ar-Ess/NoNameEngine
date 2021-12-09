@@ -854,6 +854,7 @@ void EditorScene::CreatePrimitive(ShapeType sT)
 	case CYLINDER3D: PushShape3D(new Cylinder3D()); break;
 	case PLANE3D: PushShape3D(new Plane3D()); break;
 	case SPHERE3D: PushShape3D(new Sphere3D()); break;
+	case EMPTY3D: PushShape3D(new Empty3D()); break;
 	}
 }
 
@@ -880,6 +881,7 @@ void EditorScene::DuplicateSelectedShape()
 		case PLANE3D: PushShape3D(new Plane3D(*(Plane3D*)select)); break;
 		case SPHERE3D: PushShape3D(new Sphere3D(*(Sphere3D*)select)); break;
 		case MODEL3D: PushShape3D(new Model(*(Model*)select)); break;
+		case EMPTY3D: PushShape3D(new Empty3D(*(Empty3D*)select)); break;
 		}
 	}
 }
@@ -975,7 +977,7 @@ void EditorScene::TravelShapes(vector<Shape3D*>* shapeVect, int depth)
 			ImGuizmo::Manipulate(app->camera->GetViewMatrix(), app->camera->GetViewMatrix(), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, &shape);
 		}
 
-		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+		if (ImGui::BeginDragDropSource()) 
 		{
 			ImGui::SetDragDropPayload("DragDropHierarchy", &s->id, sizeof(int), ImGuiCond_Once);
 			ImGui::Text(buffer);
@@ -991,7 +993,7 @@ void EditorScene::TravelShapes(vector<Shape3D*>* shapeVect, int depth)
 				int droppedId = *(const int*)payload->Data;
 				int index = -1;
 				Shape3D* drop = GetShapeFromId(*shapes, droppedId, &index);
-				if (drop && index != 0)
+				if (drop && index != -1)
 				{
 					std::vector<Shape3D*>* v = shapes;
 					if (drop->hasParent)
