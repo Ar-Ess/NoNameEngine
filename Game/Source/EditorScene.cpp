@@ -32,7 +32,7 @@ bool EditorScene::Start()
 	p->solid = false;
 	shapes->push_back(p);
 
-	Model* m = new Model({ 0, 0, 0 }, { 1,1,1 });
+	Model* m = new Model({ 0, 0, 0 }, { 0.05,0.05,0.05 }, {-90, 1, 0, 0});
 	m->LoadModel("Assets/Models/street_environment_V01.FBX");
 	shapes->push_back(m);
 
@@ -85,6 +85,7 @@ bool EditorScene::DrawMenuBar()
 			{
 				DeleteAllShapes(false);
 				app->Load("NNE_Project_Saving", FileContent::PROJECT);
+				SetValidId(*shapes);
 			}
 
 			if (ImGui::MenuItem("Exit", " Esc"))
@@ -668,7 +669,7 @@ bool EditorScene::ShowInspectorWindow(bool open)
 
 				// NAME
 				char buffer[24] = {};
-				sprintf_s(buffer, " Name: %s %d", s->GetName(), selectId);
+				sprintf_s(buffer, "Name: %s %d", s->GetName(), selectId);
 				ImGui::Text(buffer);
 				AddSpacing(1);
 
@@ -934,6 +935,7 @@ bool EditorScene::ShortCuts()
 		{
 			DeleteAllShapes(false);
 			app->Load("NNE_Project_Saving", FileContent::PROJECT);
+			SetValidId(*shapes);
 		}
 		if (app->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN) DuplicateSelectedShape();
 		if (app->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN) app->scene->SetGeometryView(GeometryView::TEXTURE_2D, !app->scene->GetGeometryView(GeometryView::TEXTURE_2D));

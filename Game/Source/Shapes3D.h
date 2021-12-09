@@ -64,9 +64,10 @@ public:
 		case PLANE3D: return string("Plane 3D"); break;
 		case SPHERE3D: return string("Sphere 3D"); break;
 		case MODEL3D: return string("Model 3D"); break;
+		case EMPTY3D: return string("Empty 3D"); break;
 		}
 
-		return string("NULL3D");
+		return string("NULL");
 	}
 
 	ShapeType ReadShapeType(const char* type)
