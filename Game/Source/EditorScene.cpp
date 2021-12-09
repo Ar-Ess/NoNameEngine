@@ -6,7 +6,6 @@
 #include "stb_image.h"
 #include "glmath.h"
 #include <algorithm>
-//#include "External/imgui/imgui.h"
 
 EditorScene::EditorScene(Application* App, vector<Shape3D*>* s, AssetsManager* assetsManager, ImportManager* importManager, FileManager* fileManager)
 {
@@ -127,8 +126,11 @@ bool EditorScene::DrawMenuBar()
 		}
 		if (ImGui::BeginMenu("Create"))
 		{
-			if (ImGui::MenuItem("Empty"))
+			if (ImGui::MenuItem("Empty Shape"))
 				CreatePrimitive(EMPTY3D);
+
+			if (ImGui::MenuItem("Empty Child"))
+				CreatePrimitive(EMPTY3D, true);
 
 			if (ImGui::BeginMenu("Primitives"))
 			{
@@ -152,6 +154,7 @@ bool EditorScene::DrawMenuBar()
 
 				ImGui::EndMenu();
 			}
+
 			if (ImGui::BeginMenu("Test Models"))
 			{
 				if (ImGui::MenuItem("Cube"))
@@ -541,6 +544,66 @@ bool EditorScene::ShowHierarchyWindow(bool open)
 		if (ImGui::Begin("Hierarchy", &open))
 		{
 			if (!onWindow) onWindow = ImGui::IsWindowHovered();
+			AddHelper("To create Shapes3Ds, right-click this window", "Help");
+			
+			if (ImGui::BeginPopupContextWindow("Create"))
+			{
+				ImGui::Text("Create:");
+				if (ImGui::MenuItem("Empty Shape"))
+					CreatePrimitive(EMPTY3D);
+
+				if (ImGui::MenuItem("Empty Child"))
+					CreatePrimitive(EMPTY3D, true);
+
+				if (ImGui::BeginMenu("Primitives"))
+				{
+					if (ImGui::MenuItem("Cube"))
+						CreatePrimitive(CUBE3D);
+
+					if (ImGui::MenuItem("Line"))
+						CreatePrimitive(LINE3D);
+
+					if (ImGui::MenuItem("Pyramid"))
+						CreatePrimitive(PYRAMID3D);
+
+					if (ImGui::MenuItem("Cylinder"))
+						CreatePrimitive(CYLINDER3D);
+
+					if (ImGui::MenuItem("Sphere"))
+						CreatePrimitive(SPHERE3D);
+
+					if (ImGui::MenuItem("Plane"))
+						CreatePrimitive(PLANE3D);
+
+					ImGui::EndMenu();
+				}
+
+				if (ImGui::BeginMenu("Test Models"))
+				{
+					if (ImGui::MenuItem("Cube"))
+					{
+						Model* m = new Model({ 0, 0, 0 }, 1.0f);
+						m->LoadModel("Assets/Models/cube.fbx");
+						PushShape3D(m);
+					}
+					if (ImGui::MenuItem("Warrior"))
+					{
+						Model* m = new Model({ 0, 0, 0 }, 1.0f);
+						m->LoadModel("Assets/Models/warrior.FBX");
+						PushShape3D(m);
+					}
+					if (ImGui::MenuItem("Baker House"))
+					{
+						Model* m = new Model({ 0, 0, 0 }, 1.0f);
+						m->LoadModel("Assets/Models/BakerHouse.fbx", "Assets/Textures/baker_house_texture.png");
+						PushShape3D(m);
+					}
+					ImGui::EndMenu();
+				}
+
+				ImGui::EndPopup();
+			}
+
 			AddSeparator(2);
 			AddSpacing(1);
 			selectId = 0;
@@ -877,24 +940,53 @@ bool EditorScene::ShortCuts()
 
 // -------------------------------------------------
 
-void EditorScene::CreatePrimitive(ShapeType sT)
+void EditorScene::CreatePrimitive(ShapeType sT, bool asChild)
 {
+	Shape3D* selected = nullptr;
+	vector<Shape3D*>* vec = nullptr;
+	if (asChild)
+	{
+		selected = GetShapeFromId(*shapes, selectId);
+		if (selected->id == 0 && selected->parent == nullptr)
+		{
+			SDL_ShowSimpleMessageBox(
+				SDL_MESSAGEBOX_INFORMATION,
+				"Shapes Error",
+				"\nAny shape selected",
+				app->window->mainWindow
+			);
+			return;
+		}
+
+		vec = &selected->childs;
+	}
+
+	Shape3D* push = nullptr;
+
 	switch (sT)
 	{
-	case CUBE3D: PushShape3D(new Cube3D()); break;
-	case LINE3D: PushShape3D(new Line3D()); break;
-	case PYRAMID3D: PushShape3D(new Pyramid3D()); break;
-	case CYLINDER3D: PushShape3D(new Cylinder3D()); break;
-	case PLANE3D: PushShape3D(new Plane3D()); break;
-	case SPHERE3D: PushShape3D(new Sphere3D()); break;
-	case EMPTY3D: PushShape3D(new Empty3D()); break;
+	case CUBE3D: PushShape3D(new Cube3D(), vec); break;
+	case LINE3D: PushShape3D(new Line3D(), vec); break;
+	case PYRAMID3D: PushShape3D(new Pyramid3D(), vec); break;
+	case CYLINDER3D: PushShape3D(new Cylinder3D(), vec); break;
+	case PLANE3D: PushShape3D(new Plane3D(), vec); break;
+	case SPHERE3D: PushShape3D(new Sphere3D(), vec); break;
+	case EMPTY3D: PushShape3D(new Empty3D(), vec); break;
+	}
+
+	if (asChild)
+	{
+		vec->at(vec->size() - 1)->hasParent = true;
+		vec->at(vec->size() - 1)->parent = selected;
 	}
 }
 
-void EditorScene::PushShape3D(Shape3D* s3D)
+void EditorScene::PushShape3D(Shape3D* s3D, vector<Shape3D*>* vector)
 {
+	if (vector == nullptr) vector = shapes;
+
 	s3D->selected = false;
-	shapes->push_back(s3D);
+	vector->push_back(s3D);
 	SetValidId(*shapes);
 }
 

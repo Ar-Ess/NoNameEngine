@@ -80,6 +80,19 @@ private: // Functions
 		for (int i = 0; i < separator; i++) ImGui::Separator();
 	}
 
+	void AddHelper(const char* desc, const char* title = "(?)")
+	{
+		ImGui::TextDisabled(title);
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+			ImGui::TextUnformatted(desc);
+			ImGui::PopTextWrapPos();
+			ImGui::EndTooltip();
+		}
+	}
+
 	// Given an Image enum type, width and height, draw an image
 	void AddImage(Image img, unsigned int w = 0, unsigned int h = 0)
 	{
@@ -190,10 +203,10 @@ private: // Functions
 	}
 
 	// Create a default primitive
-	void CreatePrimitive(ShapeType sT);
+	void CreatePrimitive(ShapeType sT, bool asChild = false);
 
 	// Push Back of a Shape3D
-	void PushShape3D(Shape3D* s3D);
+	void PushShape3D(Shape3D* s3D, vector<Shape3D*>* vector = nullptr);
 
 	// Duplicates selected shape
 	void DuplicateSelectedShape();
@@ -281,6 +294,7 @@ private: // Variables
 	int selectId = 0;
 	int prevSelectId = -1;
 	Shape3D* prevShape = nullptr;
+	bool createToolTip = false;
 
 	Image folderImage = { ImageTexture::IMG_NO_IMAGE };
 	Image fileImage = { ImageTexture::IMG_NO_IMAGE };
