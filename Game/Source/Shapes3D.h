@@ -122,12 +122,12 @@ public:
 
 protected:
 
-	Shape3D(Point3D pos, Point3D s, Rotation rot, ShapeType sT, const char* n)
+	Shape3D(Point3D pos, Point3D s, Rotation rot, ShapeType sT, const char* n, bool ax = false)
 	{
 		position = pos;
 		rotation = rot;
 		scale = s;
-		axis = false;
+		axis = ax;
 		selected = false;
 		type = sT;
 		name.clear();
@@ -178,13 +178,17 @@ protected:
 class Empty3D : public Shape3D
 {
 public:
-	Empty3D(Point3D pos = { 0.0f, 0.0f, 0.0f }, Point3D s = { 1, 1, 1 }, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, EMPTY3D, "Empty")
+	Empty3D(Point3D pos = { 0.0f, 0.0f, 0.0f }, Point3D s = { 1, 1, 1 }, Rotation rot = { 0, 0, 0, 0 }) : Shape3D(pos, s, rot, EMPTY3D, "Empty", true)
 	{
 	}
 
 	bool Draw()
 	{
 		if (!draw) return true;
+		glTranslatef(position.x, position.y, position.z);
+		glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
+		glScalef(scale.x, scale.y, scale.z);
+		glLineWidth(1.0f);
 
 		if (axis) DrawAxis();
 

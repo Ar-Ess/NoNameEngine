@@ -26,7 +26,6 @@ bool EditorScene::Start()
 	bool ret = true;
 
 	Plane3D* p = new Plane3D({ 0, 0, 0 }, { 0, 1, 0 }, Point3D(200));
-	p->axis = true;
 	p->solid = false;
 	shapes->push_back(p);
 
@@ -128,6 +127,9 @@ bool EditorScene::DrawMenuBar()
 		}
 		if (ImGui::BeginMenu("Create"))
 		{
+			if (ImGui::MenuItem("Empty"))
+				CreatePrimitive(EMPTY3D);
+
 			if (ImGui::BeginMenu("Primitives"))
 			{
 				if (ImGui::MenuItem("Cube"))
