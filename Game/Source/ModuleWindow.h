@@ -28,6 +28,20 @@ public:
 	SDL_Window* mainWindow = nullptr;
 	SDL_Surface* screen_surface = nullptr;
 
+	int GetWindowWidth()
+	{
+		int w, h;
+		SDL_GetWindowSize(mainWindow, &w, &h);
+		return w;
+	}
+
+	int GetWindowHeight()
+	{
+		int w, h;
+		SDL_GetWindowSize(mainWindow, &w, &h);
+		return h;
+	}
+
 };
 
 #endif // __ModuleWindow_H__

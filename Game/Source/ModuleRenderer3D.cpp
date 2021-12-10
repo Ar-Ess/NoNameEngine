@@ -209,6 +209,7 @@ bool ModuleRenderer3D::GeometryDraw()
 	for (uint i = 0; i < MAX_LIGHTS; ++i)
 		lights[i].Render();
 
+	DrawFrustum(app->camera->frustum);
 	return ret;
 }
 

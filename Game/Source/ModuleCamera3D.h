@@ -2,26 +2,11 @@
 #include "Module.h"
 #include "Globals.h"
 #include "glmath.h"
+#include "External/MathGeoLib/Geometry/Frustum.h"
+#include "External/MathGeoLib/Geometry/Plane.h"
 
-struct Plane;
-struct Frustum;
 
-struct Plane
-{
-	// we create a normal vector and a float with the distance from origin of the plan.
-	vec3 normal = { 0.f, 1.f, 0.f };
-	float distance = 0.f;
-};
 
-struct Frustum
-{
-	Plane topPlane;
-	Plane bottomPlane;
-	Plane rightPlane;
-	Plane leftPlane;
-	Plane farPlane;
-	Plane nearPlane;
-};
 class ModuleCamera3D : public Module
 {
 public:
@@ -61,16 +46,19 @@ public:
 
 	void CalculateViewMatrix();
 
-	Frustum CreateFrustum(ModuleCamera3D cam, float aspect, float fovY, float zNear, float zFar);
+	/*Frustum CreateFrustum(ModuleCamera3D cam, float aspect, float fovY, float zNear, float zFar);*/
 
 public:
 	
 	vec3 X = {}, Y = {}, Z = {}, position = {}, reference = {};
 	float speed = 0.5f;
 	float sens = 0.3f;
+	Frustum frustum; // This is the frustum of the main camera
+	Plane planes[6]; // Planes that configure the defined frustum
 
 private:
 
 	mat4x4 ViewMatrix = {}, ViewMatrixInverse = {};
 	Point3D lookPoint = {};
+	float ratio;
 };

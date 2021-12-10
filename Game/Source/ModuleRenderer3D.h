@@ -9,6 +9,8 @@
 #include <SDL_opengles2.h>
 #else
 #include "External/SDL/include/SDL_opengl.h"
+#include "External/MathGeoLib/Geometry/AABB.h"
+#include "External/MathGeoLib/Geometry/Frustum.h"
 #endif
 
 struct Light;
@@ -65,6 +67,58 @@ public:
 
 		if (active) glEnable(gViewType);
 		else glDisable(gViewType);
+	}
+
+	void ModuleRenderer3D::DrawFrustum(Frustum& frustum)
+	{
+		float3 corners[8];
+		frustum.GetCornerPoints(corners);
+		DrawWireCube(corners, Blue);
+	}
+
+	void ModuleRenderer3D::DrawWireCube(float3* vertex, Color color)
+	{
+		glBegin(GL_LINES);
+
+		glColor4f(color.r, color.g, color.b, color.a);
+
+		//Between-planes right
+		glVertex3fv((GLfloat*)&vertex[1]);
+		glVertex3fv((GLfloat*)&vertex[5]);
+		glVertex3fv((GLfloat*)&vertex[7]);
+		glVertex3fv((GLfloat*)&vertex[3]);
+
+		//Between-planes left
+		glVertex3fv((GLfloat*)&vertex[4]);
+		glVertex3fv((GLfloat*)&vertex[0]);
+		glVertex3fv((GLfloat*)&vertex[2]);
+		glVertex3fv((GLfloat*)&vertex[6]);
+
+		//Far plane horizontal 
+		glVertex3fv((GLfloat*)&vertex[5]);
+		glVertex3fv((GLfloat*)&vertex[4]);
+		glVertex3fv((GLfloat*)&vertex[6]);
+		glVertex3fv((GLfloat*)&vertex[7]);
+
+		//Near plane horizontal
+		glVertex3fv((GLfloat*)&vertex[0]);
+		glVertex3fv((GLfloat*)&vertex[1]);
+		glVertex3fv((GLfloat*)&vertex[3]);
+		glVertex3fv((GLfloat*)&vertex[2]);
+
+		//Near plane vertical  
+		glVertex3fv((GLfloat*)&vertex[1]);
+		glVertex3fv((GLfloat*)&vertex[3]);
+		glVertex3fv((GLfloat*)&vertex[0]);
+		glVertex3fv((GLfloat*)&vertex[2]);
+
+		//Far plane vertical   
+		glVertex3fv((GLfloat*)&vertex[5]);
+		glVertex3fv((GLfloat*)&vertex[7]);
+		glVertex3fv((GLfloat*)&vertex[4]);
+		glVertex3fv((GLfloat*)&vertex[6]);
+
+		glEnd();
 	}
 
 public:

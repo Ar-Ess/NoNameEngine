@@ -17,6 +17,16 @@ ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(ap
 	//position = vec3(-2.0f, 5.0f, 12.0f);
 	position = vec3(0.0f, 0.0f, -10.0f);
 	reference = vec3(0.0f, 0.0f, 0.0f);
+
+	// Create our frustum using the MathGeoLib functions
+	ratio = app->window->GetWindowWidth() / app->window->GetWindowHeight(); // We calculate the screen ratio using SDL functions
+	frustum.SetPos(float3(0.f, 0.f, -10.f)); // Frustum position
+	frustum.SetViewPlaneDistances(0.1f, 1000.0f); // Frustum distances of the near plane and the far plane
+	frustum.SetPerspective(1.f, 1.f); // 1,1 perspective to get a pyramid-like frustum
+	frustum.SetFrame(float3(100.f, 100.f, 100.f), float3(0.f, 0.f, 1), float3(0.f, 1.f, 0.f));
+	frustum.SetHorizontalFovAndAspectRatio(frustum.HorizontalFov(), ratio); // Definition of the hFov
+	frustum.SetVerticalFovAndAspectRatio(frustum.VerticalFov(), ratio); // definition of the vFov
+	frustum.GetPlanes(planes);
 }
 
 ModuleCamera3D::~ModuleCamera3D()
@@ -51,6 +61,7 @@ update_status ModuleCamera3D::PostUpdate()
 	bool shift = (app->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT);
 	bool lclick = (app->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT);
 	float frameSpeed = speed;
+	frustum.SetPos(float3(0.f, 0.f, -10.f));
 	if (app->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT) frameSpeed *= 2;
 
 	// Trackpad movement
@@ -208,15 +219,15 @@ void ModuleCamera3D::CalculateViewMatrix()
 	ViewMatrixInverse = inverse(ViewMatrix);
 }
 
-Frustum ModuleCamera3D::CreateFrustum(ModuleCamera3D cam, float aspect, float fovY, float zNear, float zFar)
-{
-	Frustum frustum;
-	const float halfVSide = zFar * tanf(fovY * 0.5f);
-	const float halfHSide = halfVSide * aspect;
-	const vec3 frontMultFar = zFar *lookPoint.z;
-
-	frustum.nearPlane = { position + zNear * lookPoint.z, lookPoint.z };
-	frustum.farPlane = { position + frontMultFar, -lookPoint.z };
-	/*frustum.rightPlane = {position, cross()}*/
-	return frustum;
-}
+//Frustum ModuleCamera3D::CreateFrustum(ModuleCamera3D cam, float aspect, float fovY, float zNear, float zFar)
+//{
+//	Frustum frustum;
+//	const float halfVSide = zFar * tanf(fovY * 0.5f);
+//	const float halfHSide = halfVSide * aspect;
+//	const vec3 frontMultFar = zFar *lookPoint.z;
+//
+//	frustum.nearPlane = { position + zNear * lookPoint.z, lookPoint.z };
+//	frustum.farPlane = { position + frontMultFar, -lookPoint.z };
+//	/*frustum.rightPlane = {position, cross()}*/
+//	return frustum;
+//}
