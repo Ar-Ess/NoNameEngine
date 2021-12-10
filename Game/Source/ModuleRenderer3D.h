@@ -11,6 +11,7 @@
 #include "External/SDL/include/SDL_opengl.h"
 #include "External/MathGeoLib/Geometry/AABB.h"
 #include "External/MathGeoLib/Geometry/Frustum.h"
+#include "Model.h"
 #endif
 
 struct Light;
@@ -121,10 +122,26 @@ public:
 		glEnd();
 	}
 
+	void ModuleRenderer3D::DrawBoundingBox(Shape3D* shape)
+	{
+		if (shape->GetShapeType() == ShapeType::MODEL3D)
+		{
+			float3 corners[8];
+			Model* m = (Model*)shape;
+			m->box.GetCornerPoints(corners);
+			DrawWireCube(corners, Green);
+		}
+		
+	}
+
 public:
 
 	Light lights[MAX_LIGHTS] = {};
 	SDL_GLContext context = {};
 	mat3x3 NormalMatrix = {};
 	mat4x4 ModelMatrix = {}, ViewMatrix = {}, ProjectionMatrix = {};
+
+private:
+
+	Model model;
 };

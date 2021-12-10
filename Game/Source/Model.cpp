@@ -111,11 +111,14 @@ bool Model::LoadModel(const char* pathFile, const char* pathTex)
         tID.channelsPerPixel = compPerPixel;
 
         size = {tID.width, tID.height};
-
+  
         // SETTING MESH
         Mesh* m = new Mesh(vertex, numVertex, index, numIndex, normal, numNormal, texture, numTexCoord, tID);
         meshes.push_back(m);
 
+        // Create AABB bounding box
+        box.SetNegativeInfinity();
+        box.Enclose((float3*)aiMesh->mVertices, aiMesh->mNumVertices);
         // FREE VARIABLES
         //stbi_image_free(tID.pixels);
     }
@@ -246,3 +249,9 @@ void Model::DrawNormals(Mesh* m)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->GetId(INDEX));
     glDrawElements(GL_LINES, m->GetNum(INDEX), GL_UNSIGNED_INT, NULL);
 }
+
+//void Model::BoundingBox(aiMesh* mesh)
+//{
+//    box.SetNegativeInfinity();
+//    box.Enclose((float3*)mesh->mVertices, mesh->mNumVertices);
+//}

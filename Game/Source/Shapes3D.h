@@ -5,7 +5,10 @@
 
 #include "External/glew/glew.h"
 #include "External/SDL/include/SDL_opengl.h"
+#include "External/MathGeoLib/Geometry/AABB.h"
+#include "External/MathGeoLib/Geometry/OBB.h"
 #include <gl/GL.h>
+
 
 #pragma comment (lib, "Source/External/glew/glew32.lib") /* link OpenGL Utility lib     */
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
@@ -120,6 +123,7 @@ public:
 	vector<Shape3D*> childs;
 	Shape3D* parent = nullptr;
 	int id = 0;
+	AABB boundingBox;
 
 protected:
 

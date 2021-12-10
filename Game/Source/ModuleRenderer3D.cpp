@@ -202,6 +202,7 @@ bool ModuleRenderer3D::GeometryDraw()
 	for (int i = 0; i < app->scene->shapes.size(); i++)
 	{
 		glPushMatrix();
+		DrawBoundingBox(app->scene->shapes[i]);
 		ret = app->scene->shapes[i]->Draw();
 		glPopMatrix();
 	}

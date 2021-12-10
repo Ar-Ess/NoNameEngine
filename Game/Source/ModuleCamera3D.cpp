@@ -138,7 +138,6 @@ update_status ModuleCamera3D::PostUpdate()
 
 	frustum.SetPos(frustum.Pos() + float3(newPosition.x, newPosition.y, newPosition.z));
 	frustum.SetPos(frustum.Pos() + float3(newPos.x, newPos.y, newPos.z));
-	LOG("frustum pos is : ", frustum.Pos());
 	// Recalculate matrix
 	LookAt(vec3{ lookPoint.x, lookPoint.y, lookPoint.z });
 	CalculateViewMatrix();
