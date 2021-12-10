@@ -35,6 +35,7 @@ ModuleCamera3D::~ModuleCamera3D()
 bool ModuleCamera3D::Start()
 {
 	LOG("Setting up the camera");
+	frustum.SetPos(float3(0.f, 0.f, -10.f));
 	bool ret = true;
 
 	return ret;
@@ -61,7 +62,6 @@ update_status ModuleCamera3D::PostUpdate()
 	bool shift = (app->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT);
 	bool lclick = (app->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT);
 	float frameSpeed = speed;
-	frustum.SetPos(float3(0.f, 0.f, -10.f));
 	if (app->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT) frameSpeed *= 2;
 
 	// Trackpad movement
@@ -136,6 +136,9 @@ update_status ModuleCamera3D::PostUpdate()
 
 	if (app->input->GetKey(SDL_SCANCODE_F) == KEY_REPEAT) lookPoint = Focus();
 
+	frustum.SetPos(frustum.Pos() + float3(newPosition.x, newPosition.y, newPosition.z));
+	frustum.SetPos(frustum.Pos() + float3(newPos.x, newPos.y, newPos.z));
+	LOG("frustum pos is : ", frustum.Pos());
 	// Recalculate matrix
 	LookAt(vec3{ lookPoint.x, lookPoint.y, lookPoint.z });
 	CalculateViewMatrix();
