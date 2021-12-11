@@ -33,7 +33,7 @@ bool EditorScene::Start()
 	shapes->push_back(p);
 
 	Model* m = new Model({ 0, 0, 0 }, { 0.05,0.05,0.05 }, {-90, 1, 0, 0});
-	/*m->LoadModel("Assets/Models/street_environment_V01.FBX");*/
+	m->LoadModel("Assets/Models/street_environment_V01.FBX");
 	shapes->push_back(m);
 
 	SetValidId(*shapes);
