@@ -203,7 +203,13 @@ bool ModuleRenderer3D::GeometryDraw()
 	{
 		glPushMatrix();
 		DrawBoundingBox(app->scene->shapes[i]);
-		ret = app->scene->shapes[i]->Draw();
+		if (app->scene->shapes[i]->GetShapeType() == ShapeType::MODEL3D)
+		{
+			if (IsOnView(app->scene->shapes[i]))
+				ret = app->scene->shapes[i]->Draw();
+		}
+
+		else ret = app->scene->shapes[i]->Draw();
 		glPopMatrix();
 	}
 
@@ -246,4 +252,41 @@ void ModuleRenderer3D::SetVSync(bool vSync)
 	{
 		SDL_GL_SetSwapInterval(0);
 	}
+}
+
+bool ModuleRenderer3D::IsOnView(Shape3D* shape)
+{
+	float3 corner[8];
+	int iTotal = 0;
+	Model* model = (Model*)shape;
+	model->box.GetCornerPoints(corner);
+
+	if (shape->GetShapeType() == ShapeType::MODEL3D)
+	{
+		for (int plane = 0; plane < 6; ++plane)
+		{
+			int count = 8;
+			int in = 0;
+
+			for (int i = 0; i < 8; ++i)
+			{
+				if (app->camera->planes[plane].IsOnPositiveSide(corner[i]))
+				{
+					in = 0;
+					--count;
+				}
+			}
+
+			if (count == 0)
+			{
+				LOG("Object not drawn");
+				return(false);
+			}
+
+		}
+	
+		return (true);
+	}
+	
+	else return false;
 }

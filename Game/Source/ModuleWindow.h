@@ -28,19 +28,9 @@ public:
 	SDL_Window* mainWindow = nullptr;
 	SDL_Surface* screen_surface = nullptr;
 
-	int GetWindowWidth()
-	{
-		int w, h;
-		SDL_GetWindowSize(mainWindow, &w, &h);
-		return w;
-	}
+	int GetWindowWidth();
 
-	int GetWindowHeight()
-	{
-		int w, h;
-		SDL_GetWindowSize(mainWindow, &w, &h);
-		return h;
-	}
+	int GetWindowHeight();
 
 };
 

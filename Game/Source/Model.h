@@ -12,6 +12,7 @@
 #include "External/assimp/include/postprocess.h"
 #include "External/MathGeoLib/Geometry/AABB.h"
 #include "External/MathGeoLib/Geometry/OBB.h"
+#include "External/MathGeoLib/Math/Quat.h"
 
 #pragma comment (lib, "Source/External/assimp/libx86/assimp.lib")
 
@@ -43,6 +44,8 @@ public:
 
 	void BoundingBox(aiMesh mesh);
 
+	void UpdateBoundingBox(AABB* aabb);
+
 public:
 	vector<Mesh*> meshes = {};
 	string filePath = {};
@@ -52,6 +55,7 @@ public:
 	bool showTexture = true;
 
 	AABB box;
+	OBB obb;
 
 private:
 	Point size = {};

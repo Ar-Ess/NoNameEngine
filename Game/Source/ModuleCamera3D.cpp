@@ -24,8 +24,8 @@ ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(ap
 	frustum.SetViewPlaneDistances(0.1f, 1000.0f); // Frustum distances of the near plane and the far plane
 	frustum.SetPerspective(1.f, 1.f); // 1,1 perspective to get a pyramid-like frustum
 	frustum.SetFrame(float3(100.f, 100.f, 100.f), float3(0.f, 0.f, 1), float3(0.f, 1.f, 0.f));
-	frustum.SetHorizontalFovAndAspectRatio(frustum.HorizontalFov(), ratio); // Definition of the hFov
-	frustum.SetVerticalFovAndAspectRatio(frustum.VerticalFov(), ratio); // definition of the vFov
+	frustum.SetHorizontalFovAndAspectRatio(frustum.HorizontalFov(), 1.77f); // Definition of the hFov
+	frustum.SetVerticalFovAndAspectRatio(frustum.VerticalFov(), 1.77f); // definition of the vFov
 	frustum.GetPlanes(planes);
 }
 
@@ -138,6 +138,7 @@ update_status ModuleCamera3D::PostUpdate()
 
 	frustum.SetPos(frustum.Pos() + float3(newPosition.x, newPosition.y, newPosition.z));
 	frustum.SetPos(frustum.Pos() + float3(newPos.x, newPos.y, newPos.z));
+	frustum.GetPlanes(planes);
 	// Recalculate matrix
 	LookAt(vec3{ lookPoint.x, lookPoint.y, lookPoint.z });
 	CalculateViewMatrix();

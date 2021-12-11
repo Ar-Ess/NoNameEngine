@@ -34,7 +34,6 @@ update_status ModuleScene::Update()
 	}
 
 	if (sceneChangeRequest) ret = SetScene(changeScene);
-
 	if (!ret) return UPDATE_STOP;
 	return UPDATE_CONTINUE;
 }

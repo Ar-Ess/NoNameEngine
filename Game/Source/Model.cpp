@@ -250,6 +250,16 @@ void Model::DrawNormals(Mesh* m)
     glDrawElements(GL_LINES, m->GetNum(INDEX), GL_UNSIGNED_INT, NULL);
 }
 
+void Model::UpdateBoundingBox(AABB* aabb)
+{
+    OBB ob = *aabb;
+    Quat trans = { position.x, position.y, position.z, 0 };
+    ob.Transform(trans);
+
+    aabb->SetNegativeInfinity();
+    aabb->Enclose(ob);
+}
+
 //void Model::BoundingBox(aiMesh* mesh)
 //{
 //    box.SetNegativeInfinity();

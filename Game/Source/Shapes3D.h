@@ -225,6 +225,8 @@ public:
 		//}
 	}
 
+	AABB cubeBox;
+
 	bool Draw()
 	{
 		if (!draw) return true;
@@ -319,6 +321,7 @@ private:
 		glVertex3f(v[5].x, v[5].y, v[5].z); // v5
 		glVertex3f(v[6].x, v[6].y, v[6].z); // v6
 
+
 		glEnd();
 	}
 	bool DrawEdges()
@@ -411,6 +414,7 @@ private:
 	uint iBuffer = 0;
 	Point3D v[8] = { { 1.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f },
 					 { 1.0f, 0.0f, 1.0f }, { 1.0f, 1.0f, 1.0f }, { 0.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } };
+
 };
 
 class Line3D : public Shape3D

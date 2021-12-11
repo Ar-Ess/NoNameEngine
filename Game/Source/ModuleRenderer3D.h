@@ -130,10 +130,13 @@ public:
 			Model* m = (Model*)shape;
 			m->box.GetCornerPoints(corners);
 			DrawWireCube(corners, Green);
+
+			m->UpdateBoundingBox(&m->box);
 		}
 		
 	}
 
+	bool IsOnView(Shape3D* shape);
 public:
 
 	Light lights[MAX_LIGHTS] = {};
@@ -143,5 +146,6 @@ public:
 
 private:
 
-	Model model;
+	Model* model = nullptr;
+	OBB obb;
 };
