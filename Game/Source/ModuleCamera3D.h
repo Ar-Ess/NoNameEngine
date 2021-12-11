@@ -1,9 +1,12 @@
 #pragma once
 #include "Module.h"
 #include "Globals.h"
+#include "ModuleRenderer3D.h"
 #include "glmath.h"
 #include "External/MathGeoLib/Geometry/Frustum.h"
 #include "External/MathGeoLib/Geometry/Plane.h"
+#include "External/MathGeoLib/Geometry/LineSegment.h"
+#include "Shapes3D.h"
 
 
 
@@ -46,6 +49,16 @@ public:
 
 	void CalculateViewMatrix();
 
+	vec3 NormaliseRay(vec3 ray3);
+
+	void CreateVec4(vec3 ray3);
+
+	void RayCoordinates(vec4 ray4);
+
+	void SelectObject(Shape3D* shape);
+	void CheckRaycast(LineSegment* ray, Shape3D* shape);
+
+
 	/*Frustum CreateFrustum(ModuleCamera3D cam, float aspect, float fovY, float zNear, float zFar);*/
 
 public:
@@ -55,10 +68,13 @@ public:
 	float sens = 0.3f;
 	Frustum frustum; // This is the frustum of the main camera
 	Plane planes[6]; // Planes that configure the defined frustum
+	vec3 ray;
+	vec4 ray4;
 
 private:
 
 	mat4x4 ViewMatrix = {}, ViewMatrixInverse = {};
 	Point3D lookPoint = {};
 	float ratio;
+	ModuleRenderer3D* renderer3D;
 };

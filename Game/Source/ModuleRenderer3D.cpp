@@ -205,6 +205,7 @@ bool ModuleRenderer3D::GeometryDraw()
 		DrawBoundingBox(app->scene->shapes[i]);
 		if (app->scene->shapes[i]->GetShapeType() == ShapeType::MODEL3D)
 		{
+			app->camera->SelectObject(app->scene->shapes[i]);
 			if (IsOnView(app->scene->shapes[i]))
 				ret = app->scene->shapes[i]->Draw();
 		}

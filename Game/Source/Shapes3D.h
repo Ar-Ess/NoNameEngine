@@ -125,6 +125,7 @@ public:
 	int id = 0;
 	AABB boundingBox;
 
+
 protected:
 
 	Shape3D(Point3D pos, Point3D s, Rotation rot, ShapeType sT, const char* n, bool ax = false)

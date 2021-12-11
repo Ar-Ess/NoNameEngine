@@ -27,6 +27,8 @@ ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(ap
 	frustum.SetHorizontalFovAndAspectRatio(frustum.HorizontalFov(), 1.77f); // Definition of the hFov
 	frustum.SetVerticalFovAndAspectRatio(frustum.VerticalFov(), 1.77f); // definition of the vFov
 	frustum.GetPlanes(planes);
+
+	/*ray = float3(app->input->GetMouseX(), app->input->GetMouseY(), 0.f);*/
 }
 
 ModuleCamera3D::~ModuleCamera3D()
@@ -63,6 +65,11 @@ update_status ModuleCamera3D::PostUpdate()
 	bool lclick = (app->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT);
 	float frameSpeed = speed;
 	if (app->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT) frameSpeed *= 2;
+
+	ray = NormaliseRay(ray);
+	CreateVec4(ray);
+	RayCoordinates(ray4);
+
 
 	// Trackpad movement
 	if (wheelZV != 0)
@@ -143,6 +150,8 @@ update_status ModuleCamera3D::PostUpdate()
 	LookAt(vec3{ lookPoint.x, lookPoint.y, lookPoint.z });
 	CalculateViewMatrix();
 
+	
+
 	return UPDATE_CONTINUE;
 }
 
@@ -220,6 +229,79 @@ void ModuleCamera3D::CalculateViewMatrix()
 {
 	ViewMatrix = mat4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -dot(X, position), -dot(Y, position), -dot(Z, position), 1.0f);
 	ViewMatrixInverse = inverse(ViewMatrix);
+}
+
+vec3 ModuleCamera3D::NormaliseRay(vec3 ray3)
+{
+	float x = (2.f * app->input->GetMouseX() / app->window->GetWindowWidth() - 1.f);
+	float y = 1.f - (2.f * app->input->GetMouseY()) / app->window->GetWindowHeight();
+	float z = 1.0f;
+	ray3 = vec3(x, y, z);
+
+	return ray3;
+}
+
+void ModuleCamera3D::CreateVec4(vec3 ray3)
+{
+	ray4 = vec4(ray3.x, ray3.y, -1.0, 1.0);
+}
+
+void ModuleCamera3D::RayCoordinates(vec4 ray4)
+{
+	vec4 rayEye = inverse(ViewMatrix) * ray4;
+	ray4 = vec4(rayEye.x, rayEye.y, -1.f, 0.f);
+
+	vec3 ray3 = ((inverse(ViewMatrix) * rayEye).x, (inverse(ViewMatrix) * rayEye).y, (inverse(ViewMatrix) * rayEye).z);
+	ray3 = NormaliseRay(ray3);
+	
+}
+
+void ModuleCamera3D::SelectObject(Shape3D* shape)
+{
+	float2 mousePos = float2(app->input->GetMouseX(), app->window->GetWindowHeight() - app->input->GetMouseY());
+
+	float mouseNormalisedX = mousePos.x / app->window->GetWindowWidth();
+	float mouseNormalisedY = mousePos.y / app->window->GetWindowHeight();
+
+	mouseNormalisedX = (mouseNormalisedX - 0.5) / 0.5;
+	mouseNormalisedY = (mouseNormalisedY - 0.5) / 0.5;
+
+	LineSegment selectRay = frustum.UnProjectLineSegment(mouseNormalisedX, mouseNormalisedY);
+
+	/*app->render->DrawLine(selectRay.a, selectRay.b);*/
+	//LOG("Ray goes from: %d to %d", selectRay.a, selectRay.b);
+
+	CheckRaycast(&selectRay, shape);
+}
+
+void ModuleCamera3D::CheckRaycast(LineSegment* ray, Shape3D* shape)
+{
+	bool hovered = false;
+	Model* object = (Model*)shape;
+	std::map<float, Shape3D*> hits;
+
+
+	if (ray->Intersects(object->box))
+	{
+		hovered = true;
+	}
+
+	if (hovered && app->input->GetMouseButton(SDL_BUTTON_LEFT))
+	{
+		shape->selected = true;
+	}
+
+	else if (app->input->GetMouseButton(SDL_BUTTON_LEFT))
+	{
+		shape->selected = false;
+	}
+
+
+	/*if (objectFound)
+		app->scene->SetSelectedObject((*hits.begin()).second);*/
+	//else
+		//App->scene->SetSelectedObject(nullptr);
+
 }
 
 //Frustum ModuleCamera3D::CreateFrustum(ModuleCamera3D cam, float aspect, float fovY, float zNear, float zFar)
