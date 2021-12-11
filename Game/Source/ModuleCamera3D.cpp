@@ -280,21 +280,30 @@ void ModuleCamera3D::CheckRaycast(LineSegment* ray, Shape3D* shape)
 	Model* object = (Model*)shape;
 	std::map<float, Shape3D*> hits;
 
-
+	// We check if the mouse is hovering the shape
 	if (ray->Intersects(object->box))
 	{
 		hovered = true;
 	}
 
+	// We check if the mouse is clicking the shape
 	if (hovered && app->input->GetMouseButton(SDL_BUTTON_LEFT))
 	{
 		shape->selected = true;
 	}
 
-	else if (app->input->GetMouseButton(SDL_BUTTON_LEFT))
+	// We check if the mouse is clicking outside of the shape
+	if (!hovered && app->input->GetMouseButton(SDL_BUTTON_LEFT) && !ImGui::IsAnyItemHovered())
 	{
 		shape->selected = false;
 	}
+
+	// We check if we are clicking any option in the Hierarchy of the selected object
+	if (shape->selected == true && ImGui::IsAnyItemHovered())
+	{
+		shape->selected = true;
+	}
+
 
 
 	/*if (objectFound)

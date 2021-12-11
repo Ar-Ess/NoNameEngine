@@ -7,6 +7,7 @@
 #include "External/MathGeoLib/Geometry/Plane.h"
 #include "External/MathGeoLib/Geometry/LineSegment.h"
 #include "Shapes3D.h"
+#include "EditorScene.h"
 
 
 
@@ -76,5 +77,5 @@ private:
 	mat4x4 ViewMatrix = {}, ViewMatrixInverse = {};
 	Point3D lookPoint = {};
 	float ratio;
-	ModuleRenderer3D* renderer3D;
+	EditorScene* editor = nullptr;
 };
