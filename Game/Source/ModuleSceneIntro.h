@@ -2,6 +2,7 @@
 #include "Module.h"
 #include "Globals.h"
 #include "EditorScene.h"
+#include "Timer.h"
 #include <string>
 #include "Shapes3D.h"
 #include <vector>
@@ -262,6 +263,7 @@ public: // Getters & Setters
 
 public:
 	vector<Shape3D*> shapes = {};
+	Timer GameTime;
 
 private:
 	Scenes scene = Scenes::EDITOR;

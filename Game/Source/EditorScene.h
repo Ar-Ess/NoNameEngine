@@ -56,6 +56,7 @@ private: // Functions
 	bool ShowHierarchyWindow(bool open);
 	bool ShowInspectorWindow(bool open);
 	bool ShowAssetsWindow(bool open);
+	bool ShowGameStateWindow(bool open);
 
 	bool ShortCuts();
 
@@ -247,6 +248,7 @@ public: // Variables
 	bool hierarchyWindow = true;
 	bool inspectorWindow = true;
 	bool assetsWindow = true;
+	bool gameStateWindow = true;
 
 	bool aboutPopup = false;
 

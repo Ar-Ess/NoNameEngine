@@ -57,6 +57,7 @@ bool EditorScene::Update()
 	hierarchyWindow = ShowHierarchyWindow(hierarchyWindow);
 	inspectorWindow = ShowInspectorWindow(inspectorWindow);
 	assetsWindow = ShowAssetsWindow(assetsWindow);
+	gameStateWindow = ShowGameStateWindow(gameStateWindow);
 
 	ret = ShortCuts();
 
@@ -276,12 +277,17 @@ bool EditorScene::ShowAboutWindow(bool open)
 			ImGui::Text("The best 3D engine for the best games.\nCreated by:\n\nMarti Buxeda: \n");
 			if (ImGui::Button("Github link"))
 			{
-				LinkBrowser("https://github.com/BooStarGamer");
+				LinkBrowser("https://github.com/Ar-Ess");
 			}
 			ImGui::Text("Victor Jara: \n");
 			if (ImGui::Button("Github link"))
 			{
 				LinkBrowser("https://github.com/Kerali");
+			}
+			ImGui::Text("Jordi Espriu: \n");
+			if (ImGui::Button("Github link"))
+			{
+				LinkBrowser("https://github.com/LordUnicorn31");
 			}
 
 			ImGui::Text("\n3rd Party Libraries used:\n");
@@ -908,6 +914,33 @@ bool EditorScene::ShowAssetsWindow(bool open)
 		}
 		ImGui::End();
 	}
+	return open;
+}
+
+bool EditorScene::ShowGameStateWindow(bool open)
+{
+	if (open)
+	{
+		if (ImGui::Begin("Game State", &open))
+		{
+			if (!onWindow) onWindow = ImGui::IsWindowHovered();
+			ImGui::Dummy(ImVec2{ ImGui::GetWindowSize().x/2-120,0 });
+			ImGui::SameLine();
+			if (ImGui::Button("Play"))
+				app->scene->GameTime.Start();
+			ImGui::SameLine();
+			if (ImGui::Button("Stop"))
+				app->scene->GameTime.Stop();
+			ImGui::SameLine();
+			if (ImGui::Button("Resume"))
+				app->scene->GameTime.Resume();
+			ImGui::SameLine();
+			if (ImGui::Button("Pause"))
+				app->scene->GameTime.Pause();
+		}
+		ImGui::End();
+	}
+
 	return open;
 }
 
