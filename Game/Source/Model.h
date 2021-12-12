@@ -29,9 +29,12 @@ public:
 	~Model();
 
 	bool LoadModel(const char* pathFile, const char* pathTex = "Assets/Textures/default_texture.jpg");
+	bool ImportModel(const char* pathFile);
 	bool LoadTexture(const char* pathTex = "Assets/Textures/default_texture.jpg");
 
 	bool Draw();
+
+private:
 	bool DrawSolid(Mesh* m);
 	void DrawEdges(Mesh* m);
 	void DrawNormals(Mesh* m);

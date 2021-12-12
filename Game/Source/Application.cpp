@@ -254,7 +254,7 @@ bool Application::Load(string fName, FileContent fc)
 			msBarLimit = json_object_get_number(json_object(file), "MsBarLimit");
 
 			scene->SetBrightness(json_object_get_number(json_object(file), "Brightness"));
-			scene->SetWinDimensions({ json_object_get_number(json_object(file), "Window Width"), json_object_get_number(json_object(file), "Window Height") });
+			scene->SetWinDimensions({ float(json_object_get_number(json_object(file), "Window Width")), float(json_object_get_number(json_object(file), "Window Height")) });
 			scene->SetWinDimensionProportion(json_object_get_number(json_object(file), "Window Proportion Value"));
 
 			scene->SetWindowSettings(WindowSettings::FULL_SCREEN, json_object_get_boolean(json_object(file), "Full Screen"));
@@ -281,7 +281,7 @@ bool Application::Load(string fName, FileContent fc)
 			msBarLimit = json_object_get_number(json_object(file), "MsBarLimit");
 
 			scene->SetBrightness(json_object_get_number(json_object(file), "Brightness"));
-			scene->SetWinDimensions({ json_object_get_number(json_object(file), "Window Width"), json_object_get_number(json_object(file), "Window Height") });
+			scene->SetWinDimensions({ float(json_object_get_number(json_object(file), "Window Width")), float(json_object_get_number(json_object(file), "Window Height")) });
 			scene->SetWinDimensionProportion(json_object_get_number(json_object(file), "Window Proportion Value"));
 
 			scene->SetWindowSettings(WindowSettings::FULL_SCREEN, json_object_get_boolean(json_object(file), "Full Screen"));
@@ -598,7 +598,7 @@ bool Application::LoadRestartPropierties()
 
 void Application::JsonSaveShapes(JSON_Array* arr, vector<Shape3D*>* shapes, int offset)
 {
-	for (int i = offset; i < shapes->size(); i++)
+	for (unsigned int i = offset; i < shapes->size(); i++)
 	{
 		Shape3D* shape = shapes->at(i);
 		JSON_Value* shapeValue = json_value_init_array();
@@ -679,7 +679,7 @@ void Application::JsonSaveShapes(JSON_Array* arr, vector<Shape3D*>* shapes, int 
 
 void Application::JsonLoadShapes(JSON_Array* arr, vector<Shape3D*>* shapes, Shape3D* parent)
 {
-	for (int i = 0; i < json_array_get_count(arr); i++)
+	for (unsigned int i = 0; i < json_array_get_count(arr); i++)
 	{
 		JSON_Value* shapeValue = json_array_get_value(arr, i);
 		JSON_Array* shapeArray = json_value_get_array(shapeValue);

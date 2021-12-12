@@ -80,7 +80,7 @@ private: // Private functions
 	void LoadDropTexture(const char* path)
 	{
 		bool setted = false;
-		for (int i = 0; i < shapes.size(); i++)
+		for (unsigned int i = 0; i < shapes.size(); i++)
 		{
 			if (shapes[i]->GetShapeType() == MODEL3D && shapes[i]->selected)
 			{
@@ -232,7 +232,7 @@ public: // Getters & Setters
 	void SetGeometryInfo(GeometryInfo gI)
 	{
 		bool setted = false;
-		for (int i = 0; i < shapes.size(); i++)
+		for (unsigned int i = 0; i < shapes.size(); i++)
 		{
 			if (shapes[i]->selected)
 			{

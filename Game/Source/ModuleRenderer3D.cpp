@@ -199,7 +199,7 @@ bool ModuleRenderer3D::GeometryDraw()
 	bool ret = true;
 	lights[0].SetPos(app->camera->position.x, app->camera->position.y, app->camera->position.z);
 
-	for (int i = 0; i < app->scene->shapes.size(); i++)
+	for (unsigned int i = 0; i < app->scene->shapes.size(); i++)
 	{
 		glPushMatrix();
 		DrawBoundingBox(app->scene->shapes[i]);
@@ -209,7 +209,6 @@ bool ModuleRenderer3D::GeometryDraw()
 			if (IsOnView(app->scene->shapes[i]))
 				ret = app->scene->shapes[i]->Draw();
 		}
-
 		else ret = app->scene->shapes[i]->Draw();
 		glPopMatrix();
 	}

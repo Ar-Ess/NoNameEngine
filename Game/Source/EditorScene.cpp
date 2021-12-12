@@ -32,7 +32,7 @@ bool EditorScene::Start()
 	p->solid = false;
 	shapes->push_back(p);
 
-	Model* m = new Model({ 0, 0, 0 }, { 0.05,0.05,0.05 }, {-90, 1, 0, 0});
+	Model* m = new Model({ 0, 0, 0 }, { 0.05f,0.05f,0.05f }, {-90, 1, 0, 0});
 	m->LoadModel("Assets/Models/street_environment_V01.FBX");
 	shapes->push_back(m);
 
@@ -164,19 +164,22 @@ bool EditorScene::DrawMenuBar()
 				if (ImGui::MenuItem("Cube"))
 				{
 					Model* m = new Model({ 0, 0, 0 }, 1.0f);
-					m->LoadModel("Assets/Models/cube.fbx");
+					file->AccessBinFile("cube").Generate(m);
+					//m->LoadModel("Assets/Models/cube.fbx");
 					PushShape3D(m);
 				}
 				if (ImGui::MenuItem("Warrior"))
 				{
 					Model* m = new Model({ 0, 0, 0 }, 1.0f);
-					m->LoadModel("Assets/Models/warrior.FBX");
+					file->AccessBinFile("warrior").Generate(m);
+					//m->LoadModel("Assets/Models/warrior.FBX");
 					PushShape3D(m);
 				}
 				if (ImGui::MenuItem("Baker House"))
 				{
 					Model* m = new Model({ 0, 0, 0 }, 1.0f);
-					m->LoadModel("Assets/Models/BakerHouse.fbx", "Assets/Textures/baker_house_texture.png");
+					//m->LoadModel("Assets/Models/BakerHouse.fbx", "Assets/Textures/baker_house_texture.png");
+					file->AccessBinFile("BakerHouse").Generate(m);
 					PushShape3D(m);
 				}
 				ImGui::EndMenu();
@@ -1116,7 +1119,7 @@ void EditorScene::TravelShapes(vector<Shape3D*>* shapeVect, int depth)
 {
 	int startingPoint = 0;
 	if (depth == 0) startingPoint = 1;
-	for (int i = startingPoint; i < shapeVect->size(); i++)
+	for (unsigned int i = startingPoint; i < shapeVect->size(); i++)
 	{
 		ImGui::Dummy({ float(depth * 10), 0.0f });
 		ImGui::SameLine();
@@ -1187,7 +1190,7 @@ void EditorScene::TravelShapes(vector<Shape3D*>* shapeVect, int depth)
 
 void EditorScene::DiselectShapes(vector<Shape3D*> shapes, Shape3D* ref)
 {
-	for (int a = 0; a < shapes.size(); a++)
+	for (unsigned int a = 0; a < shapes.size(); a++)
 	{
 		if (shapes[a] != ref) shapes[a]->selected = false;
 		if (!shapes[a]->childs.empty())
@@ -1200,7 +1203,7 @@ void EditorScene::DiselectShapes(vector<Shape3D*> shapes, Shape3D* ref)
 int EditorScene::SetValidId(vector<Shape3D*> shapes, int size)
 {
 	int s = size;
-	for (int a = 0; a < shapes.size(); a++)
+	for (unsigned int a = 0; a < shapes.size(); a++)
 	{
 		shapes[a]->id = s;
 		s++;

@@ -37,7 +37,7 @@ struct Point
 	Point() {}
 	Point(int xx, int yy) { x = float(xx); y = float(yy); }
 	Point(float xx, float yy) { x = xx; y = yy; }
-	Point(double xx, double yy) { x = xx; y = yy; }
+	//Point(double xx, double yy) { x = xx; y = yy; }
 
 	float x = 0, y = 0;
 
@@ -74,7 +74,7 @@ struct Point3D
 	Point3D() {}
 	Point3D(int xx, int yy, int zz) { x = xx; y = yy; z = zz; }
 	Point3D(float xx, float yy, float zz) { x = xx; y = yy; z = zz; }
-	Point3D(double xx, double yy, double zz) { x = xx; y = yy; z = zz; }
+	//Point3D(double xx, double yy, double zz) { x = xx; y = yy; z = zz; }
 	Point3D(vec3 p) { x = p.x; y = p.y; z = p.z; }
 	Point3D(float p) { x = p; y = p; z = p; }
 

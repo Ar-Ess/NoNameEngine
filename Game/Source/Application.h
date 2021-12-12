@@ -97,7 +97,7 @@ private: // JSON Functions
 
 	void ArrayRetrieveVector(JSON_Array* arr, vec3* vec, int offSet)
 	{
-		double array[3] = {};
+		float array[3] = {};
 		for (int i = 0; i < 3; i++)
 			array[i] = json_array_get_number(arr, (i + (3 * offSet)));
 
@@ -108,7 +108,7 @@ private: // JSON Functions
 
 	void ArrayRetrieveVector(JSON_Array* arr, Point3D* vec, int offSet, bool isAllVectorArray = true)
 	{
-		double array[3] = {};
+		float array[3] = {};
 		int mult = 1;
 		if (isAllVectorArray) mult = 3;
 		// If it is a "AllVectorArray", you can inout the offset thinking about vectors as units, not a group of 3 units.

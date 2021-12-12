@@ -71,14 +71,14 @@ private: // Functions
 	{
 		short int plus = 0;
 		if (spaces == 0) plus = 1;
-		for (int i = 0; i < spaces * 2 + plus; i++) ImGui::Spacing();
+		for (unsigned int i = 0; i < spaces * 2 + plus; i++) ImGui::Spacing();
 	}
 
 	// Input from 1 to whatever you need
 	void AddSeparator(unsigned int separator = 1)
 	{
 		if (separator == 0) return;
-		for (int i = 0; i < separator; i++) ImGui::Separator();
+		for (unsigned int i = 0; i < separator; i++) ImGui::Separator();
 	}
 
 	void AddHelper(const char* desc, const char* title = "(?)")
@@ -162,7 +162,7 @@ private: // Functions
 
 	Shape3D* GetShapeFromId(vector<Shape3D*> shapes, int id, int* index = nullptr)
 	{
-		for (int a = 0; a < shapes.size(); a++)
+		for (unsigned int a = 0; a < shapes.size(); a++)
 		{
 			if (shapes[a]->id == id)
 			{

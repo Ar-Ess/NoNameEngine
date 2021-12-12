@@ -1,4 +1,5 @@
 #define FILEM_EXTENSION ".nne"
+#define FILEM_BIN_EXTENSION ".bne"
 #define FILEM_STARTING_POINT 28
 #define FILEM_SHAPE_INDEX_POINT 7
 #define FILEM_SHAPE_INFO_START_POINT 4
@@ -16,13 +17,31 @@
 #include "External/Density/density_api.h"
 #include "Shapes3D.h"
 #include "Model.h"
+#include <fstream>
+
+typedef struct binmesh
+{
+	unsigned    numberOfMeshes = 0;
+	unsigned    vertexSizeBytes = 0;
+	unsigned    normalsSizeBytes = 0;
+	unsigned    indexSizeBytes = 0;
+	unsigned    textCoordSizeBytes = 0;
+
+	float* vertex = nullptr;   //float,float,float  every vertex => sizeof(float) *3
+	unsigned* index = nullptr; //int                every indice => sizeof(int)
+	float* normals = nullptr;    //float,float,float  every normal => sizeof(float) *3
+	float* textCoords = nullptr; //float,float        every normal => sizeof(float) *2
+
+} BinaryMesh;
 
 class FileManager
 {
 	enum class FileFunctionCall
 	{
 		OPEN_FILE_FUNCTION,
-		ACCESS_FILE_FUNCTION
+		ACCESS_FILE_FUNCTION,
+		OPEN_BIN_FILE_FUNCTION,
+		ACCESS_BIN_FILE_FUNCTION
 	};
 
 	struct FileEditor
@@ -36,13 +55,197 @@ class FileManager
 			fileFunction = ffC;
 		}
 
+		FileEditor(const char* name, int* i, FileFunctionCall ffC, bool exist = true)
+		{
+			fileName = name;
+			numberOfShapesSaved = i;
+			exists = exist;
+			fileFunction = ffC;
+		}
+
 		bool Write(Shape3D* shape)
 		{
+			bool ret = false;
+
 			if (!exists)
 			{
 				LOG("FILE DOES NOT EXIST. USE OpenFile() TO CREATE A NEW FILE");
 				return false;
 			}
+
+			if (fileFunction == FileFunctionCall::OPEN_FILE_FUNCTION || fileFunction == FileFunctionCall::ACCESS_FILE_FUNCTION)
+			{
+				ret = true;
+				ret = FileWrite(shape);
+			}
+			else
+				LOG("Entered a const BinaryMesh* when opening a non-binary file. Input a Shape* to write a non-binary file.");
+
+			return ret;
+		}
+
+		bool Write(const BinaryMesh* mesh)
+		{
+			bool ret = false;
+
+			if (!exists)
+			{
+				LOG("FILE DOES NOT EXIST. USE OpenBinFile() TO CREATE A NEW BINARY FILE");
+				return false;
+			}
+
+			if (fileFunction == FileFunctionCall::OPEN_BIN_FILE_FUNCTION || fileFunction == FileFunctionCall::ACCESS_BIN_FILE_FUNCTION)
+			{
+				ret = true;
+				ret = BinFileWrite(mesh);
+			}
+			else
+				LOG("Entered a Shape* when opening a binary file. Input a const BinaryMesh* to write a binary file.");
+
+			return ret;
+		}
+
+		bool Read(Shape3D** s, unsigned int index = 0)
+		{
+			bool ret = false;
+
+			if (!exists)
+			{
+				LOG("FILE DOES NOT EXIST. USE OpenFile() TO CREATE A NEW FILE");
+				return false;
+			}
+			if (fileFunction == FileFunctionCall::OPEN_FILE_FUNCTION)
+			{
+				LOG("CAN NOT READ AN OPENED FILE, USE AccessFile(). OpenFile() GENERATES A NEW BLANK FILE, CAN NOT READ SOMETHING EMPTY");
+				return false;
+			}
+
+			if (fileFunction == FileFunctionCall::OPEN_FILE_FUNCTION || fileFunction == FileFunctionCall::ACCESS_FILE_FUNCTION)
+			{
+				ret = true;
+				ret = FileRead(index, s);
+			}
+			else
+				LOG("Entered a const BinaryMesh** when opening a non-binary file. Input a Shape** to read a non-binary file.");
+
+			return ret;
+		}
+
+		bool Read(vector<BinaryMesh*>* mesh)
+		{
+			bool ret = false;
+
+			if (!exists)
+			{
+				LOG("FILE DOES NOT EXIST. USE OpenFile() TO CREATE A NEW FILE");
+				return false;
+			}
+			if (fileFunction == FileFunctionCall::OPEN_FILE_FUNCTION)
+			{
+				LOG("CAN NOT READ AN OPENED FILE, USE AccessFile(). OpenFile() GENERATES A NEW BLANK FILE, CAN NOT READ SOMETHING EMPTY");
+				return false;
+			}
+
+			if (fileFunction == FileFunctionCall::OPEN_BIN_FILE_FUNCTION || fileFunction == FileFunctionCall::ACCESS_BIN_FILE_FUNCTION)
+			{
+				ret = true;
+				ret = BinFileRead(mesh);
+			}
+			else
+				LOG("Entered a Shape** when opening a binary file. Input a BinaryMesh** to write a binary file.");
+
+			return ret;
+		}
+
+		bool Generate(Shape3D* model)
+		{
+			bool ret = false;
+
+			if (!exists)
+			{
+				LOG("FILE DOES NOT EXIST. USE OpenFile() TO CREATE A NEW FILE");
+				return false;
+			}
+			if (fileFunction == FileFunctionCall::OPEN_FILE_FUNCTION)
+			{
+				LOG("CAN NOT READ AN OPENED FILE, USE AccessFile(). OpenFile() GENERATES A NEW BLANK FILE, CAN NOT READ SOMETHING EMPTY");
+				return false;
+			}
+
+			if (fileFunction == FileFunctionCall::OPEN_BIN_FILE_FUNCTION || fileFunction == FileFunctionCall::ACCESS_BIN_FILE_FUNCTION)
+			{
+				ret = true;
+				ret = BinFileGenerate(model);
+			}
+			else
+				LOG("Entered a Shape** when opening a binary file. Input a BinaryMesh** to write a binary file.");
+
+			return ret;
+		}
+
+		bool Init()
+		{
+			bool ret = false;
+
+			if (fileFunction == FileFunctionCall::OPEN_BIN_FILE_FUNCTION)
+			{
+				ret = true;
+				std::ofstream file;
+				file.open(fileName.c_str(), std::ios::in | std::ios::app | std::ios::binary);
+				file.close();
+			}
+
+			return ret;
+		}
+
+	private: // Functions
+		bool GoNextChar(char character, unsigned int offset = 0)
+		{
+			if (offset != 0) fseek(file, offset, SEEK_CUR);
+
+			int end = (size - ftell(file));
+
+			for (int i = 0; i < end; i++)
+			{
+				if (fgetc(file) == character)
+				{
+					fseek(file, -1, SEEK_CUR);
+					return true;
+				}
+			}
+
+			fseek(file, -(end + 1), SEEK_CUR);
+			return false;
+		}
+
+		int FindNextChar(char character, unsigned int offset = 0)
+		{
+			if (offset != 0) fseek(file, offset, SEEK_CUR);
+			int pos = ftell(file);
+			int end = (size - pos);
+
+			for (int i = 0; i < end; i++)
+			{
+				if (fgetc(file) == character)
+				{
+					fseek(file, pos, SEEK_SET);
+					return i;
+				}
+			}
+
+			fseek(file, -(end + 1), SEEK_CUR);
+			return -1;
+		}
+
+		char DebugChar()
+		{
+			char c = fgetc(file);
+			fseek(file, -1, SEEK_CUR);
+			return c;
+		}
+
+		bool FileWrite(Shape3D* shape)
+		{
 
 			fopen_s(&file, fileName.c_str(), "a");
 
@@ -70,13 +273,13 @@ class FileManager
 
 				fprintf_s(file, "\nMeshes: %d<", m->meshes.size());
 
-				for (int i = 0; i < m->meshes.size(); i++)
+				for (unsigned int i = 0; i < m->meshes.size(); i++)
 				{
 					Mesh* mh = m->meshes[i];
 
 					// Vertex
 					fprintf_s(file, "\nMesh %d<\n - Vertex: %d<\n", i, mh->GetNum(MeshData::VERTEX));
-					for (struct { int a; float* v; void Add() {++a; v += 1;}; } s = { 0, mh->GetVertexPtr() };
+					for (struct { unsigned int a; float* v; void Add() { ++a; v += 1; }; } s = { 0, mh->GetVertexPtr() };
 						s.a < mh->GetNum(MeshData::VERTEX);
 						s.Add())
 					{
@@ -85,7 +288,7 @@ class FileManager
 
 					// Index
 					fprintf_s(file, "\n - Index: %d<\n", mh->GetNum(MeshData::INDEX));
-					for (struct { int a; uint* idx; void Add() { ++a; idx += 1; }; } s = { 0, mh->GetIndexPtr() };
+					for (struct { unsigned int a; uint* idx; void Add() { ++a; idx += 1; }; } s = { 0, mh->GetIndexPtr() };
 						s.a < mh->GetNum(MeshData::INDEX);
 						s.Add())
 					{
@@ -94,7 +297,7 @@ class FileManager
 
 					// Normals
 					fprintf_s(file, "\n - Normals: %d<\n", mh->GetNum(MeshData::NORMAL));
-					for (struct { int a; float* n; void Add() { ++a; n += 1; }; } s = { 0, mh->GetNormalPtr() };
+					for (struct { unsigned int a; float* n; void Add() { ++a; n += 1; }; } s = { 0, mh->GetNormalPtr() };
 						s.a < mh->GetNum(MeshData::NORMAL);
 						s.Add())
 					{
@@ -103,7 +306,7 @@ class FileManager
 
 					// Texture Coords
 					fprintf_s(file, "\n - Texture Coords: %d<\n", mh->GetNum(MeshData::TEXTURE_COORDS));
-					for (struct { int a; float* t; void Add() { ++a; t += 1; }; } s = { 0, mh->GetTexturePtr() };
+					for (struct { unsigned int a; float* t; void Add() { ++a; t += 1; }; } s = { 0, mh->GetTexturePtr() };
 						s.a < mh->GetNum(MeshData::TEXTURE_COORDS);
 						s.Add())
 					{
@@ -163,18 +366,34 @@ class FileManager
 			return true;
 		}
 
-		bool Read(unsigned int index, Shape3D** s)
+		bool BinFileWrite(const BinaryMesh* m)
 		{
-			if (!exists)
+			std::ofstream binFile;
+			binFile.open(fileName.c_str(), std::ios::in | std::ios::app | std::ios::binary);
+
+			if (binFile.is_open())
 			{
-				LOG("FILE DOES NOT EXIST. USE OpenFile() TO CREATE A NEW FILE");
+				binFile.write((char*)m, 5 * sizeof(unsigned)); //write header
+
+				//binFile.write((char*)m->numberOfMeshes, size * sizeof(unsigned));
+				binFile.write((char*)m->vertex, m->vertexSizeBytes);
+				binFile.write((char*)m->normals, m->normalsSizeBytes);
+				binFile.write((char*)m->textCoords, m->textCoordSizeBytes);
+				binFile.write((char*)m->index, m->indexSizeBytes);
+
+				binFile.close();
+				return true; //all fine
+			}
+			else
+			{
 				return false;
 			}
-			if (fileFunction == FileFunctionCall::OPEN_FILE_FUNCTION)
-			{
-				LOG("CAN NOT READ AN OPENED FILE, USE AccessFile(). OpenFile() GENERATES A NEW BLANK FILE, CAN NOT READ SOMETHING EMPTY");
-				return false;
-			}
+
+			return true;
+		}
+
+		bool FileRead(unsigned int index, Shape3D** s)
+		{
 			if (index > *numberOfShapesSaved)
 			{
 				LOG("NO SHAPE EXIST IN THE INDEX GIVEN");
@@ -348,53 +567,114 @@ class FileManager
 
 			// Close the file
 			if (fclose(file) != 0) return false;
+		}
+
+		bool BinFileRead(vector<BinaryMesh*>* mesh)
+		{
+			std::ifstream biniFile;
+			biniFile.open(fileName.c_str(), std::ios::binary);
+
+			if (biniFile.is_open())
+			{
+				int count = 1;
+
+				for (int i = 0; i < count; i++)
+				{
+					BinaryMesh* m = new BinaryMesh();
+
+					biniFile.read((char*)m, 5 * sizeof(unsigned));
+
+					count = m->numberOfMeshes;
+
+					//for (int i = 0; )
+					m->vertex = (float*)malloc(m->vertexSizeBytes);
+					biniFile.read((char*)m->vertex, m->vertexSizeBytes);
+
+					m->normals = (float*)malloc(m->normalsSizeBytes);
+					biniFile.read((char*)m->normals, m->normalsSizeBytes);
+
+					m->textCoords = (float*)malloc(m->textCoordSizeBytes);
+					biniFile.read((char*)m->textCoords, m->textCoordSizeBytes);
+
+					m->index = (unsigned*)malloc(m->indexSizeBytes);
+					biniFile.read((char*)m->index, m->indexSizeBytes);
+
+					mesh->push_back(m);
+				}
+
+				biniFile.close();
+			}
+			else
+			{
+				return NULL;
+			}
 			return true;
 		}
 
-	private: // Functions
-		bool GoNextChar(char character, unsigned int offset = 0)
+		bool BinFileGenerate(Shape3D* shape)
 		{
-			if (offset != 0) fseek(file, offset, SEEK_CUR);
+			std::ifstream biniFile;
+			biniFile.open(fileName.c_str(), std::ios::binary);
 
-			int end = (size - ftell(file));
+			vector<BinaryMesh*> mesh;
 
-			for (int i = 0; i < end; i++)
+			Model* model = (Model*)shape;
+
+			if (biniFile.is_open())
 			{
-				if (fgetc(file) == character)
+				int count = 1;
+
+				for (int i = 0; i < count; i++)
 				{
-					fseek(file, -1, SEEK_CUR);
-					return true;
+					BinaryMesh* m = new BinaryMesh();
+
+					biniFile.read((char*)m, 5 * sizeof(unsigned));
+
+					count = m->numberOfMeshes;
+
+					//for (int i = 0; )
+					m->vertex = (float*)malloc(m->vertexSizeBytes);
+					biniFile.read((char*)m->vertex, m->vertexSizeBytes);
+
+					m->normals = (float*)malloc(m->normalsSizeBytes);
+					biniFile.read((char*)m->normals, m->normalsSizeBytes);
+
+					m->textCoords = (float*)malloc(m->textCoordSizeBytes);
+					biniFile.read((char*)m->textCoords, m->textCoordSizeBytes);
+
+					m->index = (unsigned*)malloc(m->indexSizeBytes);
+					biniFile.read((char*)m->index, m->indexSizeBytes);
+
+					mesh.push_back(m);
 				}
+
+				biniFile.close();
+				FileManager file;
+
+				for (unsigned int i = 0; i < mesh.size(); i++)
+				{
+					model->meshes.push_back(file.CreateMeshFromBinary(mesh[i]));
+
+					// Create AABB bounding box
+					model->box.SetNegativeInfinity();
+					model->box.Enclose((float3*)model->meshes[i]->GetVertexPtr(), model->meshes[i]->GetNum(VERTEX));
+					// FREE VARIABLES
+					//stbi_image_free(tID.pixels);
+
+					delete mesh[i];
+				}
+
+				model->filePath.clear();
+				model->filePath += fileName.c_str();
+
+				mesh.clear();
+			}
+			else
+			{
+				return NULL;
 			}
 
-			fseek(file, -(end + 1), SEEK_CUR);
-			return false;
-		}
-
-		int FindNextChar(char character, unsigned int offset = 0)
-		{
-			if (offset != 0) fseek(file, offset, SEEK_CUR);
-			int pos = ftell(file);
-			int end = (size - pos);
-
-			for (int i = 0; i < end; i++)
-			{
-				if (fgetc(file) == character)
-				{
-					fseek(file, pos, SEEK_SET);
-					return i;
-				}
-			}
-
-			fseek(file, -(end + 1), SEEK_CUR);
-			return -1;
-		}
-
-		char DebugChar()
-		{
-			char c = fgetc(file);
-			fseek(file, -1, SEEK_CUR);
-			return c;
+			return true;
 		}
 
 	private: // Variables
@@ -453,6 +733,60 @@ public:
 			fclose(file);
 
 		return FileEditor(name.c_str(), file, &numberOfShapesSaved, FileFunctionCall::ACCESS_FILE_FUNCTION, exist);
+	}
+
+	// Opens an new access to file to write or read.
+	// Checks if the file exists:
+	//    - True: Removes the file named "fileName" and generates a new file with "fileName" as name
+	//    - False: Generates a new file with "fileName" as name
+	FileEditor OpenBinFile(const char* fileName)
+	{
+		std::string name = "Library\\";
+		name += fileName;
+		name += FILEM_BIN_EXTENSION;
+
+		FILE* file = nullptr;
+		fopen_s(&file, name.c_str(), "r");
+
+		if (file != nullptr)
+		{
+			fclose(file);
+			remove(name.c_str());
+		}
+
+		return FileEditor(name.c_str(), &numberOfShapesSaved, FileFunctionCall::OPEN_BIN_FILE_FUNCTION);
+	}
+
+	// Opens an existent access to file to write or read.
+	// Checks if the file exists:
+	//    - True: Appends the new information to the file
+	//    - False: Exits any function derivated from it
+	FileEditor AccessBinFile(const char* fileName)
+	{
+		bool exist = true;
+		std::string name = "Library\\";
+		name += fileName;
+		name += FILEM_BIN_EXTENSION;
+
+		FILE* file = nullptr;
+		fopen_s(&file, name.c_str(), "r");
+
+		if (file == nullptr) exist = false;
+		else
+			fclose(file);
+
+		return FileEditor(name.c_str(), &numberOfShapesSaved, FileFunctionCall::ACCESS_BIN_FILE_FUNCTION, exist);
+	}
+
+	Mesh* CreateMeshFromBinary(BinaryMesh* bm)
+	{
+		uint numVertex = bm->vertexSizeBytes / sizeof(float) / 3;
+		uint numIndex = bm->indexSizeBytes / sizeof(unsigned);
+		uint numNormals = bm->normalsSizeBytes / sizeof(float) / 3;
+		uint numTexCoords = bm->textCoordSizeBytes / sizeof(float) / 2;
+
+		Mesh* m = new Mesh(bm->vertex, numVertex, bm->index, numIndex, bm->normals, numNormals, bm->textCoords, numTexCoords);
+		return m;
 	}
 
 private:

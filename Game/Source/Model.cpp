@@ -1,6 +1,7 @@
 #include "Model.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include "FileManager.h"
 
 using namespace std;
 
@@ -13,7 +14,7 @@ Model::Model(Point3D pos, Point3D s, Rotation rot) : Shape3D(pos, s, rot, MODEL3
 
 Model::~Model()
 {
-    for (int i = 0; i < meshes.size(); i++)
+    for (unsigned int i = 0; i < meshes.size(); i++)
     {
         meshes[i]->~Mesh();
         delete meshes[i];
@@ -43,7 +44,7 @@ bool Model::LoadModel(const char* pathFile, const char* pathTex)
         return ret;
     }
 
-    for (int i = 0; i < scene->mNumMeshes; i++)
+    for (unsigned int i = 0; i < scene->mNumMeshes; i++)
     {
         // VARIABLES
         if (&scene->mMeshes[i] == nullptr)
@@ -97,7 +98,7 @@ bool Model::LoadModel(const char* pathFile, const char* pathTex)
         aiVector3D* coords = aiMesh->mTextureCoords[0];
         if (coords != nullptr)
         {
-            for (int i = 0; i < numTexCoord; i++)
+            for (unsigned int i = 0; i < numTexCoord; i++)
             {
                 *(texture + i * 2) = coords[i].x;
                 *(texture + i * 2 + 1) = 1.0 - coords[i].y; //this coord image is inverted in the library
@@ -122,6 +123,102 @@ bool Model::LoadModel(const char* pathFile, const char* pathTex)
         // FREE VARIABLES
         //stbi_image_free(tID.pixels);
     }
+
+    aiReleaseImport(scene);
+    aiDetachAllLogStreams();
+
+    return ret;
+}
+
+bool Model::ImportModel(const char* pathFile)
+{
+    bool ret = true;
+
+    filePath.clear();
+    filePath += "Assets/Models/";
+    filePath += pathFile;
+
+    string name;
+    name += pathFile;
+    name.erase(name.end() - 4, name.end());
+
+    FileManager file;
+    file.OpenBinFile(name.c_str()).Init();
+
+    const aiScene* scene = aiImportFile(filePath.c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
+
+    if (scene != nullptr && scene->HasMeshes())
+        int i = 0;
+    else
+    {
+        LOG("Error loading scene %s", pathFile);
+        ret = false;
+        return ret;
+    }
+
+    for (unsigned int i = 0; i < scene->mNumMeshes; i++)
+    {
+        // VARIABLES
+        if (&scene->mMeshes[i] == nullptr)
+        {
+            ret = false;
+            break;
+        }
+        const aiMesh* aiMesh = scene->mMeshes[i];
+        BinaryMesh* binMesh = new BinaryMesh();
+        binMesh->numberOfMeshes = (unsigned)scene->mNumMeshes;
+
+        binMesh->vertexSizeBytes = aiMesh->mNumVertices * sizeof(float) * 3;//3==x,y,z
+        binMesh->vertex = (float*)malloc(binMesh->vertexSizeBytes);
+        memcpy(binMesh->vertex, aiMesh->mVertices, binMesh->vertexSizeBytes);
+
+        binMesh->normalsSizeBytes = aiMesh->mNumVertices * sizeof(float) * 3;//3==x,y,z equal vertex
+        binMesh->normals = (float*)malloc(binMesh->normalsSizeBytes);
+        memcpy(binMesh->normals, aiMesh->mNormals, binMesh->normalsSizeBytes);
+
+        binMesh->textCoordSizeBytes = aiMesh->mNumVertices * sizeof(float) * 2;//3==u,v
+        binMesh->textCoords = (float*)malloc(binMesh->textCoordSizeBytes);
+        for (unsigned int i = 0; i < aiMesh->mNumVertices; i++)
+        {
+            *(binMesh->textCoords + i * 2) = aiMesh->mTextureCoords[0][i].x;
+            *(binMesh->textCoords + i * 2 + 1) = 1.0 - aiMesh->mTextureCoords[0][i].y; //this coord image is inverted
+        }
+
+        binMesh->indexSizeBytes = aiMesh->mNumFaces * sizeof(unsigned) * 3; //3==indices/face
+        binMesh->index = (unsigned*)malloc(binMesh->indexSizeBytes);
+        for (unsigned int i = 0; i < aiMesh->mNumFaces; i++)
+        {
+            aiFace* f = aiMesh->mFaces + i;
+            *(binMesh->index + 0 + i * 3) = f->mIndices[0];
+            *(binMesh->index + 1 + i * 3) = f->mIndices[1];
+            *(binMesh->index + 2 + i * 3) = f->mIndices[2];
+        }
+
+        file.AccessBinFile(name.c_str()).Write(binMesh);
+
+        free(binMesh->vertex);
+        free(binMesh->normals);
+        free(binMesh->textCoords);
+        free(binMesh->index);
+        delete binMesh;
+
+        // Create AABB bounding box
+        box.SetNegativeInfinity();
+        box.Enclose((float3*)aiMesh->mVertices, aiMesh->mNumVertices);
+        // FREE VARIABLES
+        //stbi_image_free(tID.pixels);
+    }
+
+    vector<BinaryMesh*> binMesh;
+    file.AccessBinFile(name.c_str()).Read(&binMesh);
+
+    for (unsigned int i = 0; i < binMesh.size(); i++)
+    {
+        meshes.push_back(file.CreateMeshFromBinary(binMesh[i]));
+        delete binMesh[i];
+    }
+
+    binMesh.clear();
 
     aiReleaseImport(scene);
     aiDetachAllLogStreams();
@@ -177,7 +274,7 @@ bool Model::Draw()
 
     glScalef(scale.x, scale.y, scale.z);
 
-    for (int i = 0; i < meshes.size(); i++)
+    for (unsigned int i = 0; i < meshes.size(); i++)
     {
         Mesh* m = meshes[i];
         if (solid) DrawSolid(m);

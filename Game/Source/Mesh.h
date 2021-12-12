@@ -112,7 +112,7 @@ public:
 
 		//textureInternalData.Reset();
 	}
-
+	
 	~Mesh() 
 	{
 		delete index;

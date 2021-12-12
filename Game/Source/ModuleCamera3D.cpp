@@ -150,8 +150,6 @@ update_status ModuleCamera3D::PostUpdate()
 	LookAt(vec3{ lookPoint.x, lookPoint.y, lookPoint.z });
 	CalculateViewMatrix();
 
-	
-
 	return UPDATE_CONTINUE;
 }
 
@@ -203,7 +201,7 @@ Point3D ModuleCamera3D::Focus()
 	Point3D minor = { 0, 0, 0 };
 	bool first = true;
 
-	for (int i = 1; i < app->scene->shapes.size(); i++)
+	for (unsigned int i = 1; i < app->scene->shapes.size(); i++)
 	{
 		Point3D pos = app->scene->shapes[i]->GetPosition();
 		if (first)
@@ -287,19 +285,19 @@ void ModuleCamera3D::CheckRaycast(LineSegment* ray, Shape3D* shape)
 	}
 
 	// We check if the mouse is clicking the shape
-	if (hovered && app->input->GetMouseButton(SDL_BUTTON_LEFT))
+	if (hovered && app->input->GetMouseButton(SDL_BUTTON_LEFT) && !app->scene->GetOnWindow())
 	{
 		shape->selected = true;
 	}
 
 	// We check if the mouse is clicking outside of the shape
-	if (!hovered && app->input->GetMouseButton(SDL_BUTTON_LEFT) && !ImGui::IsAnyItemHovered())
+	if (!hovered && app->input->GetMouseButton(SDL_BUTTON_LEFT) && !app->scene->GetOnWindow())
 	{
 		shape->selected = false;
 	}
 
 	// We check if we are clicking any option in the Hierarchy of the selected object
-	if (shape->selected == true && ImGui::IsAnyItemHovered())
+	if (shape->selected == true && app->scene->GetOnWindow())
 	{
 		shape->selected = true;
 	}

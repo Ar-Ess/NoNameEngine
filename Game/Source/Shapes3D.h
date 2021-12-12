@@ -198,7 +198,7 @@ public:
 
 		if (axis) DrawAxis();
 
-		for (int i = 0; !childs.empty() && i < childs.size(); i++) childs[i]->Draw();
+		for (unsigned int i = 0; !childs.empty() && i < childs.size(); i++) childs[i]->Draw();
 
 		return true;
 	}
@@ -240,7 +240,7 @@ public:
 		if (edges) DrawEdges();
 		if (axis) DrawAxis();
 
-		for (int i = 0; !childs.empty() && i < childs.size(); i++) childs[i]->Draw();
+		for (unsigned int i = 0; !childs.empty() && i < childs.size(); i++) childs[i]->Draw();
 
 		return true;
 
@@ -437,7 +437,7 @@ public:
 		if (solid) DrawSolid();
 		if (axis) DrawAxis();
 
-		for (int i = 0; !childs.empty() && i < childs.size(); i++) childs[i]->Draw();
+		for (unsigned int i = 0; !childs.empty() && i < childs.size(); i++) childs[i]->Draw();
 
 		return true;
 	}
@@ -513,7 +513,7 @@ public:
 		if (axis) DrawAxis();
 
 
-		for (int i = 0; !childs.empty() && i < childs.size(); i++) childs[i]->Draw();
+		for (unsigned int i = 0; !childs.empty() && i < childs.size(); i++) childs[i]->Draw();
 		
 		return true;
 
@@ -684,7 +684,7 @@ public:
 		if (edges) DrawEdges();
 		if (axis) DrawAxis();
 
-		for (int i = 0; !childs.empty() && i < childs.size(); i++) childs[i]->Draw();
+		for (unsigned int i = 0; !childs.empty() && i < childs.size(); i++) childs[i]->Draw();
 
 		return true;
 	}
@@ -833,7 +833,7 @@ public:
 		if (edges) DrawEdges();
 		if (axis) DrawAxis();
 
-		for (int i = 0; !childs.empty() && i < childs.size(); i++) childs[i]->Draw();
+		for (unsigned int i = 0; !childs.empty() && i < childs.size(); i++) childs[i]->Draw();
 
 		return true;
 	}
@@ -982,7 +982,7 @@ public:
 		if (edges) DrawEdges();
 		if (axis) DrawAxis();
 
-		for (int i = 0; !childs.empty() && i < childs.size(); i++) childs[i]->Draw();
+		for (unsigned int i = 0; !childs.empty() && i < childs.size(); i++) childs[i]->Draw();
 
 		return true;
 	}
