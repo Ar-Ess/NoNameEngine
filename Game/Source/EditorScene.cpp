@@ -924,7 +924,14 @@ bool EditorScene::ShowAssetsWindow(bool open)
 							}
 							else
 							{
-								//app->scene->LoadDropTexture(droppedFileDir);
+								Shape3D* s = GetShapeFromId(*shapes, selectId);
+								if (s->GetShapeType() == ShapeType::MODEL3D)
+								{
+									Model* m = (Model*)s;
+									string path = "Assets/Textures/";
+									path += assets->GetAssetAt(i)->name;
+									m->LoadTexture(path.c_str());
+								}
 							}
 							break;
 						}
@@ -1234,6 +1241,7 @@ int EditorScene::SetValidId(vector<Shape3D*> shapes, int size)
 	}
 
 	prevSelectId = -1;
+	selectId = 0;
 	prevShape = nullptr;
 
 	return s;

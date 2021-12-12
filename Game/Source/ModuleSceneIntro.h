@@ -43,7 +43,7 @@ enum class WindowSettings
 
 enum class GeometryView;
 
-enum GeometryInfo
+enum class GeometryInfo
 {
 	EDGES,
 	NORMALS,
@@ -82,7 +82,7 @@ private: // Private functions
 		bool setted = false;
 		for (unsigned int i = 0; i < shapes.size(); i++)
 		{
-			if (shapes[i]->GetShapeType() == MODEL3D && shapes[i]->selected)
+			if (shapes[i]->GetShapeType() == ShapeType::MODEL3D && shapes[i]->selected)
 			{
 				Model* m = (Model*)shapes[i];
 				m->LoadTexture(path);
@@ -238,9 +238,9 @@ public: // Getters & Setters
 			{
 				switch (gI)
 				{
-				case EDGES: shapes[i]->edges = editor->edges; break;
-				case NORMALS: shapes[i]->normals = editor->normals; break;
-				case SOLID: shapes[i]->solid = editor->solid; break;
+				case GeometryInfo::EDGES: shapes[i]->edges = editor->edges; break;
+				case GeometryInfo::NORMALS: shapes[i]->normals = editor->normals; break;
+				case GeometryInfo::SOLID: shapes[i]->solid = editor->solid; break;
 				}
 				setted = true;
 			}

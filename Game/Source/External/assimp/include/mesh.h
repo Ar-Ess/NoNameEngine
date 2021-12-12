@@ -217,7 +217,9 @@ struct aiVertexWeight
     //! \param pWeight Vertex weight factor
     aiVertexWeight( unsigned int pID, float pWeight)
         : mVertexId( pID), mWeight( pWeight)
-    { /* nothing to do here */ }
+    {
+        return;
+    }
 
 #endif // __cplusplus
 };
