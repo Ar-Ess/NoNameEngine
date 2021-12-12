@@ -7,6 +7,18 @@
 A programed & a designer of the successful team NoNameBros, have created an astonishing engine that will blow your mind. 
 NoNameEngine will help programmers developing games as famous as "Split Duty".
 ## Engine Features
+
+### Frustum
+- Frustum added. The frustum movement works well, however the rotation of the frustum gives problems,
+so we do not recommend rotating the frsutum.
+
+## Mouse picking
+- Mouse picking system added, which allows to select entities and acces their inspector information
+
+## Bounding boxes
+- Now all models have a visual bounding box which allows the user to see the transformation of the 
+models. Right now the bounding boxes don't update, we are working on it.
+ 
 ### Camera Controls
  - **Orientation:**
    - Mouse: Move + L-Click 
