@@ -19,7 +19,7 @@ ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(ap
 	reference = vec3(0.0f, 0.0f, 0.0f);
 
 	// Create our frustum using the MathGeoLib functions
-	ratio = app->window->GetWindowWidth() / app->window->GetWindowHeight(); // We calculate the screen ratio using SDL functions
+	ratio = float(app->window->GetWindowWidth() / app->window->GetWindowHeight()); // We calculate the screen ratio using SDL functions
 	frustum.SetPos(float3(0.f, 0.f, -10.f)); // Frustum position
 	frustum.SetViewPlaneDistances(0.1f, 1000.0f); // Frustum distances of the near plane and the far plane
 	frustum.SetPerspective(1.f, 1.f); // 1,1 perspective to get a pyramid-like frustum
@@ -256,18 +256,17 @@ void ModuleCamera3D::RayCoordinates(vec4 ray4)
 
 void ModuleCamera3D::SelectObject(Shape3D* shape)
 {
-	float2 mousePos = float2(app->input->GetMouseX(), app->window->GetWindowHeight() - app->input->GetMouseY());
+	float2 mousePos = float2(float(app->input->GetMouseX()), float(app->window->GetWindowHeight() - app->input->GetMouseY()));
 
 	float mouseNormalisedX = mousePos.x / app->window->GetWindowWidth();
 	float mouseNormalisedY = mousePos.y / app->window->GetWindowHeight();
 
-	mouseNormalisedX = (mouseNormalisedX - 0.5) / 0.5;
-	mouseNormalisedY = (mouseNormalisedY - 0.5) / 0.5;
+	mouseNormalisedX = float((mouseNormalisedX - 0.5) / 0.5);
+	mouseNormalisedY = float((mouseNormalisedY - 0.5) / 0.5);
 
-	LineSegment selectRay = frustum.UnProjectLineSegment(mouseNormalisedX, mouseNormalisedY);
+	LineSegment selectRay;
+	selectRay = frustum.UnProjectLineSegment(mouseNormalisedX, mouseNormalisedY);
 
-	/*app->render->DrawLine(selectRay.a, selectRay.b);*/
-	//LOG("Ray goes from: %d to %d", selectRay.a, selectRay.b);
 
 	CheckRaycast(&selectRay, shape);
 }

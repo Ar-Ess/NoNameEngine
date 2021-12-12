@@ -84,7 +84,7 @@ bool Application::InitImGui()
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
 	{
 		printf("Error: %s\n", SDL_GetError());
-		return -1;
+		return bool(-1);
 	}
 
 	// GL 3.0 + GLSL 130
@@ -186,9 +186,9 @@ void Application::ProfilerLogic()
 		SDL_Delay(frameDelay - lastFrameMs);
 	}
 
-	fpsLog.push_back(framesOnLastUpdate);
+	fpsLog.push_back(float(framesOnLastUpdate));
 	fpsLog.push_back(0.0f);
-	msLog.push_back(lastFrameMs);
+	msLog.push_back(float(lastFrameMs));
 	msLog.push_back(0.0f);
 
 	while (fpsLog.size() > frameBarLimit * 2)
@@ -249,13 +249,13 @@ bool Application::Load(string fName, FileContent fc)
 			scene->SetProjectName(json_object_get_string(json_object(file), "ProjectName"));
 			scene->SetTeamName(json_object_get_string(json_object(file), "TeamName"));
 
-			fps = json_object_get_number(json_object(file), "FPS");
-			frameBarLimit = json_object_get_number(json_object(file), "FrameBarLimit");
-			msBarLimit = json_object_get_number(json_object(file), "MsBarLimit");
+			fps = (int)json_object_get_number(json_object(file), "FPS");
+			frameBarLimit = (int)json_object_get_number(json_object(file), "FrameBarLimit");
+			msBarLimit = (int)json_object_get_number(json_object(file), "MsBarLimit");
 
-			scene->SetBrightness(json_object_get_number(json_object(file), "Brightness"));
+			scene->SetBrightness(float(json_object_get_number(json_object(file), "Brightness")));
 			scene->SetWinDimensions({ float(json_object_get_number(json_object(file), "Window Width")), float(json_object_get_number(json_object(file), "Window Height")) });
-			scene->SetWinDimensionProportion(json_object_get_number(json_object(file), "Window Proportion Value"));
+			scene->SetWinDimensionProportion(int(json_object_get_number(json_object(file), "Window Proportion Value")));
 
 			scene->SetWindowSettings(WindowSettings::FULL_SCREEN, json_object_get_boolean(json_object(file), "Full Screen"));
 			scene->SetWindowSettings(WindowSettings::FULL_DESKTOP, json_object_get_boolean(json_object(file), "Full Desktop"));
@@ -263,8 +263,8 @@ bool Application::Load(string fName, FileContent fc)
 			scene->SetWindowSettings(WindowSettings::V_SYNC, json_object_get_boolean(json_object(file), "VSync"));
 			scene->SetWindowSettings(WindowSettings::KEEP_PROPORTION, json_object_get_boolean(json_object(file), "Keep Proportion"));
 
-			camera->SetSpeed(json_object_get_number(json_object(file), "Camera Speed"));
-			camera->SetSensitivity(json_object_get_number(json_object(file), "Camera Sens"));
+			camera->SetSpeed(float(json_object_get_number(json_object(file), "Camera Speed")));
+			camera->SetSensitivity(float(json_object_get_number(json_object(file), "Camera Sens")));
 
 			scene->SetGeometryView(GeometryView::DEPTH_TEST, json_object_get_boolean(json_object(file), "Depth Test"));
 			scene->SetGeometryView(GeometryView::CULL_FACE, json_object_get_boolean(json_object(file), "Cull Face"));
@@ -280,9 +280,9 @@ bool Application::Load(string fName, FileContent fc)
 			frameBarLimit = int(json_object_get_number(json_object(file), "FrameBarLimit"));
 			msBarLimit = int(json_object_get_number(json_object(file), "MsBarLimit"));
 
-			scene->SetBrightness(json_object_get_number(json_object(file), "Brightness"));
+			scene->SetBrightness(float(json_object_get_number(json_object(file), "Brightness")));
 			scene->SetWinDimensions({ float(json_object_get_number(json_object(file), "Window Width")), float(json_object_get_number(json_object(file), "Window Height")) });
-			scene->SetWinDimensionProportion(json_object_get_number(json_object(file), "Window Proportion Value"));
+			scene->SetWinDimensionProportion(int(json_object_get_number(json_object(file), "Window Proportion Value")));
 
 			scene->SetWindowSettings(WindowSettings::FULL_SCREEN, json_object_get_boolean(json_object(file), "Full Screen"));
 			scene->SetWindowSettings(WindowSettings::FULL_DESKTOP, json_object_get_boolean(json_object(file), "Full Desktop"));
@@ -290,8 +290,8 @@ bool Application::Load(string fName, FileContent fc)
 			scene->SetWindowSettings(WindowSettings::V_SYNC, json_object_get_boolean(json_object(file), "VSync"));
 			scene->SetWindowSettings(WindowSettings::KEEP_PROPORTION, json_object_get_boolean(json_object(file), "Keep Proportion"));
 
-			camera->SetSpeed(json_object_get_number(json_object(file), "Camera Speed"));
-			camera->SetSensitivity(json_object_get_number(json_object(file), "Camera Sens"));
+			camera->SetSpeed(float(json_object_get_number(json_object(file), "Camera Speed")));
+			camera->SetSensitivity(float(json_object_get_number(json_object(file), "Camera Sens")));
 
 			scene->SetGeometryView(GeometryView::DEPTH_TEST, json_object_get_boolean(json_object(file), "Depth Test"));
 			scene->SetGeometryView(GeometryView::CULL_FACE, json_object_get_boolean(json_object(file), "Cull Face"));
@@ -622,19 +622,19 @@ void Application::JsonSaveShapes(JSON_Array* arr, vector<Shape3D*>* shapes, int 
 
 		switch (shape->GetShapeType())
 		{
-		case LINE3D:
+		case ShapeType::LINE3D:
 		{
 			Line3D* l = (Line3D*)shape;
 			ArrayAppendVector(shapeArray, l->GetSecondVertex()); // Second Vertex (3) - 19
 			break;
 		}
-		case PYRAMID3D:
+		case ShapeType::PYRAMID3D:
 		{
 			Pyramid3D* py = (Pyramid3D*)shape;
 			json_array_append_number(shapeArray, py->GetHeight()); // Height (1) - 19
 			break;
 		}
-		case CYLINDER3D:
+		case ShapeType::CYLINDER3D:
 		{
 			Cylinder3D* cy = (Cylinder3D*)shape;
 			json_array_append_number(shapeArray, cy->GetHeight()); // Height (1) - 19
@@ -642,20 +642,20 @@ void Application::JsonSaveShapes(JSON_Array* arr, vector<Shape3D*>* shapes, int 
 			json_array_append_number(shapeArray, cy->GetSegments()); // Segments (1) - 21
 			break;
 		}
-		case PLANE3D:
+		case ShapeType::PLANE3D:
 		{
 			Plane3D* p = (Plane3D*)shape;
 			ArrayAppendVector(shapeArray, p->GetNormal()); // Normal (3) - 19
 			break;
 		}
-		case SPHERE3D:
+		case ShapeType::SPHERE3D:
 		{
 			Sphere3D* s = (Sphere3D*)shape;
 			json_array_append_number(shapeArray, s->GetRadius()); // Radius (1) - 19
 			json_array_append_number(shapeArray, s->GetSubdivision()); // Subdivisions (1) - 20
 			break;
 		}
-		case MODEL3D:
+		case ShapeType::MODEL3D:
 		{
 			Model* m = (Model*)shape;
 			json_array_append_string(shapeArray, m->filePath.c_str()); // Path File (1) - 19
@@ -695,7 +695,7 @@ void Application::JsonLoadShapes(JSON_Array* arr, vector<Shape3D*>* shapes, Shap
 		bool hasParent = json_array_get_boolean(shapeArray, 5);
 
 		ArrayRetrieveVector(shapeArray, &position, 6, false);
-		float angle = json_array_get_number(shapeArray, 9);
+		float angle = (float)json_array_get_number(shapeArray, 9);
 		ArrayRetrieveVector(shapeArray, &planeNormal, 10, false);
 		ArrayRetrieveVector(shapeArray, &scale, 13, false);
 
@@ -703,18 +703,18 @@ void Application::JsonLoadShapes(JSON_Array* arr, vector<Shape3D*>* shapes, Shap
 		string type = typeChar;
 		const char* nameChar = json_array_get_string(shapeArray, 17);
 		string name = nameChar;
-		int id = json_array_get_number(shapeArray, 18);
+		int id = (int)json_array_get_number(shapeArray, 18);
 
 		int lastSpace = 18;
 
 		switch (c.ReadShapeType(type.c_str()))
 		{
-		case CUBE3D:
+		case ShapeType::CUBE3D:
 		{
 			shapes->push_back(new Cube3D(position, scale, Rotation{angle, planeNormal.x, planeNormal.y, planeNormal.z}));
 			break;
 		}
-		case LINE3D:
+		case ShapeType::LINE3D:
 		{
 			lastSpace = 21;
 			Point3D secondVertex = {};
@@ -722,23 +722,23 @@ void Application::JsonLoadShapes(JSON_Array* arr, vector<Shape3D*>* shapes, Shap
 			shapes->push_back(new Line3D(position, secondVertex, scale.x));
 			break;
 		}
-		case PYRAMID3D:
+		case ShapeType::PYRAMID3D:
 		{
 			lastSpace = 19;
-			float height = json_array_get_number(shapeArray, 19);
+			float height = (float)json_array_get_number(shapeArray, 19);
 			shapes->push_back(new Pyramid3D(position, height, scale, Rotation{ angle, planeNormal.x, planeNormal.y, planeNormal.z }));
 			break;
 		}
-		case CYLINDER3D:
+		case ShapeType::CYLINDER3D:
 		{
 			lastSpace = 21;
-			float height = json_array_get_number(shapeArray, 19);
-			float radius = json_array_get_number(shapeArray, 20);
-			int segments = json_array_get_number(shapeArray, 21);
+			float height = (float)json_array_get_number(shapeArray, 19);
+			float radius = (float)json_array_get_number(shapeArray, 20);
+			int segments = (int)json_array_get_number(shapeArray, 21);
 			shapes->push_back(new Cylinder3D(position, segments, height, radius, scale, Rotation{ angle, planeNormal.x, planeNormal.y, planeNormal.z }));
 			break;
 		}
-		case PLANE3D:
+		case ShapeType::PLANE3D:
 		{
 			lastSpace = 21;
 			Point3D normal = {};
@@ -746,15 +746,15 @@ void Application::JsonLoadShapes(JSON_Array* arr, vector<Shape3D*>* shapes, Shap
 			shapes->push_back(new Plane3D(position, normal, scale, Rotation{ angle, planeNormal.x, planeNormal.y, planeNormal.z }));
 			break;
 		}
-		case SPHERE3D:
+		case ShapeType::SPHERE3D:
 		{
 			lastSpace = 20;
-			float radius = json_array_get_number(shapeArray, 19);
-			int subdivisions = json_array_get_number(shapeArray, 20);
+			float radius = (float)json_array_get_number(shapeArray, 19);
+			int subdivisions = (int)json_array_get_number(shapeArray, 20);
 			shapes->push_back(new Sphere3D(position, scale, radius, subdivisions, Rotation{ angle, planeNormal.x, planeNormal.y, planeNormal.z }));
 			break;
 		}
-		case MODEL3D:
+		case ShapeType::MODEL3D:
 		{
 			lastSpace = 20;
 			string filePath = json_array_get_string(shapeArray, 19);
@@ -764,7 +764,7 @@ void Application::JsonLoadShapes(JSON_Array* arr, vector<Shape3D*>* shapes, Shap
 			shapes->push_back(m);
 			break;
 		}
-		case EMPTY3D:
+		case ShapeType::EMPTY3D:
 		{
 			shapes->push_back(new Empty3D(position, scale, Rotation{ angle, planeNormal.x, planeNormal.y, planeNormal.z }));
 			break;

@@ -69,7 +69,7 @@ public:
 	bool LoadRestartPropierties();
 	uint32 GetFrameCount() const
 	{
-		return frameCount;
+		return uint32(frameCount);
 	}
 	float GetDeltaTime() const
 	{
@@ -128,9 +128,9 @@ private: // JSON Functions
 public: // Variables
 
 	std::vector<float> fpsLog = {};
-	int frameBarLimit = 80;
+	unsigned int frameBarLimit = 80;
 	std::vector<float> msLog = {};
-	int msBarLimit = 80;
+	unsigned int msBarLimit = 80;
 	int fps = 60;
 
 private: // Variables

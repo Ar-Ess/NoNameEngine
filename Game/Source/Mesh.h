@@ -139,11 +139,11 @@ public:
 
 		switch (md)
 		{
-		case VERTEX: ret = vertexID; break;
-		case INDEX: ret = indexID; break;
-		case NORMAL: ret = normalID; break;
-		case TEXTURE: ret = textureID; break;
-		case TEXTURE_COORDS: ret = texCoordID; break;
+		case MeshData::VERTEX: ret = vertexID; break;
+		case MeshData::INDEX: ret = indexID; break;
+		case MeshData::NORMAL: ret = normalID; break;
+		case MeshData::TEXTURE: ret = textureID; break;
+		case MeshData::TEXTURE_COORDS: ret = texCoordID; break;
 		}
 
 		return ret;

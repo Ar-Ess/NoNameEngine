@@ -498,7 +498,7 @@ struct aiUVTransform
 /** @brief A very primitive RTTI system for the contents of material
  *  properties.
  */
-enum aiPropertyTypeInfo
+enum class aiPropertyTypeInfo
 {
     /** Array of single-precision (32 Bit) floats
      *
@@ -600,7 +600,7 @@ struct aiMaterialProperty
         : mSemantic( 0 )
         , mIndex( 0 )
         , mDataLength( 0 )
-        , mType( aiPTI_Float )
+        , mType(aiPropertyTypeInfo::aiPTI_Float )
         , mData( NULL )
     {
     }
