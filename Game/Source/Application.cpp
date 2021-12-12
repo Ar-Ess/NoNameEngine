@@ -276,9 +276,9 @@ bool Application::Load(string fName, FileContent fc)
 		}
 		case FileContent::CONFIG_PREFERENCES:
 		{
-			fps = json_object_get_number(json_object(file), "FPS");
-			frameBarLimit = json_object_get_number(json_object(file), "FrameBarLimit");
-			msBarLimit = json_object_get_number(json_object(file), "MsBarLimit");
+			fps = int(json_object_get_number(json_object(file), "FPS"));
+			frameBarLimit = int(json_object_get_number(json_object(file), "FrameBarLimit"));
+			msBarLimit = int(json_object_get_number(json_object(file), "MsBarLimit"));
 
 			scene->SetBrightness(json_object_get_number(json_object(file), "Brightness"));
 			scene->SetWinDimensions({ float(json_object_get_number(json_object(file), "Window Width")), float(json_object_get_number(json_object(file), "Window Height")) });

@@ -106,7 +106,7 @@ private: // Functions
 			height = h;
 		}
 
-		ImGui::Image(ImTextureID(img.GetTextureId()),ImVec2(width, height));
+		ImGui::Image(ImTextureID(img.GetTextureId()),ImVec2(float(width), float(height)));
 	}
 
 	void AddImage(Image img, int proportion = 100)
@@ -122,7 +122,7 @@ private: // Functions
 			height = int(ceil((height * proportion) / 100));
 		}
 
-		ImGui::Image(ImTextureID(img.GetTextureId()), ImVec2(width, height));
+		ImGui::Image(ImTextureID(img.GetTextureId()), ImVec2(float(width), float(height)));
 	}
 
 	// Given an Image enum type, width and height, draw an image
@@ -137,7 +137,7 @@ private: // Functions
 			height = h;
 		}
 
-		if (ImGui::ImageButton(ImTextureID(img.GetTextureId()), ImVec2(width, height), ImVec2(0, 0), ImVec2(1, 1), 0)) return true;
+		if (ImGui::ImageButton(ImTextureID(img.GetTextureId()), ImVec2(float(width), float(height)), ImVec2(0, 0), ImVec2(1, 1), 0)) return true;
 
 		return false;
 	}
@@ -155,7 +155,7 @@ private: // Functions
 			height = int(ceil((height * proportion) / 100));
 		}
 
-		if (ImGui::ImageButton(ImTextureID(img.GetTextureId()), ImVec2(width, height), ImVec2(0, 0), ImVec2(1, 1))) return true;
+		if (ImGui::ImageButton(ImTextureID(img.GetTextureId()), ImVec2(float(width), float(height)), ImVec2(0, 0), ImVec2(1, 1))) return true;
 
 		return false;
 	}

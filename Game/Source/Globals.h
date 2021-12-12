@@ -72,7 +72,7 @@ struct Point
 struct Point3D
 {
 	Point3D() {}
-	Point3D(int xx, int yy, int zz) { x = xx; y = yy; z = zz; }
+	Point3D(int xx, int yy, int zz) { x = float(xx); y = float(yy); z = float(zz); }
 	Point3D(float xx, float yy, float zz) { x = xx; y = yy; z = zz; }
 	//Point3D(double xx, double yy, double zz) { x = xx; y = yy; z = zz; }
 	Point3D(vec3 p) { x = p.x; y = p.y; z = p.z; }

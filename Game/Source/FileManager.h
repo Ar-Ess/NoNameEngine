@@ -76,7 +76,7 @@ class FileManager
 			if (fileFunction == FileFunctionCall::OPEN_FILE_FUNCTION || fileFunction == FileFunctionCall::ACCESS_FILE_FUNCTION)
 			{
 				ret = true;
-				ret = FileWrite(shape);
+				//ret = FileWrite(shape);
 			}
 			else
 				LOG("Entered a const BinaryMesh* when opening a non-binary file. Input a Shape* to write a non-binary file.");
@@ -123,7 +123,7 @@ class FileManager
 			if (fileFunction == FileFunctionCall::OPEN_FILE_FUNCTION || fileFunction == FileFunctionCall::ACCESS_FILE_FUNCTION)
 			{
 				ret = true;
-				ret = FileRead(index, s);
+				//ret = FileRead(index, s);
 			}
 			else
 				LOG("Entered a const BinaryMesh** when opening a non-binary file. Input a Shape** to read a non-binary file.");
@@ -244,8 +244,8 @@ class FileManager
 			return c;
 		}
 
-		bool FileWrite(Shape3D* shape)
-		{
+		//bool FileWrite(Shape3D* shape)
+		/*{
 
 			fopen_s(&file, fileName.c_str(), "a");
 
@@ -364,7 +364,7 @@ class FileManager
 
 			if (fclose(file) != 0) return false;
 			return true;
-		}
+		}*/
 
 		bool BinFileWrite(const BinaryMesh* m)
 		{
@@ -392,9 +392,9 @@ class FileManager
 			return true;
 		}
 
-		bool FileRead(unsigned int index, Shape3D** s)
-		{
-			if (index > *numberOfShapesSaved)
+		//bool FileRead(unsigned int index, Shape3D** s)
+		/*{
+			if (index > unsigned(*numberOfShapesSaved))
 			{
 				LOG("NO SHAPE EXIST IN THE INDEX GIVEN");
 				return false;
@@ -567,7 +567,7 @@ class FileManager
 
 			// Close the file
 			if (fclose(file) != 0) return false;
-		}
+		}*/
 
 		bool BinFileRead(vector<BinaryMesh*>* mesh)
 		{

@@ -101,7 +101,7 @@ bool Model::LoadModel(const char* pathFile, const char* pathTex)
             for (unsigned int i = 0; i < numTexCoord; i++)
             {
                 *(texture + i * 2) = coords[i].x;
-                *(texture + i * 2 + 1) = 1.0 - coords[i].y; //this coord image is inverted in the library
+                *(texture + i * 2 + 1) = 1.0f - coords[i].y; //this coord image is inverted in the library
             }
         }
 
@@ -181,7 +181,7 @@ bool Model::ImportModel(const char* pathFile)
         for (unsigned int i = 0; i < aiMesh->mNumVertices; i++)
         {
             *(binMesh->textCoords + i * 2) = aiMesh->mTextureCoords[0][i].x;
-            *(binMesh->textCoords + i * 2 + 1) = 1.0 - aiMesh->mTextureCoords[0][i].y; //this coord image is inverted
+            *(binMesh->textCoords + i * 2 + 1) = 1.0f - aiMesh->mTextureCoords[0][i].y; //this coord image is inverted
         }
 
         binMesh->indexSizeBytes = aiMesh->mNumFaces * sizeof(unsigned) * 3; //3==indices/face

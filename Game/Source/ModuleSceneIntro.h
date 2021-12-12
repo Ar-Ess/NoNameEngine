@@ -190,7 +190,7 @@ public: // Getters & Setters
 	void SetWinDimensions(Point size)
 	{
 		editor->wSize = size;
-		app->window->SetWinSize(size.x, size.y);
+		app->window->SetWinSize(int(size.x), int(size.y));
 	}
 	int GetWinDimensionProportion()
 	{
