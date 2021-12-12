@@ -666,9 +666,10 @@ bool EditorScene::ShowInspectorWindow(bool open)
 		{
 			if (!onWindow) onWindow = ImGui::IsWindowHovered();
 
+			Shape3D* s = prevShape;
+
 			if (selectId != 0)
 			{
-				Shape3D* s = prevShape; 
 				if (selectId != prevSelectId) s = GetShapeFromId(*shapes, selectId);
 				prevSelectId = selectId;
 				prevShape = s;
@@ -906,7 +907,27 @@ bool EditorScene::ShowAssetsWindow(bool open)
 							assets->ParseForwardFiles(assets->GetAssetAt(i + (columns * a))->name.c_str());
 							break;
 						}
-						case AssetType::FILE: break;
+						case AssetType::FILE: 
+						{
+							string format = assets->GetAssetAt(i)->name;
+							int fSize = format.size() - 4;
+							for (unsigned int i = 0; i < fSize; i++) format.erase(format.begin());
+							format.shrink_to_fit();
+							string FBX = ".FBX";
+							string fbx = ".fbx";
+
+							if (SameString(format, FBX) || SameString(format, fbx))
+							{
+								Model* m = new Model({0, 0, 0});
+								m->ImportModel(assets->GetAssetAt(i)->name.c_str());
+								PushShape3D(m);
+							}
+							else
+							{
+								//app->scene->LoadDropTexture(droppedFileDir);
+							}
+							break;
+						}
 						}
 					}
 					
@@ -1059,7 +1080,9 @@ void EditorScene::DeleteShape()
 	if (erase != nullptr && erase->selected)
 	{
 		DeleteShapeFromId(shapes, selectId);
+		erase = nullptr;
 		SetValidId(*shapes);
+
 	}
 	else
 	{
@@ -1209,6 +1232,9 @@ int EditorScene::SetValidId(vector<Shape3D*> shapes, int size)
 		s++;
 		if (!shapes[a]->childs.empty()) s = SetValidId(shapes[a]->childs, s);
 	}
+
+	prevSelectId = -1;
+	prevShape = nullptr;
 
 	return s;
 }

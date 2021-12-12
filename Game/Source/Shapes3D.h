@@ -112,6 +112,23 @@ public:
 		this->rotation = rotation;
 	}
 
+	void DeleteChilds(vector<Shape3D*>* vect)
+	{
+		for (unsigned int i = 0; i < childs.size(); i++)
+		{
+			if (!vect->at(i)->childs.empty())
+			{
+				DeleteChilds(&vect->at(i)->childs);
+			}
+
+			vect->at(i)->~Shape3D();
+			delete vect->at(i);
+			vect->at(i) = nullptr;
+		}
+
+		vect->clear();
+	}
+
 	bool axis = false;
 	bool edges = true;
 	bool solid = true;
@@ -188,6 +205,11 @@ public:
 	{
 	}
 
+	~Empty3D()
+	{
+		DeleteChilds(&childs);
+	}
+
 	bool Draw()
 	{
 		if (!draw) return true;
@@ -224,6 +246,11 @@ public:
 		//		v[i] += pos;
 		//	}
 		//}
+	}
+
+	~Cube3D()
+	{
+		DeleteChilds(&childs);
 	}
 
 	AABB cubeBox;
@@ -427,6 +454,11 @@ public:
 		v[1] = vertex1;
 	}
 
+	~Line3D()
+	{
+		DeleteChilds(&childs);
+	}
+
 	bool Draw()
 	{
 		if (!draw) return true;
@@ -497,6 +529,11 @@ public:
 				v[i] += pos;
 			}
 		}*/
+	}
+
+	~Pyramid3D()
+	{
+		DeleteChilds(&childs);
 	}
 
 	bool Draw()
@@ -671,6 +708,11 @@ public:
 		radius = r;
 	}
 
+	~Cylinder3D()
+	{
+		DeleteChilds(&childs);
+	}
+
 	bool Draw()
 	{
 		if (!draw) return true;
@@ -821,6 +863,11 @@ public:
 		normal = n;
 	}
 
+	~Plane3D()
+	{
+		DeleteChilds(&childs);
+	}
+
 	bool Draw()
 	{
 		if (!draw) return true;
@@ -967,6 +1014,11 @@ public:
 			BuildVerticesSmooth();
 		else
 			BuildVerticesFlat();
+	}
+
+	~Sphere3D()
+	{
+		DeleteChilds(&childs);
 	}
 
 	bool Draw()

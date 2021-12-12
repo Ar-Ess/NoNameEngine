@@ -20,6 +20,8 @@ Model::~Model()
         delete meshes[i];
     }
 
+    DeleteChilds(&childs);
+
     meshes.clear();
 }
 
@@ -178,10 +180,14 @@ bool Model::ImportModel(const char* pathFile)
 
         binMesh->textCoordSizeBytes = aiMesh->mNumVertices * sizeof(float) * 2;//3==u,v
         binMesh->textCoords = (float*)malloc(binMesh->textCoordSizeBytes);
-        for (unsigned int i = 0; i < aiMesh->mNumVertices; i++)
+        aiVector3D* coords = aiMesh->mTextureCoords[0];
+        if (coords != nullptr)
         {
-            *(binMesh->textCoords + i * 2) = aiMesh->mTextureCoords[0][i].x;
-            *(binMesh->textCoords + i * 2 + 1) = 1.0f - aiMesh->mTextureCoords[0][i].y; //this coord image is inverted
+            for (unsigned int i = 0; i < aiMesh->mNumVertices; i++)
+            {
+                *(binMesh->textCoords + i * 2) = coords[i].x;
+                *(binMesh->textCoords + i * 2 + 1) = 1.0f - coords[i].y; //this coord image is inverted in the library
+            }
         }
 
         binMesh->indexSizeBytes = aiMesh->mNumFaces * sizeof(unsigned) * 3; //3==indices/face

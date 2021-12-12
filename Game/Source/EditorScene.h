@@ -187,9 +187,12 @@ private: // Functions
 		{
 			if (shapes->at(a)->id == id)
 			{
-				shapes->at(a)->~Shape3D();
+				Shape3D* del = shapes->at(a);
+				del->~Shape3D();
 				shapes->erase(shapes->begin() + a);
 				if (shapes->size() == 0) shapes->clear();
+				delete del;
+
 				return true;
 			}
 
