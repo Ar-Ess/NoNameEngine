@@ -193,19 +193,19 @@ bool EditorScene::DrawMenuBar()
 				if (ImGui::MenuItem("Solid"))
 				{
 					solid = !solid;
-					app->scene->SetGeometryInfo(SOLID);
+					app->scene->SetGeometryInfo(GeometryInfo::SOLID);
 				}
 
 				if (ImGui::MenuItem("Edges"))
 				{
 					edges = !edges;
-					app->scene->SetGeometryInfo(EDGES);
+					app->scene->SetGeometryInfo(GeometryInfo::EDGES);
 				}
 
 				if (ImGui::MenuItem("Normals"))
 				{
 					normals = !normals;
-					app->scene->SetGeometryInfo(NORMALS);
+					app->scene->SetGeometryInfo(GeometryInfo::NORMALS);
 				}
 				ImGui::EndMenu();
 			}
@@ -392,7 +392,7 @@ bool EditorScene::ShowConfigWindow(bool open)
 							sprintf_s(title, 25, "Framerate %.1f", framerate);
 							ImGui::Text("Framerate Graph");
 							ImGui::PlotHistogram("##framerate", &app->fpsLog[0], app->fpsLog.size(), 0, title, 0.0f, 100.0f, ImVec2(307, 100));
-							ImGui::SliderInt(" FBL", &app->frameBarLimit, 30, 80, "Bars: %d");
+							ImGui::SliderInt(" FBL", (int*)&app->frameBarLimit, 30, 80, "Bars: %d");
 
 							AddSpacing(0);
 
@@ -400,7 +400,7 @@ bool EditorScene::ShowConfigWindow(bool open)
 							sprintf_s(title, 25, "Milliseconds %0.1f", milliseconds);
 							ImGui::Text("Milliseconds Graph");
 							ImGui::PlotHistogram("##milliseconds", &app->msLog[0], app->msLog.size(), 0, title, 0.0f, 40.0f, ImVec2(307, 100));
-							ImGui::SliderInt(" MSG", &app->msBarLimit, 30, 80, "Bars: %d");
+							ImGui::SliderInt(" MSG", (int*)&app->msBarLimit, 30, 80, "Bars: %d");
 
 							AddSpacing(1);
 
