@@ -54,6 +54,7 @@ models. Right now the bounding boxes don't update, we are working on it.
 
 ### Load Models & Textures
 - Any model/image extension supported (in code)
+- Own binary file format
 - Drag & Drop feature:
   - **Models:**
     - Supports FBX for now (will be extended on the future) 
@@ -90,10 +91,23 @@ _Important: "Shape3D" class is the equivalent of "GameObject" class_
 
 ### Hierarchy
  - View all the shapes in the stage
- - Select a model to display:
+ - Select a model to display in Inspector
+ - Right Click to create Shape3D
+ - Drag & Drop to child / unchild Shapes3D
+
+### Inspector
    - Shape name
-   - Transpose info (Position, Rotation, Scale)
+   - Transpose info (Position, Rotation, Scale) modificable
    - Shape type
      - In case it has specific variables, show them
    - Mesh info
    - Texture Info
+
+### Assets
+   - Navigator for assets
+   - Interact to import fbx or textures
+
+Future Implementation:
+ - Ingame Timer Management
+ - Camera component
+ - Ray cast debug and bounding box for all Shapes3D 
