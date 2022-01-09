@@ -7,6 +7,8 @@
 #include "glmath.h"
 #include <algorithm>
 
+#include "AudioSourceComponent.h"
+
 EditorScene::EditorScene(Application* App, vector<Shape3D*>* s, AssetsManager* assetsManager, ImportManager* importManager, FileManager* fileManager)
 {
 	this->app = App;
@@ -32,9 +34,9 @@ bool EditorScene::Start()
 	p->solid = false;
 	shapes->push_back(p);
 
-	Model* m = new Model({ 0, 0, 0 }, { 0.05f,0.05f,0.05f }, {-90, 1, 0, 0});
+	/*Model* m = new Model({ 0, 0, 0 }, { 0.05f,0.05f,0.05f }, {-90, 1, 0, 0});
 	m->LoadModel("Assets/Models/street_environment_V01.FBX");
-	shapes->push_back(m);
+	shapes->push_back(m);*/
 
 	SetValidId(*shapes);
 
@@ -58,6 +60,11 @@ bool EditorScene::Update()
 	inspectorWindow = ShowInspectorWindow(inspectorWindow);
 	assetsWindow = ShowAssetsWindow(assetsWindow);
 	gameStateWindow = ShowGameStateWindow(gameStateWindow);
+
+	if (app->input->GetKey(SDL_SCANCODE_G) == KEY_DOWN)
+	{
+		shapes->at(1)->components.push_back(new AudioSourceComponent());
+	}
 
 	ret = ShortCuts();
 
@@ -665,7 +672,6 @@ bool EditorScene::ShowInspectorWindow(bool open)
 		if (ImGui::Begin("Inspector", &open))
 		{
 			if (!onWindow) onWindow = ImGui::IsWindowHovered();
-
 			Shape3D* s = prevShape;
 
 			if (selectId != 0)
@@ -674,154 +680,17 @@ bool EditorScene::ShowInspectorWindow(bool open)
 				prevSelectId = selectId;
 				prevShape = s;
 
-				AddSeparator(2);
-				AddSpacing(0);
+				GeneralInfoInspector(s);
 
-				// NAME
-				char buffer[24] = {};
-				sprintf_s(buffer, "Name: %s %d", s->GetName(), selectId);
-				ImGui::Text(buffer);
-				AddSpacing(1);
+				TransformInfoInspector(s);
 
-				// Type
-				ImGui::Text("Type: %s", s->WriteShapeType().c_str());
-				AddSpacing(0);
+				MeshInfoInspector(s);
 
-				switch (s->GetShapeType())
-				{
-				case PYRAMID3D:
-				{
-					Pyramid3D* py = (Pyramid3D*)s;
-					ImGui::Text("    Height: %.2f", py->GetHeight());
-					break;
-				}
-				case CYLINDER3D:
-				{
-					Cylinder3D* cy = (Cylinder3D*)s;
-					ImGui::Text("    Height: %.2f", cy->GetHeight());
-					ImGui::Text("    Radius: %.2f", cy->GetRadius());
-					ImGui::Text("    Segments: %d", cy->GetSegments());
-					break;
-				}
-				case PLANE3D:
-				{
-					Plane3D* p = (Plane3D*)s;
-					ImGui::Text("    Normal: {%d, %d, %d}", (int)p->GetNormal().x, (int)p->GetNormal().y, (int)p->GetNormal().z);
-					break;
-				}
-				case SPHERE3D:
-				{
-					Sphere3D* sp = (Sphere3D*)s;
-					/*subdivision = sub
-						interleavedStride*/
-					ImGui::Text("    Radius: %.1f", sp->GetRadius());
-					ImGui::Text("    Subdivisions: %.1f", sp->GetSubdivision());
-					break;
-				}
-				}
+				TextureInfoInspector(s);
 
-				// TRANSFORM
-				if(ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
-				{
-					// we create new Point3D so that the transforms of the meshes are modificable
-					Point3D position = s->GetPosition();
-					Rotation rotation = s->GetRotation();
-					Point3D scale = s->GetScale();
-					Point3D rot = rotation.ToEulerAngles();
-
-					if (ImGui::DragFloat3("Position", (float*)&position, 0.25))
-					{
-						s->SetPosition(position);
-					}
-
-					if (ImGui::DragFloat3("Scale", (float*)&scale, 0.25))
-					{
-						s->SetScale(scale);
-					}
-
-					if (ImGui::DragFloat3("Rotation", (float*)&rot, 0.25))
-					{
-						rotation.FromEulerAngles(rot);
-						s->SetRotation(rotation);
-					}
-				}
-				AddSpacing(0);
-
-				AddSpacing(1);
-				AddSeparator(1);
-				AddSpacing(1);
-
-				// MESH
-				ImGui::Text(" Mesh:");
-				AddSpacing(0);
-
-				if (s->GetShapeType() != MODEL3D)
-				{
-					ImGui::BulletText("Num: %d", 1);
-					AddSpacing(1);
-				}
-				else
-				{
-					Model* m = (Model*)s;
-					// Num Of Mesh
-					ImGui::BulletText("Num: %d", m->meshes.size());
-					AddSpacing(1);
-
-					// Model Path
-					ImGui::BulletText("Model path: %s", m->filePath.c_str());
-					AddSpacing(1);
-				}
-
-				// Solid
-				ImGui::BulletText("Solid: "); ImGui::SameLine(); s->solid ? ImGui::Text("true") : ImGui::Text("false");
-				AddSpacing(1);
-
-				// Edges
-				ImGui::BulletText("Edges: "); ImGui::SameLine(); s->edges ? ImGui::Text("true") : ImGui::Text("false");
-				AddSpacing(1);
-
-				if (s->GetShapeType() == MODEL3D)
-				{
-					// Normals
-					ImGui::BulletText("Normals: "); ImGui::SameLine(); s->normals ? ImGui::Text("true") : ImGui::Text("false");
-					AddSpacing(1);
-				}
-				AddSeparator(1);
-				AddSpacing(1);
-
-				// TEXTURE
-				ImGui::Text(" Texture:");
-				
-				AddSpacing(0);
-
-				if (s->GetShapeType() != MODEL3D)
-				{
-					ImGui::BulletText("No Texture");
-					AddSpacing(1);
-				}
-				else
-				{
-					Model* m = (Model*)s;
-
-					//ImGui::Image((void*)(intptr_t)myImageTexture, ImVec2(imageWidth, imageHeight));
-
-					// Size
-					ImGui::BulletText("Size: ");
-					ImGui::Text("    Width: %.2f", m->GetSize().x);
-					ImGui::Text("    Height: %.2f", m->GetSize().y);
-					AddSpacing(1);
-
-					// Texture Path
-					ImGui::BulletText("Texture path: %s", m->texturePath.c_str());
-					AddSpacing(1);
-
-					// Show texture
-					ImGui::Checkbox("Texture", &m->showTexture);
-					AddSpacing(1);
-				}
+				ComponentInfoInspector(s);
 			}
 		}
-
 		ImGui::End();
 	}
 	return open;
@@ -1245,4 +1114,198 @@ int EditorScene::SetValidId(vector<Shape3D*> shapes, int size)
 	prevShape = nullptr;
 
 	return s;
+}
+
+// ==== INFO INSPECTOR ========================================================
+
+void EditorScene::GeneralInfoInspector(Shape3D* s)
+{
+	// NAME
+	char buffer[24] = {};
+	sprintf_s(buffer, "Name: %s %d", s->GetName(), selectId);
+	ImGui::Text(buffer);
+	AddSpacing(1);
+
+	// Type
+	ImGui::Text("Type: %s", s->WriteShapeType().c_str());
+	AddSpacing(0);
+
+	switch (s->GetShapeType())
+	{
+	case PYRAMID3D:
+	{
+		Pyramid3D* py = (Pyramid3D*)s;
+		ImGui::Text("    Height: %.2f", py->GetHeight());
+		break;
+	}
+	case CYLINDER3D:
+	{
+		Cylinder3D* cy = (Cylinder3D*)s;
+		ImGui::Text("    Height: %.2f", cy->GetHeight());
+		ImGui::Text("    Radius: %.2f", cy->GetRadius());
+		ImGui::Text("    Segments: %d", cy->GetSegments());
+		break;
+	}
+	case PLANE3D:
+	{
+		Plane3D* p = (Plane3D*)s;
+		ImGui::Text("    Normal: {%d, %d, %d}", (int)p->GetNormal().x, (int)p->GetNormal().y, (int)p->GetNormal().z);
+		break;
+	}
+	case SPHERE3D:
+	{
+		Sphere3D* sp = (Sphere3D*)s;
+		/*subdivision = sub
+			interleavedStride*/
+		ImGui::Text("    Radius: %.1f", sp->GetRadius());
+		ImGui::Text("    Subdivisions: %.1f", sp->GetSubdivision());
+		break;
+	}
+	}
+
+	AddSeparator(2);
+	AddSpacing(0);
+}
+
+void EditorScene::TransformInfoInspector(Shape3D* s)
+{
+	// TRANSFORM
+	if (ImGui::CollapsingHeader("Transform"))
+	{
+		AddSpacing(0);
+		// we create new Point3D so that the transforms of the meshes are modificable
+		Point3D position = s->GetPosition();
+		Rotation rotation = s->GetRotation();
+		Point3D scale = s->GetScale();
+		Point3D rot = rotation.ToEulerAngles();
+
+		if (ImGui::DragFloat3("Position", (float*)&position, 0.25))
+		{
+			s->SetPosition(position);
+		}
+
+		if (ImGui::DragFloat3("Scale", (float*)&scale, 0.25))
+		{
+			s->SetScale(scale);
+		}
+
+		if (ImGui::DragFloat3("Rotation", (float*)&rot, 0.25))
+		{
+			rotation.FromEulerAngles(rot);
+			s->SetRotation(rotation);
+		}
+
+		AddSpacing(0);
+	}
+	AddSpacing(0);
+	AddSeparator(1);
+	AddSpacing(0);
+}
+
+void EditorScene::MeshInfoInspector(Shape3D* s)
+{
+	if (ImGui::CollapsingHeader("Mesh"))
+	{
+		// MESH
+		AddSpacing(0);
+
+		if (s->GetShapeType() != MODEL3D)
+		{
+			ImGui::BulletText("Num: %d", 1);
+			AddSpacing(1);
+		}
+		else
+		{
+			Model* m = (Model*)s;
+			// Num Of Mesh
+			ImGui::BulletText("Num: %d", m->meshes.size());
+			AddSpacing(1);
+
+			// Model Path
+			ImGui::BulletText("Model path: %s", m->filePath.c_str());
+			AddSpacing(1);
+		}
+
+		// Solid
+		ImGui::BulletText("Solid: "); ImGui::SameLine(); s->solid ? ImGui::Text("true") : ImGui::Text("false");
+		AddSpacing(1);
+
+		// Edges
+		ImGui::BulletText("Edges: "); ImGui::SameLine(); s->edges ? ImGui::Text("true") : ImGui::Text("false");
+		AddSpacing(1);
+
+		if (s->GetShapeType() == MODEL3D)
+		{
+			// Normals
+			ImGui::BulletText("Normals: "); ImGui::SameLine(); s->normals ? ImGui::Text("true") : ImGui::Text("false");
+			AddSpacing(1);
+		}
+
+		AddSpacing(0);
+	}
+	AddSpacing(0);
+	AddSeparator(1);
+	AddSpacing(0);
+}
+
+void EditorScene::TextureInfoInspector(Shape3D* s)
+{
+	if (ImGui::CollapsingHeader("Texture"))
+	{
+		// TEXTURE
+
+		AddSpacing(0);
+
+		if (s->GetShapeType() != MODEL3D)
+		{
+			ImGui::BulletText("No Texture");
+			AddSpacing(1);
+		}
+		else
+		{
+			Model* m = (Model*)s;
+
+			//ImGui::Image((void*)(intptr_t)myImageTexture, ImVec2(imageWidth, imageHeight));
+
+			// Size
+			ImGui::BulletText("Size: ");
+			ImGui::Text("    Width: %.2f", m->GetSize().x);
+			ImGui::Text("    Height: %.2f", m->GetSize().y);
+			AddSpacing(1);
+
+			// Texture Path
+			ImGui::BulletText("Texture path: %s", m->texturePath.c_str());
+			AddSpacing(1);
+
+			// Show texture
+			ImGui::Checkbox("Texture", &m->showTexture);
+			AddSpacing(1);
+		}
+
+		AddSpacing(0);
+	}
+	AddSpacing(0);
+	AddSeparator(1);
+	AddSpacing(0);
+}
+
+void EditorScene::ComponentInfoInspector(Shape3D* s)
+{
+	for (int i = 0; i < s->components.size(); i++)
+	{
+		ImGui::PushID(i);
+		if (ImGui::CollapsingHeader(s->components[i]->GetTitle()))
+		{
+			AddSpacing(0);
+
+
+
+			AddSpacing(0);
+		}
+
+		ImGui::PopID();
+		AddSpacing(0);
+		AddSeparator(1);
+		AddSpacing(0);
+	}
 }

@@ -244,6 +244,18 @@ private: // Functions
 
 	int SetValidId(vector<Shape3D*> s, int size = 0);
 
+	// Inspector information
+
+	void GeneralInfoInspector(Shape3D* s);
+
+	void TransformInfoInspector(Shape3D* s);
+
+	void MeshInfoInspector(Shape3D* s);
+
+	void TextureInfoInspector(Shape3D* s);
+
+	void ComponentInfoInspector(Shape3D* s);
+
 public: // Variables
 	bool demoWindow = false;
 	bool outputWindow = true;

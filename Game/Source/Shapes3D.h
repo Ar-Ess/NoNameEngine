@@ -9,6 +9,7 @@
 #include "External/MathGeoLib/Geometry/OBB.h"
 #include <gl/GL.h>
 
+#include "Component.h"
 
 #pragma comment (lib, "Source/External/glew/glew32.lib") /* link OpenGL Utility lib     */
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
@@ -141,7 +142,7 @@ public:
 	Shape3D* parent = nullptr;
 	int id = 0;
 	AABB boundingBox;
-
+	vector<Component*> components;
 
 protected:
 

@@ -148,6 +148,9 @@
     <Filter Include="External\Wwise\WwiseAuthoringAPI\ts">
       <UniqueIdentifier>{fe258417-5f0c-4434-9a3b-3b4326b6bc65}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Components">
+      <UniqueIdentifier>{be54e6e0-d0e5-46c3-be13-1042d1927663}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\External\imgui\imconfig.h">
@@ -1034,6 +1037,12 @@
     </ClInclude>
     <ClInclude Include="Source\External\Wwise\include\AK\WwiseAuthoringAPI\AkAutobahn\WebSocketClient.h">
       <Filter>External\Wwise\WwiseAuthoringAPI\AkAutobahn</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Component.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AudioSourceComponent.h">
+      <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

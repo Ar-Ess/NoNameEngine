@@ -82,7 +82,9 @@
   <ItemGroup>
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\AssetsManager.h" />
+    <ClInclude Include="Source\AudioSourceComponent.h" />
     <ClInclude Include="Source\Color.h" />
+    <ClInclude Include="Source\Component.h" />
     <ClInclude Include="Source\Defs.h" />
     <ClInclude Include="Source\EditorScene.h" />
     <ClInclude Include="Source\External\Density\algorithms\algorithms.h" />
