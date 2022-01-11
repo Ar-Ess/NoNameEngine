@@ -33,7 +33,7 @@ private: // Methods
 			ImGui::Dummy(ImVec2{ 0.0f, 3.8f });
 
 			ImGui::Dummy(ImVec2{ 3.8f, 0.0f }); ImGui::SameLine();
-			ImGui::VSliderInt("-0", ImVec2{15, 150}, &volume, -128.0f, 0.0f, ""); 
+			ImGui::VSliderInt("-0", ImVec2{15, 155}, &volume, -128.0f, 0.0f, ""); 
 			ImGui::SameLine(0.0f, 20.0f);
 			if (ImGui::BeginTable("Column Table", 2))
 			{
@@ -41,12 +41,12 @@ private: // Methods
 				ImGui::Dummy(ImVec2{0.0f, 6.0f});
 
 				ImGui::TableNextRow(); ImGui::TableSetColumnIndex(0);
-				ImGui::Knob("L / R", &pan, -50.0, 50.0, false);
+				ImGui::Dummy(ImVec2{ 4.5f, 0.0f }); ImGui::SameLine();
+				ImGui::Knob("L / R", &pan, -50.0, 50.0, false, 2.5f);
 				ImGui::Dummy(ImVec2{ 0.0f, 10.0f });
 
 				ImGui::TableNextRow(); ImGui::TableSetColumnIndex(0);
-				ImGui::Knob("Transpose", &transpose, -24.0, 24.0, false);
-				ImGui::Dummy(ImVec2{ 0.0f, 10.0f });
+				ImGui::Knob("Transpose", &transpose, -24.0, 24.0, false, -10);
 				
 			}
 			ImGui::EndTable();

@@ -150,7 +150,7 @@ static ImVec2           InputTextCalcTextSizeW(const ImWchar* text_begin, const 
 // Implementing a simple custom widget using the public API.
 // You may also use the <imgui_internal.h> API to get raw access to more data/helpers, however the internal API isn't guaranteed to be forward compatible.
 // FIXME: Need at least proper label centering + clipping (internal functions RenderTextClipped provides both but api is flaky/temporary)
-bool ImGui::Knob(const char* label, float* p_value, float v_min, float v_max, bool tooltip)
+bool ImGui::Knob(const char* label, float* p_value, float v_min, float v_max, bool tooltip, float x_text_offset)
 {
     ImGuiIO& io = ImGui::GetIO();
     ImGuiStyle& style = ImGui::GetStyle();
@@ -176,6 +176,8 @@ bool ImGui::Knob(const char* label, float* p_value, float v_min, float v_max, bo
         if (*p_value > v_max) *p_value = v_max;
         value_changed = true;
     }
+
+    center.x -= x_text_offset;
 
     float t = (*p_value - v_min) / (v_max - v_min);
     float angle = ANGLE_MIN + (ANGLE_MAX - ANGLE_MIN) * t;
