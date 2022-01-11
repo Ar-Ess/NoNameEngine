@@ -14,6 +14,8 @@ class Component
 public:
 	~Component() {}
 
+	virtual void Update(bool* onWindow = nullptr) {}
+
 	const char* GetTitle()
 	{
 		return title.c_str();
@@ -29,6 +31,7 @@ protected:
 
 	std::string title;
 	ComponentID id = NO_COMPONENT;
+	bool open = false;
 };
 
 #endif // !__COMPONENT_H__

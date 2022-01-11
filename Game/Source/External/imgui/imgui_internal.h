@@ -2893,6 +2893,7 @@ namespace ImGui
 #endif
 
     // Widgets
+    IMGUI_API bool          Knob(const char* label, float* p_value, float v_min, float v_max, bool tooltip = true);
     IMGUI_API void          TextEx(const char* text, const char* text_end = NULL, ImGuiTextFlags flags = 0);
     IMGUI_API bool          ButtonEx(const char* label, const ImVec2& size_arg = ImVec2(0, 0), ImGuiButtonFlags flags = 0);
     IMGUI_API bool          CloseButton(ImGuiID id, const ImVec2& pos);

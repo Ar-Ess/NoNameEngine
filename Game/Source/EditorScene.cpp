@@ -1135,21 +1135,26 @@ void EditorScene::GeneralInfoInspector(Shape3D* s)
 	case PYRAMID3D:
 	{
 		Pyramid3D* py = (Pyramid3D*)s;
-		ImGui::Text("    Height: %.2f", py->GetHeight());
+		if (ImGui::CollapsingHeader("Characteristics"))
+			ImGui::Text("    Height: %.2f", py->GetHeight());
 		break;
 	}
 	case CYLINDER3D:
 	{
 		Cylinder3D* cy = (Cylinder3D*)s;
-		ImGui::Text("    Height: %.2f", cy->GetHeight());
-		ImGui::Text("    Radius: %.2f", cy->GetRadius());
-		ImGui::Text("    Segments: %d", cy->GetSegments());
+		if (ImGui::CollapsingHeader("Characteristics"))
+		{
+			ImGui::Text("    Height: %.2f", cy->GetHeight());
+			ImGui::Text("    Radius: %.2f", cy->GetRadius());
+			ImGui::Text("    Segments: %d", cy->GetSegments());
+		}
 		break;
 	}
 	case PLANE3D:
 	{
 		Plane3D* p = (Plane3D*)s;
-		ImGui::Text("    Normal: {%d, %d, %d}", (int)p->GetNormal().x, (int)p->GetNormal().y, (int)p->GetNormal().z);
+		if (ImGui::CollapsingHeader("Characteristics"))
+			ImGui::Text("    Normal: {%d, %d, %d}", (int)p->GetNormal().x, (int)p->GetNormal().y, (int)p->GetNormal().z);
 		break;
 	}
 	case SPHERE3D:
@@ -1157,8 +1162,11 @@ void EditorScene::GeneralInfoInspector(Shape3D* s)
 		Sphere3D* sp = (Sphere3D*)s;
 		/*subdivision = sub
 			interleavedStride*/
-		ImGui::Text("    Radius: %.1f", sp->GetRadius());
-		ImGui::Text("    Subdivisions: %.1f", sp->GetSubdivision());
+		if (ImGui::CollapsingHeader("Characteristics"))
+		{
+			ImGui::Text("    Radius: %.1f", sp->GetRadius());
+			ImGui::Text("    Subdivisions: %.1f", sp->GetSubdivision());
+		}
 		break;
 	}
 	}
@@ -1297,9 +1305,7 @@ void EditorScene::ComponentInfoInspector(Shape3D* s)
 		if (ImGui::CollapsingHeader(s->components[i]->GetTitle()))
 		{
 			AddSpacing(0);
-
-
-
+			s->components[i]->Update(&onWindow);
 			AddSpacing(0);
 		}
 
