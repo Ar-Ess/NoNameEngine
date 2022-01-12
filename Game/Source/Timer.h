@@ -3,7 +3,7 @@
 
 #include "Defs.h"
 
-enum timerState
+enum TimerState
 {
 	RUNNING,
 	PAUSED,
@@ -24,18 +24,19 @@ public:
 	void Restart();
 
 	uint32 Read() const;
-	float ReadSec();
+	float ReadSec() const;
 
-	bool running;
-	uint32 startTime;
-	uint32 stopTime;
-	uint32 pausedAt;
-	uint32 resumedAt;
+	TimerState GetTimerState() const
+	{
+		return state;
+	}
+
+private:
+	uint32 initialTime;
+	uint32 finalTime;
 	uint32 time;
 
-	timerState state;
-private:
-	
+	TimerState state;
 };
 
 #endif //__TIMER_H__

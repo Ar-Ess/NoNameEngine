@@ -34,11 +34,14 @@ bool EditorScene::Start()
 	p->solid = false;
 	shapes->push_back(p);
 
-	/*Model* m = new Model({ 0, 0, 0 }, { 0.05f,0.05f,0.05f }, {-90, 1, 0, 0});
-	m->LoadModel("Assets/Models/street_environment_V01.FBX");
-	shapes->push_back(m);*/
+	Model* m = new Model({ 0, 0, 0 }, { 0.5f,0.5f,0.5f }, {0, 0, 0, 0});
+	m->LoadModel("Assets/Models/cube.fbx");
+	shapes->push_back(m);
+	DeleteAllShapes();
 
 	SetValidId(*shapes);
+
+	this->timer = &app->scene->gameTimer;
 
 	return ret;
 }
@@ -49,6 +52,17 @@ bool EditorScene::Update()
 
 	onWindow = ImGui::IsAnyItemHovered();
 	if (!onWindow) onWindow = ImGui::IsAnyItemActive();
+
+	if (timer->GetTimerState() == STOPPED) ret = UpdateEditor();
+	else
+		ret = UpdateGame();
+
+	return ret;
+}
+
+bool EditorScene::UpdateEditor()
+{
+	bool ret = true;
 
 	if (demoWindow) ImGui::ShowDemoWindow(&demoWindow);
 	ret = DrawDocking();
@@ -67,6 +81,19 @@ bool EditorScene::Update()
 	}
 
 	ret = ShortCuts();
+
+	return ret;
+}
+
+bool EditorScene::UpdateGame()
+{
+	bool ret = true;
+
+	ret = DrawDocking();
+	ImGui::BeginDisabled();
+	ret = DrawMenuBar();
+	ImGui::EndDisabled();
+	gameStateWindow = ShowGameStateWindow(gameStateWindow);
 
 	return ret;
 }
@@ -821,22 +848,41 @@ bool EditorScene::ShowGameStateWindow(bool open)
 {
 	if (open)
 	{
-		if (ImGui::Begin("Game State", &open))
+		if (ImGui::Begin("Game State", &open, ImGuiWindowFlags_NoCollapse))
 		{
+			bool running = (timer->GetTimerState() == RUNNING);
+			bool stopped = (timer->GetTimerState() == STOPPED);
+			bool paused = (timer->GetTimerState() == PAUSED);
+
 			if (!onWindow) onWindow = ImGui::IsWindowHovered();
-			ImGui::Dummy(ImVec2{ ImGui::GetWindowSize().x/2-120,0 });
+
+			ImGui::SetCursorPosX(ImGui::GetWindowSize().x / 2 - 100);
+
+			if (timer->GetTimerState() != PAUSED)
+			{
+				if (running) ImGui::BeginDisabled();
+				if (ImGui::Button(" Play "))
+				{
+					timer->Start();
+				}
+				ImGui::SameLine();
+				if (running) ImGui::EndDisabled();
+			}
+			else
+			{
+				if (ImGui::Button("Resume")) timer->Resume();
+				ImGui::SameLine();
+			}
+
+			if (stopped || paused) ImGui::BeginDisabled();
+			if (ImGui::Button("Pause ")) timer->Pause();
 			ImGui::SameLine();
-			if (ImGui::Button("Play"))
-				app->scene->GameTime.Start();
+			if (stopped || paused) ImGui::EndDisabled();
+
+			if (stopped) ImGui::BeginDisabled();
+			if (ImGui::Button(" Stop ")) timer->Stop();
 			ImGui::SameLine();
-			if (ImGui::Button("Stop"))
-				app->scene->GameTime.Stop();
-			ImGui::SameLine();
-			if (ImGui::Button("Resume"))
-				app->scene->GameTime.Resume();
-			ImGui::SameLine();
-			if (ImGui::Button("Pause"))
-				app->scene->GameTime.Pause();
+			if (stopped) ImGui::EndDisabled();
 		}
 		ImGui::End();
 	}

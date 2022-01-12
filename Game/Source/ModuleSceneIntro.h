@@ -263,7 +263,7 @@ public: // Getters & Setters
 
 public:
 	vector<Shape3D*> shapes = {};
-	Timer GameTime;
+	Timer gameTimer;
 
 private:
 	Scenes scene = Scenes::EDITOR;

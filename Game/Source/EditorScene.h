@@ -47,6 +47,9 @@ public:
 	bool CleanUp();
 
 private: // Functions
+	bool UpdateEditor();
+	bool UpdateGame();
+
 	bool DrawMenuBar();
 	bool DrawDocking();
 
@@ -312,6 +315,7 @@ private: // Variables
 	int prevSelectId = -1;
 	Shape3D* prevShape = nullptr;
 	bool createToolTip = false;
+	Timer* timer;
 
 	Image folderImage = { ImageTexture::IMG_NO_IMAGE };
 	Image fileImage = { ImageTexture::IMG_NO_IMAGE };
