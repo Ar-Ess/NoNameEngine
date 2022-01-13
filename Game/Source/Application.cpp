@@ -4,6 +4,7 @@
 #include "ModuleInput.h"
 #include "ModuleSceneIntro.h"
 #include "ModuleCamera3D.h"
+#include "ModuleSound.h"
 #include "ModuleRenderer3D.h"
 
 //#include "Primitive.h"
@@ -29,6 +30,7 @@ Application::Application()
 	input = new ModuleInput(this);
 	scene = new ModuleScene(this);
 	camera = new ModuleCamera3D(this);
+	sound = new ModuleSound(this);
 
 	// Main Modules
 	AddModule(window);
@@ -42,6 +44,9 @@ Application::Application()
 
 	// Camera
 	AddModule(camera);
+
+	// Sound
+	AddModule(sound);
 
 	PERF_PEEK(ptimer);
 }

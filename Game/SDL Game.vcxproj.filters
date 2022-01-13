@@ -1077,7 +1077,10 @@
     <ClInclude Include="Source\External\OpenAL\include\AL\efx-presets.h">
       <Filter>External\OpenAL</Filter>
     </ClInclude>
-    <ClInclude Include="Source\ModuleAudio.h">
+    <ClInclude Include="Source\AudioSystem.h">
+      <Filter>Modules\AudioSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ModuleSound.h">
       <Filter>Modules\AudioSystem</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1343,8 +1346,14 @@
     <ClCompile Include="Source\External\MathGeoLib\Time\Clock.cpp">
       <Filter>External\MathGeoLib\Time</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ModuleAudio.cpp">
+    <ClCompile Include="Source\AudioSystem.cpp">
       <Filter>Modules\AudioSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ModuleSound.cpp">
+      <Filter>Modules\AudioSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\dr_wav_impl.c">
+      <Filter>Utils\Others</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
