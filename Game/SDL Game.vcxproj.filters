@@ -151,6 +151,12 @@
     <Filter Include="Components">
       <UniqueIdentifier>{be54e6e0-d0e5-46c3-be13-1042d1927663}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External\DrWav">
+      <UniqueIdentifier>{f4594279-4525-4b95-9c66-106ef3471dab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\OpenAL">
+      <UniqueIdentifier>{73c4a8ca-10ce-4899-bf63-f99cc7e3036f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\External\imgui\imconfig.h">
@@ -584,9 +590,6 @@
     </ClInclude>
     <ClInclude Include="Source\External\MathGeoLib\Time\Clock.h">
       <Filter>External\MathGeoLib\Time</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ModuleAudio.h">
-      <Filter>Modules\AudioSystem</Filter>
     </ClInclude>
     <ClInclude Include="Source\External\Wwise\include\AK\AkPlatforms.h">
       <Filter>External\Wwise</Filter>
@@ -1047,6 +1050,36 @@
     <ClInclude Include="Source\LiniarVelocityComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
+    <ClInclude Include="Source\External\DrWav\dr_flac.h">
+      <Filter>External\DrWav</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\DrWav\dr_mp3.h">
+      <Filter>External\DrWav</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\DrWav\dr_wav.h">
+      <Filter>External\DrWav</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\OpenAL\include\AL\al.h">
+      <Filter>External\OpenAL</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\OpenAL\include\AL\alc.h">
+      <Filter>External\OpenAL</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\OpenAL\include\AL\alext.h">
+      <Filter>External\OpenAL</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\OpenAL\include\AL\efx.h">
+      <Filter>External\OpenAL</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\OpenAL\include\AL\efx-creative.h">
+      <Filter>External\OpenAL</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\OpenAL\include\AL\efx-presets.h">
+      <Filter>External\OpenAL</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ModuleAudio.h">
+      <Filter>Modules\AudioSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\External\imgui\imgui_demo.cpp">
@@ -1309,6 +1342,9 @@
     </ClCompile>
     <ClCompile Include="Source\External\MathGeoLib\Time\Clock.cpp">
       <Filter>External\MathGeoLib\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ModuleAudio.cpp">
+      <Filter>Modules\AudioSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
