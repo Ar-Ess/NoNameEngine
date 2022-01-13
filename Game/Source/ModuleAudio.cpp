@@ -1,6 +1,19 @@
 #include "ModuleAudio.h"
 #pragma comment (lib, "Source/External/OpenAL/libs/debug/OpenAL/OpenAL32.lib")
 
+#define OpenAL_ErrorCheck(message)\
+{\
+	ALenum error = alGetError();\
+	if( error != AL_NO_ERROR)\
+	{\
+		std::cerr << "OpenAL Error: " << error << " with call for " << #message << std::endl;\
+	}\
+}
+
+#define alec(FUNCTION_CALL)\
+FUNCTION_CALL;\
+OpenAL_ErrorCheck(FUNCTION_CALL)
+
 ModuleAudio::ModuleAudio()
 {
 }
@@ -26,5 +39,11 @@ void ModuleAudio::InitAudio()
 	{
 		LOG("Failed to make the OpenAL context the current context");
 	}
+}
+
+void ModuleAudio::CreateListener()
+{
+	alec(alListener3f(AL_POSITION, 0.0f, 0.0f, 0.0f));
+	alec(alListener3f(AL_VELOCITY, 0.0f, 0.0f, 0.0f));
 }
 
