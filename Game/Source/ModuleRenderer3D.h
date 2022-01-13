@@ -11,6 +11,7 @@
 #include "External/SDL/include/SDL_opengl.h"
 #include "External/MathGeoLib/Geometry/AABB.h"
 #include "External/MathGeoLib/Geometry/Frustum.h"
+
 #include "Model.h"
 #endif
 
@@ -148,4 +149,5 @@ private:
 
 	Model* model = nullptr;
 	OBB obb;
+
 };
