@@ -4,6 +4,7 @@
 #include <string>
 #include "glmath.h"
 #include <math.h>
+#include "External/MathGeoLib/Math/MathFunc.h"
 
 #define LOG(format, ...) log(__FILE__, __LINE__, format, __VA_ARGS__);
 
@@ -85,6 +86,15 @@ struct Point3D
 		x = xx;
 		y = yy;
 		z = zz;
+	}
+
+	float Distance(Point3D endPoint)
+	{
+		float x = Pow(endPoint.x - this->x, 2);
+		float y = Pow(endPoint.y - this->y, 2);
+		float z = Pow(endPoint.z - this->z, 2);
+
+		return Sqrt(x + y + z);
 	}
 
 	float operator[](int i) { 

@@ -3,7 +3,8 @@
 
 #include <string>
 #include "Globals.h"
-#include "Shapes3D.h"
+//#include "Shapes3D.h"
+#include "Timer.h"
 
 class Shape3D;
 

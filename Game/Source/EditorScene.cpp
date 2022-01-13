@@ -1224,7 +1224,7 @@ void EditorScene::GeneralInfoInspector(Shape3D* s)
 	{
 		Pyramid3D* py = (Pyramid3D*)s;
 		if (ImGui::CollapsingHeader("Characteristics"))
-			ImGui::Text("    Height: %.2f", py->GetHeight());
+			ImGui::Text("Height: %.2f", py->GetHeight());
 		break;
 	}
 	case CYLINDER3D:
@@ -1232,9 +1232,9 @@ void EditorScene::GeneralInfoInspector(Shape3D* s)
 		Cylinder3D* cy = (Cylinder3D*)s;
 		if (ImGui::CollapsingHeader("Characteristics"))
 		{
-			ImGui::Text("    Height: %.2f", cy->GetHeight());
-			ImGui::Text("    Radius: %.2f", cy->GetRadius());
-			ImGui::Text("    Segments: %d", cy->GetSegments());
+			ImGui::Text("Height: %.2f", cy->GetHeight());
+			ImGui::Text("Radius: %.2f", cy->GetRadius());
+			ImGui::Text("Segments: %d", cy->GetSegments());
 		}
 		break;
 	}
@@ -1242,7 +1242,7 @@ void EditorScene::GeneralInfoInspector(Shape3D* s)
 	{
 		Plane3D* p = (Plane3D*)s;
 		if (ImGui::CollapsingHeader("Characteristics"))
-			ImGui::Text("    Normal: {%d, %d, %d}", (int)p->GetNormal().x, (int)p->GetNormal().y, (int)p->GetNormal().z);
+			ImGui::Text("Normal: {%d, %d, %d}", (int)p->GetNormal().x, (int)p->GetNormal().y, (int)p->GetNormal().z);
 		break;
 	}
 	case SPHERE3D:
@@ -1252,13 +1252,14 @@ void EditorScene::GeneralInfoInspector(Shape3D* s)
 			interleavedStride*/
 		if (ImGui::CollapsingHeader("Characteristics"))
 		{
-			ImGui::Text("    Radius: %.1f", sp->GetRadius());
-			ImGui::Text("    Subdivisions: %.1f", sp->GetSubdivision());
+			ImGui::Text("Radius: %.1f", sp->GetRadius());
+			ImGui::Text("Subdivisions: %.1f", sp->GetSubdivision());
 		}
 		break;
 	}
 	}
 
+	AddSpacing(0);
 	AddSeparator(2);
 	AddSpacing(0);
 }
@@ -1328,17 +1329,17 @@ void EditorScene::MeshInfoInspector(Shape3D* s)
 
 		// Edges
 		ImGui::BulletText("Edges: "); ImGui::SameLine(); s->edges ? ImGui::Text("true") : ImGui::Text("false");
-		AddSpacing(1);
 
 		if (s->GetShapeType() == MODEL3D)
 		{
+			AddSpacing(1);
 			// Normals
 			ImGui::BulletText("Normals: "); ImGui::SameLine(); s->normals ? ImGui::Text("true") : ImGui::Text("false");
-			AddSpacing(1);
 		}
 
 		AddSpacing(0);
 	}
+
 	AddSpacing(0);
 	AddSeparator(1);
 	AddSpacing(0);
@@ -1346,40 +1347,44 @@ void EditorScene::MeshInfoInspector(Shape3D* s)
 
 void EditorScene::TextureInfoInspector(Shape3D* s)
 {
-	if (ImGui::CollapsingHeader("Texture"))
+	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_None;
+	char texture[] = {"Texture"};
+	char noTexture[] = { "   No Texture" };
+
+	char* tex = texture;
+
+	if (s->GetShapeType() != MODEL3D)
+	{
+		flags = ImGuiTreeNodeFlags_Leaf;
+		tex = noTexture;
+	}
+
+	if (ImGui::CollapsingHeader(tex, flags) && s->GetShapeType() == MODEL3D)
 	{
 		// TEXTURE
 
 		AddSpacing(0);
 
-		if (s->GetShapeType() != MODEL3D)
-		{
-			ImGui::BulletText("No Texture");
-			AddSpacing(1);
-		}
-		else
-		{
-			Model* m = (Model*)s;
+		Model* m = (Model*)s;
 
-			//ImGui::Image((void*)(intptr_t)myImageTexture, ImVec2(imageWidth, imageHeight));
+		//ImGui::Image((void*)(intptr_t)myImageTexture, ImVec2(imageWidth, imageHeight));
 
-			// Size
-			ImGui::BulletText("Size: ");
-			ImGui::Text("    Width: %.2f", m->GetSize().x);
-			ImGui::Text("    Height: %.2f", m->GetSize().y);
-			AddSpacing(1);
+		// Size
+		ImGui::BulletText("Size: ");
+		ImGui::Text("    Width: %.2f", m->GetSize().x);
+		ImGui::Text("    Height: %.2f", m->GetSize().y);
+		AddSpacing(1);
 
-			// Texture Path
-			ImGui::BulletText("Texture path: %s", m->texturePath.c_str());
-			AddSpacing(1);
+		// Texture Path
+		ImGui::BulletText("Texture path: %s", m->texturePath.c_str());
+		AddSpacing(1);
 
-			// Show texture
-			ImGui::Checkbox("Texture", &m->showTexture);
-			AddSpacing(1);
-		}
+		// Show texture
+		ImGui::Checkbox("Texture", &m->showTexture);
 
 		AddSpacing(0);
 	}
+
 	AddSpacing(0);
 	AddSeparator(1);
 	AddSpacing(0);

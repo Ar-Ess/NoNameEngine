@@ -274,6 +274,8 @@ bool Model::Draw()
     glEnableClientState(GL_NORMAL_ARRAY);
     if (showTexture) glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
+    for (unsigned int i = 0; !components.empty() && i < components.size(); i++) components[i]->Update(this);
+
     glTranslatef(position.x, position.y, position.z);
 
     glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
