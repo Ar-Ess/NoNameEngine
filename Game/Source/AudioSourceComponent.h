@@ -2,26 +2,41 @@
 #define __AUDIO_SOURCE_COMPONENT_H__
 
 #include "Component.h"
-#include "External/Wwise/include/AK/IBytes.h"
-#include "External/Wwise/include/AK/SoundEngine/Common/AkSoundEngine.h"
 
 class AudioSourceComponent : public Component
 {
 public:
-	AudioSourceComponent() : Component("Audio Source", ComponentID::AUDIO_SOURCE_COMPONENT)
-	{}
+	AudioSourceComponent(Timer* timer) : Component("Audio Source", ComponentID::AUDIO_SOURCE_COMPONENT)
+	{
+		gameTimer = timer;
+	}
 	~AudioSourceComponent() {}
 
-	void Update(bool* onWindow = nullptr)
+	void Start(Shape3D* afected)
+	{
+
+	}
+
+	void Update(Shape3D* afected)
+	{
+		if (gameTimer->GetTimerState() != RUNNING) return;
+	}
+
+	void Draw(bool* onWindow = nullptr)
 	{
 		if (ImGui::Button("Edit")) open = !open;
 
-		if (open) UpdateWindow(onWindow);
+		if (open) DrawWindow(onWindow);
+	}
+
+	void End(Shape3D* afected)
+	{
+
 	}
 
 private: // Methods
 
-	void UpdateWindow(bool* onWindow)
+	void DrawWindow(bool* onWindow)
 	{
 		if (ImGui::Begin(title.c_str(), &open))
 		{

@@ -1044,6 +1044,9 @@
     <ClInclude Include="Source\AudioSourceComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
+    <ClInclude Include="Source\LiniarVelocityComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\External\imgui\imgui_demo.cpp">

@@ -8,6 +8,7 @@
 #include <algorithm>
 
 #include "AudioSourceComponent.h"
+#include "LiniarVelocityComponent.h"
 
 EditorScene::EditorScene(Application* App, vector<Shape3D*>* s, AssetsManager* assetsManager, ImportManager* importManager, FileManager* fileManager)
 {
@@ -74,11 +75,6 @@ bool EditorScene::UpdateEditor()
 	inspectorWindow = ShowInspectorWindow(inspectorWindow);
 	assetsWindow = ShowAssetsWindow(assetsWindow);
 	gameStateWindow = ShowGameStateWindow(gameStateWindow);
-
-	if (app->input->GetKey(SDL_SCANCODE_G) == KEY_DOWN)
-	{
-		shapes->at(1)->components.push_back(new AudioSourceComponent());
-	}
 
 	ret = ShortCuts();
 
@@ -703,9 +699,36 @@ bool EditorScene::ShowInspectorWindow(bool open)
 
 			if (selectId != 0)
 			{
+				AddHelper("To add Components, right-click this window", "Help");
+				AddSeparator(2);
+				AddSpacing(1);
+
 				if (selectId != prevSelectId) s = GetShapeFromId(*shapes, selectId);
 				prevSelectId = selectId;
 				prevShape = s;
+
+				if (ImGui::BeginPopupContextWindow("Components"))
+				{
+					ImGui::Text("Add Component:");
+
+					if (ImGui::BeginMenu("Movement"))
+					{
+						if (ImGui::MenuItem("Liniar Velocity"))
+							AddComponent(LINIAR_VELOCITY_COMPONENT, s);
+
+						ImGui::EndMenu();
+					}
+
+					if (ImGui::BeginMenu("Audio"))
+					{
+						if (ImGui::MenuItem("Audio Source"))
+							AddComponent(AUDIO_SOURCE_COMPONENT, s);
+
+						ImGui::EndMenu();
+					}
+
+					ImGui::EndPopup();
+				}
 
 				GeneralInfoInspector(s);
 
@@ -864,6 +887,7 @@ bool EditorScene::ShowGameStateWindow(bool open)
 				if (ImGui::Button(" Play "))
 				{
 					timer->Start();
+					ComponentsSet(shapes, false, 1);
 				}
 				ImGui::SameLine();
 				if (running) ImGui::EndDisabled();
@@ -880,7 +904,11 @@ bool EditorScene::ShowGameStateWindow(bool open)
 			if (stopped || paused) ImGui::EndDisabled();
 
 			if (stopped) ImGui::BeginDisabled();
-			if (ImGui::Button(" Stop ")) timer->Stop();
+			if (ImGui::Button(" Stop "))
+			{
+				timer->Stop();
+				ComponentsSet(shapes, true, 1);
+			}
 			ImGui::SameLine();
 			if (stopped) ImGui::EndDisabled();
 		}
@@ -1162,6 +1190,20 @@ int EditorScene::SetValidId(vector<Shape3D*> shapes, int size)
 	return s;
 }
 
+void EditorScene::AddComponent(ComponentID component, Shape3D* recipient)
+{
+	switch (component)
+	{
+	case LINIAR_VELOCITY_COMPONENT:
+		recipient->components.push_back(new LiniarVelocityComponent(timer));
+		break;
+
+	case AUDIO_SOURCE_COMPONENT:
+		recipient->components.push_back(new AudioSourceComponent(timer));
+		break;
+	}
+}
+
 // ==== INFO INSPECTOR ========================================================
 
 void EditorScene::GeneralInfoInspector(Shape3D* s)
@@ -1351,7 +1393,7 @@ void EditorScene::ComponentInfoInspector(Shape3D* s)
 		if (ImGui::CollapsingHeader(s->components[i]->GetTitle()))
 		{
 			AddSpacing(0);
-			s->components[i]->Update(&onWindow);
+			s->components[i]->Draw(&onWindow);
 			AddSpacing(0);
 		}
 

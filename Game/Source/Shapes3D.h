@@ -214,6 +214,9 @@ public:
 	bool Draw()
 	{
 		if (!draw) return true;
+
+		for (unsigned int i = 0; !components.empty() && i < components.size(); i++) components[i]->Update(this);
+
 		glTranslatef(position.x, position.y, position.z);
 		glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
 		glScalef(scale.x, scale.y, scale.z);
@@ -259,6 +262,9 @@ public:
 	bool Draw()
 	{
 		if (!draw) return true;
+
+		for (unsigned int i = 0; !components.empty() && i < components.size(); i++) components[i]->Update(this);
+
 		glTranslatef(position.x, position.y, position.z);
 		glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
 		glScalef(scale.x, scale.y, scale.z);
@@ -464,6 +470,8 @@ public:
 	{
 		if (!draw) return true;
 
+		for (unsigned int i = 0; !components.empty() && i < components.size(); i++) components[i]->Update(this);
+
 		glTranslatef(position.x, position.y, position.z);
 		glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
 
@@ -540,6 +548,8 @@ public:
 	bool Draw()
 	{
 		if (!draw) return true;
+
+		for (unsigned int i = 0; !components.empty() && i < components.size(); i++) components[i]->Update(this);
 
 		glTranslatef(position.x, position.y, position.z);
 		glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
@@ -718,6 +728,8 @@ public:
 	{
 		if (!draw) return true;
 
+		for (unsigned int i = 0; !components.empty() && i < components.size(); i++) components[i]->Update(this);
+
 		glTranslatef(position.x, position.y, position.z);
 		glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
 		glScalef(scale.x, scale.y, scale.z);
@@ -873,6 +885,8 @@ public:
 	{
 		if (!draw) return true;
 
+		for (unsigned int i = 0; !components.empty() && i < components.size(); i++) components[i]->Update(this);
+
 		glTranslatef(position.x, position.y, position.z);
 		glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
 		glLineWidth(1.0f);
@@ -1025,6 +1039,8 @@ public:
 	bool Draw()
 	{
 		if (!draw) return true;
+
+		for (unsigned int i = 0; !components.empty() && i < components.size(); i++) components[i]->Update(this);
 
 		glTranslatef(position.x, position.y, position.z);
 		glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);

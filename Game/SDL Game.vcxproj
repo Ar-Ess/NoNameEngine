@@ -362,6 +362,7 @@
     <ClInclude Include="Source\FileManager.h" />
     <ClInclude Include="Source\glmath.h" />
     <ClInclude Include="Source\Globals.h" />
+    <ClInclude Include="Source\LiniarVelocityComponent.h" />
     <ClInclude Include="Source\ImportManager.h" />
     <ClInclude Include="Source\ModuleAudio.h" />
     <ClInclude Include="Source\stb_image.h" />

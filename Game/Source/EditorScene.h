@@ -238,6 +238,22 @@ private: // Functions
 		if (offset == 0) shapes->clear();
 	}
 
+	void ComponentsSet(vector<Shape3D*>* shapes, bool end = false, int offset = 0)
+	{
+		for (int i = (shapes->size() - 1); i >= offset; i--)
+		{
+			Shape3D* s = shapes->at(i);
+			if (!s->childs.empty()) ComponentsSet(&s->childs, end);
+
+			for (unsigned int i = 0; !s->components.empty() && i < s->components.size(); i++)
+			{
+				if (!end) s->components[i]->Start(s);
+				else
+					s->components[i]->End(s);
+			}
+		}
+	}
+
 	// Guizmo functions
 	void EditTransform(bool editTransformDecomposition);
 
@@ -246,6 +262,9 @@ private: // Functions
 	void DiselectShapes(vector<Shape3D*> shapes, Shape3D* ref);
 
 	int SetValidId(vector<Shape3D*> s, int size = 0);
+
+	// Component Functions
+	void AddComponent(ComponentID component, Shape3D* recipient);
 
 	// Inspector information
 
