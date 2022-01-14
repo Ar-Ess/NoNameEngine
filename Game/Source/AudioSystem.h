@@ -4,7 +4,7 @@
 #include "External/OpenAL/include/AL/al.h"
 #include "External/OpenAL/include/AL/alc.h"
 #include "External/OpenAL/include/AL/alext.h"
-#include "External/DrWav/dr_wav.h"
+#include <dr_wav.h>
 #include <vector>
 
 struct ReadWav

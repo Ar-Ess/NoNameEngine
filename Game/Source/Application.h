@@ -34,10 +34,10 @@ class Module;
 class ModuleRender;
 class ModuleWindow;
 class ModuleInput;
+class ModuleSound;
 class ModuleScene;
 class ModuleCamera3D;
 class AssetsManager;
-class ModuleSound;
 class ModuleRenderer3D;
 
 class Application
@@ -45,9 +45,9 @@ class Application
 public:
 	ModuleWindow* window = nullptr;
 	ModuleInput* input = nullptr;
+	ModuleSound* sound = nullptr;
 	ModuleScene* scene = nullptr;
 	ModuleCamera3D* camera = nullptr;
-	ModuleSound* sound = nullptr;
 	ModuleRenderer3D* render = nullptr;
 
 private:

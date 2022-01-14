@@ -3,6 +3,7 @@
 #include "ModuleSceneIntro.h"
 #include "ModuleInput.h"
 #include "ModuleCamera3D.h"
+#include "ModuleSound.h"
 #include "stb_image.h"
 #include "glmath.h"
 #include <algorithm>
@@ -10,13 +11,14 @@
 #include "AudioSourceComponent.h"
 #include "LiniarVelocityComponent.h"
 
-EditorScene::EditorScene(Application* App, vector<Shape3D*>* s, AssetsManager* assetsManager, ImportManager* importManager, FileManager* fileManager)
+EditorScene::EditorScene(Application* App, vector<Shape3D*>* s, AssetsManager* assetsManager, ImportManager* importManager, FileManager* fileManager, ModuleSound* sound)
 {
 	this->app = App;
 	this->shapes = s;
 	this->assets = assetsManager;
 	this->import = importManager;
 	this->file = fileManager;
+	this->sound = sound;
 }
 
 EditorScene::~EditorScene()
@@ -43,6 +45,9 @@ bool EditorScene::Start()
 	SetValidId(*shapes);
 
 	this->timer = &app->scene->gameTimer;
+
+	monoBuffer = sound->CreateBuffers();
+	monoSource = sound->CreateMonoSource(monoBuffer);
 
 	return ret;
 }
@@ -75,6 +80,7 @@ bool EditorScene::UpdateEditor()
 	inspectorWindow = ShowInspectorWindow(inspectorWindow);
 	assetsWindow = ShowAssetsWindow(assetsWindow);
 	gameStateWindow = ShowGameStateWindow(gameStateWindow);
+	audioWindow = ShowAudioWindow(audioWindow);
 
 	ret = ShortCuts();
 
@@ -572,6 +578,23 @@ bool EditorScene::ShowConfigWindow(bool open)
 				}
 			}
 			ImGui::EndTabBar();
+		}
+		ImGui::End();
+	}
+
+	return open;
+}
+
+bool EditorScene::ShowAudioWindow(bool open)
+{
+	if (open)
+	{
+		if (ImGui::Begin("Audio Test", &open))
+		{
+			if (ImGui::Button("Play", { 25, 25 }))
+			{
+				sound->PlayMonoSound(monoSource);
+			}
 		}
 		ImGui::End();
 	}

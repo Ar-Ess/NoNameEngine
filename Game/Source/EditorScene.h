@@ -5,6 +5,7 @@
 #include "AssetsManager.h"
 #include "ImportManager.h"
 #include "FileManager.h"
+#include "ModuleSound.h"
 #include "Model.h"
 #include "Globals.h"
 #include <string>
@@ -38,7 +39,7 @@ class Image;
 class EditorScene
 {
 public:
-	EditorScene(Application* app, vector<Shape3D*>* shapes, AssetsManager* assetsManager, ImportManager* importManager, FileManager* fileManager);
+	EditorScene(Application* app, vector<Shape3D*>* shapes, AssetsManager* assetsManager, ImportManager* importManager, FileManager* fileManager, ModuleSound* sound);
 	~EditorScene();
 
 	bool Start();
@@ -56,6 +57,7 @@ private: // Functions
 	bool ShowAboutWindow(bool open);
 	bool ShowOutputWindow(bool open);
 	bool ShowConfigWindow(bool open);
+	bool ShowAudioWindow(bool open);
 	bool ShowHierarchyWindow(bool open);
 	bool ShowInspectorWindow(bool open);
 	bool ShowAssetsWindow(bool open);
@@ -282,6 +284,7 @@ public: // Variables
 	bool demoWindow = false;
 	bool outputWindow = true;
 	bool configWindow = false;
+	bool audioWindow = true;
 	bool hierarchyWindow = true;
 	bool inspectorWindow = true;
 	bool assetsWindow = true;
@@ -338,4 +341,10 @@ private: // Variables
 
 	Image folderImage = { ImageTexture::IMG_NO_IMAGE };
 	Image fileImage = { ImageTexture::IMG_NO_IMAGE };
+
+	ModuleSound* sound = nullptr;
+	ALuint monoBuffer;
+	ALuint stereoBuffer;
+	ALuint monoSource;
+	ALuint stereoSource;
 };

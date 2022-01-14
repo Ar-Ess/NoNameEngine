@@ -1,6 +1,8 @@
 #pragma once
+#include "Globals.h"
 #include "Module.h"
 #include "AudioSystem.h"
+
 
 class AudioSystem;
 
@@ -18,26 +20,29 @@ public:
 	update_status Update();
 	bool CleanUp();
 
+	ALuint CreateBuffers();
+	ALuint LoadStereo();
+	ALuint CreateMonoSource(ALuint monoBuffer);
+	ALuint CreateStereoSource(ALuint stereoBuffer);
+	void PlayMonoSound(ALuint monoSource);
+	void PlayStereoSound(ALuint stereoSource);
+
 private:
 
 	void InitAudio();
+	static void ListAudioDevices(const ALCchar* devices);
 	void CreateListener();
-	ALuint* CreateBuffers();
-	ALuint* LoadStereo();
-	ALuint* CreateMonoSource(ALuint* monoBuffer);
-	ALuint* CreateStereoSource(ALuint* stereoBuffer);
-	void PlayMonoSound(ALuint* monoSource);
-	void PlayStereoSound(ALuint* stereoSource);
 	void CleanUp(ALuint monoBuffer, ALuint stereoBuffer, ALuint monoSource, ALuint stereoSource);
+	void CleanUpSource(ALuint source);
+	void CleanUpBuffer(ALuint buffer);
 
-private:
+public:
 
 	AudioSystem* audio; // pointer to our audio system
-	ALuint* monoBuffer;
-	ALuint* stereoBuffer;
-	ALuint* monoSource;
-	ALuint* stereoSource;
-
+	ALuint monoBuffer;
+	ALuint stereoBuffer;
+	ALuint monoSource;
+	ALuint stereoSource;
 	ReadWav monoData;
 	ALCdevice* device;
 	ALCcontext* context;

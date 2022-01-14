@@ -28,13 +28,16 @@ Application::Application()
 	render = new ModuleRenderer3D(this);
 	window = new ModuleWindow(this);
 	input = new ModuleInput(this);
+	sound = new ModuleSound(this);
 	scene = new ModuleScene(this);
 	camera = new ModuleCamera3D(this);
-	sound = new ModuleSound(this);
 
 	// Main Modules
 	AddModule(window);
 	AddModule(input);
+
+	// Sound
+	AddModule(sound);
 	
 	// Scenes
 	AddModule(scene);
@@ -45,8 +48,6 @@ Application::Application()
 	// Camera
 	AddModule(camera);
 
-	// Sound
-	AddModule(sound);
 
 	PERF_PEEK(ptimer);
 }

@@ -1,6 +1,5 @@
 #include "ModuleSound.h"
 
-
 #define OpenAL_ErrorCheck(message)\
 {\
 	ALenum error = alGetError();\
@@ -34,44 +33,72 @@ bool ModuleSound::Init()
 bool ModuleSound::Start()
 {
 	bool ret = true;
-	audio->CreateListener();
+	CreateListener();
 
 	monoBuffer = CreateBuffers();
-	stereoBuffer = LoadStereo();
+	/*stereoBuffer = LoadStereo();*/
 	monoSource = CreateMonoSource(monoBuffer);
-	stereoSource = CreateStereoSource(stereoBuffer);
+	/*stereoSource = CreateStereoSource(stereoBuffer);*/
 	return ret;
 }
 
 update_status ModuleSound::Update()
 {
-	PlayMonoSound(monoSource);
+	/*PlayMonoSound(monoSource);*/
+	/*PlayStereoSound(stereoSource);*/
 	return UPDATE_CONTINUE;
 }
 
 bool ModuleSound::CleanUp()
 {
 	bool ret = true;
-	CleanUp(*monoBuffer, *stereoBuffer, *monoSource, *stereoSource);
 	return ret;
 }
 
 void ModuleSound::InitAudio()
 {
-	const ALCchar* defaultDeviceStr = alcGetString(nullptr, ALC_DEFAULT_DEVICE_SPECIFIER);
-	device = alcOpenDevice(defaultDeviceStr);
+	
+	device = alcOpenDevice(NULL);
 	if (!device)
 	{
-		/*LOG("Failed to get the default device for OpenAL");*/
+		LOG("Failed to get the default device for OpenAL");
 
 	}
-	/*LOG("OpenAL Device", alcGetString(device, ALC_DEVICE_SPECIFIER));*/
+	LOG("OpenAL Device", alcGetString(device, ALC_DEVICE_SPECIFIER));
 
+	ListAudioDevices(alcGetString(NULL, ALC_DEVICE_SPECIFIER));
+	ALboolean enumeration;
+	enumeration = alcIsExtensionPresent(NULL, "ALC_ENUMERATE_ALL_EXT");
+	if (enumeration == AL_FALSE)
+	{
+		LOG("Enumeration not supported");
+	}
 	context = alcCreateContext(device, nullptr);
+
+	ALboolean bEAX = alIsExtensionPresent("EAX2.0");
+	if (bEAX == AL_FALSE)
+	{
+		LOG("EAX not supported");
+	}
 
 	if (!alcMakeContextCurrent(context))
 	{
-		/*LOG("Failed to make the OpenAL context the current context");*/
+		LOG("Failed to make the OpenAL context the current context");
+	}
+}
+
+void ModuleSound::ListAudioDevices(const ALCchar* devices)
+{
+	const ALCchar* device = devices, * next = devices + 1;
+	size_t len = 0;
+
+	LOG("Devices list: ");
+	fprintf(stdout, "----------\n");
+	while (device && *device != '\0' && next && *next != '\0') {
+		LOG("%s", device);
+		len = strlen(device);
+		device += (len + 1);
+		next += (len + 2);
 	}
 }
 
@@ -87,17 +114,17 @@ void ModuleSound::CreateListener()
 	alec(alListenerfv(AL_ORIENTATION, forwardUpVec));
 }
 
-ALuint* ModuleSound::CreateBuffers()
+ALuint ModuleSound::CreateBuffers()
 {
 	drwav_int16* pSampleData = drwav_open_file_and_read_pcm_frames_s16("Assets/Audiotest/wav_mono_16bit_44100.wav", &monoData.channels, &monoData.sampleRate, &monoData.totalPCMFrameCount, nullptr);
 	if (pSampleData == NULL) {
-		std::cerr << "failed to load audio file" << std::endl;
+		LOG("failed to load audio file");
 		drwav_free(pSampleData, nullptr); //todo use raii to clean this up
 		return 0;
 	}
 	if (monoData.getTotalSamples() > drwav_uint64(std::numeric_limits<size_t>::max))
 	{
-		std::cerr << "too much data in file for 32bit addressed vector" << std::endl;
+		LOG("too much data in file for 32bit addressed vector");
 		drwav_free(pSampleData, nullptr);
 		return 0;
 	}
@@ -109,14 +136,14 @@ ALuint* ModuleSound::CreateBuffers()
 	alec(alGenBuffers(1, &monoSoundBuffer));
 	alec(alBufferData(monoSoundBuffer, monoData.channels > 1 ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, monoData.pcmData.data(), monoData.pcmData.size() * 2, monoData.sampleRate));
 
-	return &monoSoundBuffer;
+	return monoSoundBuffer;
 }
 
-ALuint* ModuleSound::LoadStereo()
+ALuint ModuleSound::LoadStereo()
 {
 	ReadWav stereoData;
 	{
-		drwav_int16* pSampleData = drwav_open_file_and_read_pcm_frames_s16("Assets/Audiotest/wav_mono_16bit_44100.wav", &stereoData.channels, &stereoData.sampleRate, &stereoData.totalPCMFrameCount, nullptr);
+		drwav_int16* pSampleData = drwav_open_file_and_read_pcm_frames_s16("Assets/AudioTest/wav_stereo_16bit_44100.wav", &stereoData.channels, &stereoData.sampleRate, &stereoData.totalPCMFrameCount, nullptr);
 		if (pSampleData == NULL) {
 			std::cerr << "failed to load audio file" << std::endl;
 			return 0;
@@ -131,16 +158,16 @@ ALuint* ModuleSound::LoadStereo()
 		drwav_free(pSampleData, nullptr);
 	}
 
-	ALuint stereoSoundBuffer;
+	ALuint stereoSoundBuffer = 1;
 	alec(alGenBuffers(1, &stereoSoundBuffer));
 	alec(alBufferData(stereoSoundBuffer, stereoData.channels > 1 ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, stereoData.pcmData.data(), stereoData.pcmData.size() * 2 /*two bytes per sample*/, stereoData.sampleRate));
 
-	return &stereoSoundBuffer;
+	return stereoSoundBuffer;
 }
 
 
 
-ALuint* ModuleSound::CreateMonoSource(ALuint* buffer)
+ALuint ModuleSound::CreateMonoSource(ALuint buffer)
 {
 	ALuint monoSource;
 	alec(alGenSources(1, &monoSource));
@@ -149,46 +176,44 @@ ALuint* ModuleSound::CreateMonoSource(ALuint* buffer)
 	alec(alSourcef(monoSource, AL_PITCH, 1.f));
 	alec(alSourcef(monoSource, AL_GAIN, 1.f));
 	alec(alSourcei(monoSource, AL_LOOPING, AL_FALSE));
-	alec(alSourcei(monoSource, AL_BUFFER, *buffer));
+	alec(alSourcei(monoSource, AL_BUFFER, buffer));
 
-	return &monoSource;
+	return monoSource;
 }
 
-ALuint* ModuleSound::CreateStereoSource(ALuint* buffer)
+ALuint ModuleSound::CreateStereoSource(ALuint buffer)
 {
 	ALuint stereoSource;
 	alec(alGenSources(1, &stereoSource));
-	//alec(alSource3f(stereoSource, AL_POSITION, 0.f, 0.f, 1.f)); //NOTE: this does not work like mono sound positions!
-	//alec(alSource3f(stereoSource, AL_VELOCITY, 0.f, 0.f, 0.f)); 
 	alec(alSourcef(stereoSource, AL_PITCH, 1.f));
 	alec(alSourcef(stereoSource, AL_GAIN, 1.f));
 	alec(alSourcei(stereoSource, AL_LOOPING, AL_FALSE));
-	alec(alSourcei(stereoSource, AL_BUFFER, *buffer));
+	alec(alSourcei(stereoSource, AL_BUFFER, buffer));
 
-	return &stereoSource;
+	return stereoSource;
 }
 
-void ModuleSound::PlayMonoSound(ALuint* monoSource)
+void ModuleSound::PlayMonoSound(ALuint monoSource)
 {
-	alec(alSourcePlay(*monoSource));
+	alec(alSourcePlay(monoSource));
 	ALint sourceState;
-	alec(alGetSourcei(*monoSource, AL_SOURCE_STATE, &sourceState));
-	while (sourceState == AL_PLAYING)
+	alec(alGetSourcei(monoSource, AL_SOURCE_STATE, &sourceState));
+	/*while (sourceState == AL_PLAYING)
 	{
-		alec(alGetSourcei(*monoSource, AL_SOURCE_STATE, &sourceState))
-	}
+		alec(alGetSourcei(monoSource, AL_SOURCE_STATE, &sourceState))
+	}*/
 
 }
 
-void ModuleSound::PlayStereoSound(ALuint* stereoSource)
+void ModuleSound::PlayStereoSound(ALuint stereoSource)
 {
-	alec(alSourcePlay(*stereoSource));
+	alec(alSourcePlay(stereoSource));
 	ALint sourceState;
-	alec(alGetSourcei(*stereoSource, AL_SOURCE_STATE, &sourceState));
+	alec(alGetSourcei(stereoSource, AL_SOURCE_STATE, &sourceState));
 	while (sourceState == AL_PLAYING)
 	{
 		//basically loop until we're done playing the mono sound source
-		alec(alGetSourcei(*stereoSource, AL_SOURCE_STATE, &sourceState));
+		alec(alGetSourcei(stereoSource, AL_SOURCE_STATE, &sourceState));
 	}
 }
 
@@ -201,6 +226,16 @@ void ModuleSound::CleanUp(ALuint monoBuffer, ALuint stereoBuffer, ALuint monoSou
 	alcMakeContextCurrent(nullptr);
 	alcDestroyContext(context);
 	alcCloseDevice(device);
+}
+
+void ModuleSound::CleanUpSource(ALuint source)
+{
+	alec(alDeleteSources(1, &source));
+}
+
+void ModuleSound::CleanUpBuffer(ALuint buffer)
+{
+	alec(alDeleteSources(1, &buffer));
 }
 
 

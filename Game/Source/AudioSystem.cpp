@@ -17,7 +17,7 @@ OpenAL_ErrorCheck(FUNCTION_CALL)
 AudioSystem::AudioSystem()
 {
 	context = 0;
-	device = 0;
+
 }
 
 AudioSystem::~AudioSystem()

@@ -1,0 +1,11 @@
+- play audio
+- effects
+- module audio volumes
+- 3d sound
+
+struct Fumades
+{
+	envelopes;
+	LFOs;
+	automatic reverb 3D;
+}
