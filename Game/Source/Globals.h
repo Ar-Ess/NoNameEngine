@@ -191,9 +191,9 @@ public:
 
 	void FromEulerAngles(Point3D euler)
 	{
-		float max = euler.GetMaxAbs();
+		float maxim = euler.GetMaxAbs();
 
-		if (max == 0)
+		if (maxim == 0)
 		{
 			x = 0; 
 			y = 0;
@@ -202,11 +202,11 @@ public:
 			return;
 		}
 
-		x = euler.x / max;
-		y = euler.y / max;
-		z = euler.z / max;
+		x = euler.x / maxim;
+		y = euler.y / maxim;
+		z = euler.z / maxim;
 
-		angle = max;
+		angle = maxim;
 	}
 };
 

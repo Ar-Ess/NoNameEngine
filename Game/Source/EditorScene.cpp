@@ -3,22 +3,22 @@
 #include "ModuleSceneIntro.h"
 #include "ModuleInput.h"
 #include "ModuleCamera3D.h"
-#include "ModuleSound.h"
 #include "stb_image.h"
 #include "glmath.h"
 #include <algorithm>
 
 #include "AudioSourceComponent.h"
+#include "SpacialAudioSourceComponent.h"
 #include "LiniarVelocityComponent.h"
 
-EditorScene::EditorScene(Application* App, vector<Shape3D*>* s, AssetsManager* assetsManager, ImportManager* importManager, FileManager* fileManager, ModuleSound* sound)
+EditorScene::EditorScene(Application* App, vector<Shape3D*>* s, AssetsManager* assetsManager, ImportManager* importManager, FileManager* fileManager, AudioSystem* audioSystem)
 {
 	this->app = App;
 	this->shapes = s;
 	this->assets = assetsManager;
 	this->import = importManager;
 	this->file = fileManager;
-	this->sound = sound;
+	this->audio = audioSystem;
 }
 
 EditorScene::~EditorScene()
@@ -32,6 +32,8 @@ bool EditorScene::Start()
 
 	assets->ParseFiles();
 	import->LoadDefaultImages();
+	audio->InitAudio();
+	audio->CreateListener();
 
 	Plane3D* p = new Plane3D({ 0, 0, 0 }, { 0, 1, 0 }, Point3D(200));
 	p->solid = false;
@@ -45,9 +47,6 @@ bool EditorScene::Start()
 	SetValidId(*shapes);
 
 	this->timer = &app->scene->gameTimer;
-
-	monoBuffer = sound->CreateBuffers();
-	monoSource = sound->CreateMonoSource(monoBuffer);
 
 	return ret;
 }
@@ -80,7 +79,6 @@ bool EditorScene::UpdateEditor()
 	inspectorWindow = ShowInspectorWindow(inspectorWindow);
 	assetsWindow = ShowAssetsWindow(assetsWindow);
 	gameStateWindow = ShowGameStateWindow(gameStateWindow);
-	audioWindow = ShowAudioWindow(audioWindow);
 
 	ret = ShortCuts();
 
@@ -585,23 +583,6 @@ bool EditorScene::ShowConfigWindow(bool open)
 	return open;
 }
 
-bool EditorScene::ShowAudioWindow(bool open)
-{
-	if (open)
-	{
-		if (ImGui::Begin("Audio Test", &open))
-		{
-			if (ImGui::Button("Play", { 25, 25 }))
-			{
-				sound->PlayMonoSound(monoSource);
-			}
-		}
-		ImGui::End();
-	}
-
-	return open;
-}
-
 bool EditorScene::ShowHierarchyWindow(bool open)
 {
 	if (open)
@@ -746,6 +727,9 @@ bool EditorScene::ShowInspectorWindow(bool open)
 					{
 						if (ImGui::MenuItem("Audio Source"))
 							AddComponent(AUDIO_SOURCE_COMPONENT, s);
+
+						if (ImGui::MenuItem("Spacial Audio Source"))
+							AddComponent(SPACIAL_AUDIO_SOURCE_COMPONENT, s);
 
 						ImGui::EndMenu();
 					}
@@ -1222,7 +1206,11 @@ void EditorScene::AddComponent(ComponentID component, Shape3D* recipient)
 		break;
 
 	case AUDIO_SOURCE_COMPONENT:
-		recipient->components.push_back(new AudioSourceComponent(timer));
+		recipient->components.push_back(new AudioSourceComponent(timer, audio));
+		break;
+
+	case SPACIAL_AUDIO_SOURCE_COMPONENT:
+		recipient->components.push_back(new SpacialAudioSourceComponent(timer, audio));
 		break;
 	}
 }

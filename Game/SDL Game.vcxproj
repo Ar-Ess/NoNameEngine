@@ -374,7 +374,7 @@
     <ClInclude Include="Source\LiniarVelocityComponent.h" />
     <ClInclude Include="Source\ImportManager.h" />
     <ClInclude Include="Source\AudioSystem.h" />
-    <ClInclude Include="Source\ModuleSound.h" />
+    <ClInclude Include="Source\SpacialAudioSourceComponent.h" />
     <ClInclude Include="Source\stb_image.h" />
     <ClInclude Include="Source\Light.h" />
     <ClInclude Include="Source\Mesh.h" />
@@ -476,7 +476,6 @@
     <ClCompile Include="Source\ModuleInput.cpp" />
     <ClCompile Include="Source\ModuleRenderer3D.cpp" />
     <ClCompile Include="Source\ModuleSceneIntro.cpp" />
-    <ClCompile Include="Source\ModuleSound.cpp" />
     <ClCompile Include="Source\ModuleWindow.cpp" />
     <ClCompile Include="Source\PerfTimer.cpp" />
     <ClCompile Include="Source\Timer.cpp" />

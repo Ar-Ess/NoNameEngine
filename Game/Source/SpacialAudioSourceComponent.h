@@ -1,18 +1,18 @@
-#ifndef __AUDIO_SOURCE_COMPONENT_H__
-#define __AUDIO_SOURCE_COMPONENT_H__
+#ifndef __SPACIAL_AUDIO_SOURCE_COMPONENT_H__
+#define __SPACIAL_AUDIO_SOURCE_COMPONENT_H__
 
 #include "Component.h"
 #include "AudioSystem.h"
 
-class AudioSourceComponent : public Component
+class SpacialAudioSourceComponent : public Component
 {
 public:
-	AudioSourceComponent(Timer* timer, AudioSystem* audioSystem) : Component("Audio Source", ComponentID::AUDIO_SOURCE_COMPONENT)
+	SpacialAudioSourceComponent(Timer* timer, AudioSystem* audioSystem) : Component("Spacial Audio Source", ComponentID::SPACIAL_AUDIO_SOURCE_COMPONENT)
 	{
 		gameTimer = timer;
 		audio = audioSystem;
 	}
-	~AudioSourceComponent() {}
+	~SpacialAudioSourceComponent() {}
 
 	void Start(Shape3D* afected)
 	{
@@ -63,12 +63,12 @@ private: // Methods
 			ImGui::Dummy(ImVec2{ 0.0f, 3.8f });
 
 			ImGui::Dummy(ImVec2{ 3.8f, 0.0f }); ImGui::SameLine();
-			ImGui::VSliderInt("-0", ImVec2{15, 155}, &volume, -128.0f, 0.0f, ""); 
+			ImGui::VSliderInt("-0", ImVec2{ 15, 155 }, &volume, -128.0f, 0.0f, "");
 			ImGui::SameLine(0.0f, 20.0f);
 			if (ImGui::BeginTable("Column Table", 2))
 			{
 				ImGui::TableNextRow(); ImGui::TableSetColumnIndex(0);
-				ImGui::Dummy(ImVec2{0.0f, 6.0f});
+				ImGui::Dummy(ImVec2{ 0.0f, 6.0f });
 
 				ImGui::TableNextRow(); ImGui::TableSetColumnIndex(0);
 				ImGui::Dummy(ImVec2{ 4.5f, 0.0f }); ImGui::SameLine();
@@ -77,7 +77,7 @@ private: // Methods
 
 				ImGui::TableNextRow(); ImGui::TableSetColumnIndex(0);
 				ImGui::Knob("Transpose", &transpose, -24.0, 24.0, false, -10);
-				
+
 			}
 			ImGui::EndTable();
 
@@ -88,7 +88,7 @@ private: // Methods
 	bool BrowseAudio()
 	{
 		track = audio->LoadAudio("Assets/Audio/SplitDuty_Meh_Fx.wav");
-		track.source = audio->CreateAudioSource(track.buffer);
+		track.source = audio->CreateAudioSource(track.buffer, true);
 
 		return true;
 	}
@@ -103,4 +103,5 @@ private: // Variables
 	AudioSystem* audio = nullptr;
 };
 
-#endif // !__AUDIO_SOURCE_COMPONENT_H__
+#endif // !__SPACIAL_AUDIO_SOURCE_COMPONENT_H__
+

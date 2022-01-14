@@ -5,15 +5,59 @@
 #include "External/OpenAL/include/AL/alc.h"
 #include "External/OpenAL/include/AL/alext.h"
 #include <dr_wav.h>
+#include <dr_mp3.h>
+#include <dr_flac.h>
 #include <vector>
+#include <string>
 
-struct ReadWav
+enum AudioFormat
 {
+	MP3,
+	WAV,
+	FLAC
+};
+
+class Track
+{
+public: // Methods
+	uint64_t getTotalSamples()
+	{
+		uint64_t ret = 0;
+
+		switch (format)
+		{
+		case WAV: ret = totalPCMFrameCountWav * channels; break;
+		case MP3: ret = totalPCMFrameCountMp3 * channels; break;
+		case FLAC: ret = totalPCMFrameCountFlac * channels; break;
+		}
+
+		return ret;
+	}
+
+	void SetPCMFrameCount(drwav_uint64 value)
+	{
+		switch (format)
+		{
+		case WAV: totalPCMFrameCountWav = value; break;
+		case MP3: totalPCMFrameCountMp3 = (drmp3_uint64)value; break;
+		case FLAC: totalPCMFrameCountFlac = (drflac_uint64)value; break;
+		}
+	}
+
+public: // Variables
 	unsigned int channels = 0;
 	unsigned int sampleRate = 0;
-	drwav_uint64 totalPCMFrameCount = 0;
+	AudioFormat format;
+	ALuint buffer;
+	ALuint source;
 	std::vector<uint16_t> pcmData;
-	drwav_uint64 getTotalSamples() { return totalPCMFrameCount * channels; }
+	std::string path;
+
+private: // Variables
+
+	drwav_uint64 totalPCMFrameCountWav = 0;
+	drmp3_uint64 totalPCMFrameCountMp3 = 0;
+	drflac_uint64 totalPCMFrameCountFlac = 0;
 };
 
 class AudioSystem
@@ -25,17 +69,40 @@ public:
 
 	void InitAudio();
 	void CreateListener();
-	ALuint* CreateBuffers();
-	ALuint* LoadStereo();
-	ALuint* CreateMonoSource(ALuint* monoBuffer);
-	ALuint* CreateStereoSource(ALuint* stereoBuffer);
-	void PlayMonoSound(ALuint* monoSource);
-	void PlayStereoSound(ALuint* stereoSource);
+
+	Track LoadAudio(const char* path);
+	ALuint CreateAudioSource(ALuint audioBuffer, bool mono = false);
+	void PlayAudio(ALuint audioSource);
+
 	void CleanUp(ALuint monoBuffer, ALuint stereoBuffer, ALuint monoSource, ALuint stereoSource);
+
+private: // Methods
+
+	void ListAudioDevices(const ALCchar* devices);
+
+	ALuint LoadMP3(const char* path);
+	Track LoadWav(const char* path);
+
+	bool SameString(std::string a, std::string b)
+	{
+		bool ret = true;
+
+		if (a.size() != b.size()) return false;
+
+		for (unsigned int i = 0; i < a.size(); i++)
+		{
+			ret = (a[i] == b[i]);
+			if (!ret) return false;
+		}
+
+		return true;
+	}
+
+	void CleanUpSource(ALuint source);
+	void CleanUpBuffer(ALuint buffer);
 
 private:
 
-	ReadWav monoData;
 	ALCdevice* device;
 	ALCcontext* context;
 };

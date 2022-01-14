@@ -90,7 +90,7 @@ namespace AK
 
 #define AkMax(x1, x2)	(((x1) > (x2))? (x1): (x2))
 #define AkMin(x1, x2)	(((x1) < (x2))? (x1): (x2))
-#define AkClamp(x, min, max)  ((x) < (min)) ? (min) : (((x) > (max) ? (max) : (x)))
+#define AkClamp(x, min, max)  ((x) < (min)) ? (min) : (((x) > (maxim) ? (maxim) : (x)))
 
 namespace AKPLATFORM
 {

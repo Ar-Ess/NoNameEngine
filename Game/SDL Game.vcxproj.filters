@@ -70,9 +70,6 @@
     <Filter Include="External\MathGeoLib\Time">
       <UniqueIdentifier>{a6bd2c47-dd9d-46d8-914c-88121bc3f548}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Modules\AudioSystem">
-      <UniqueIdentifier>{019cd5bd-20d2-422f-8ec3-297d64d0d3b0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="External\Wwise">
       <UniqueIdentifier>{df75db09-6e08-4307-8710-f6697a598744}</UniqueIdentifier>
     </Filter>
@@ -1077,11 +1074,11 @@
     <ClInclude Include="Source\External\OpenAL\include\AL\efx-presets.h">
       <Filter>External\OpenAL</Filter>
     </ClInclude>
-    <ClInclude Include="Source\AudioSystem.h">
-      <Filter>Modules\AudioSystem</Filter>
+    <ClInclude Include="Source\SpacialAudioSourceComponent.h">
+      <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="Source\ModuleSound.h">
-      <Filter>Modules\AudioSystem</Filter>
+    <ClInclude Include="Source\AudioSystem.h">
+      <Filter>Utils\Managers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1346,14 +1343,11 @@
     <ClCompile Include="Source\External\MathGeoLib\Time\Clock.cpp">
       <Filter>External\MathGeoLib\Time</Filter>
     </ClCompile>
-    <ClCompile Include="Source\AudioSystem.cpp">
-      <Filter>Modules\AudioSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ModuleSound.cpp">
-      <Filter>Modules\AudioSystem</Filter>
-    </ClCompile>
     <ClCompile Include="Source\dr_wav_impl.c">
       <Filter>Utils\Others</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AudioSystem.cpp">
+      <Filter>Utils\Managers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

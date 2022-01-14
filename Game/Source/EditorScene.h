@@ -5,7 +5,8 @@
 #include "AssetsManager.h"
 #include "ImportManager.h"
 #include "FileManager.h"
-#include "ModuleSound.h"
+#include "AudioSystem.h"
+
 #include "Model.h"
 #include "Globals.h"
 #include <string>
@@ -39,7 +40,7 @@ class Image;
 class EditorScene
 {
 public:
-	EditorScene(Application* app, vector<Shape3D*>* shapes, AssetsManager* assetsManager, ImportManager* importManager, FileManager* fileManager, ModuleSound* sound);
+	EditorScene(Application* app, vector<Shape3D*>* shapes, AssetsManager* assetsManager, ImportManager* importManager, FileManager* fileManager, AudioSystem* audioSystem);
 	~EditorScene();
 
 	bool Start();
@@ -57,7 +58,6 @@ private: // Functions
 	bool ShowAboutWindow(bool open);
 	bool ShowOutputWindow(bool open);
 	bool ShowConfigWindow(bool open);
-	bool ShowAudioWindow(bool open);
 	bool ShowHierarchyWindow(bool open);
 	bool ShowInspectorWindow(bool open);
 	bool ShowAssetsWindow(bool open);
@@ -284,7 +284,6 @@ public: // Variables
 	bool demoWindow = false;
 	bool outputWindow = true;
 	bool configWindow = false;
-	bool audioWindow = true;
 	bool hierarchyWindow = true;
 	bool inspectorWindow = true;
 	bool assetsWindow = true;
@@ -332,6 +331,7 @@ private: // Variables
 	AssetsManager* assets = nullptr;
 	ImportManager* import = nullptr;
 	FileManager* file = nullptr;
+	AudioSystem* audio = nullptr;
 	ImGuiID dockSpaceId = {};
 	int selectId = 0;
 	int prevSelectId = -1;
@@ -341,10 +341,4 @@ private: // Variables
 
 	Image folderImage = { ImageTexture::IMG_NO_IMAGE };
 	Image fileImage = { ImageTexture::IMG_NO_IMAGE };
-
-	ModuleSound* sound = nullptr;
-	ALuint monoBuffer;
-	ALuint stereoBuffer;
-	ALuint monoSource;
-	ALuint stereoSource;
 };

@@ -10,6 +10,7 @@
 #include "ModuleInput.h"
 #include "AssetsManager.h"
 #include "ImportManager.h"
+#include "AudioSystem.h"
 #include "Model.h"
 
 class Shape3D;
