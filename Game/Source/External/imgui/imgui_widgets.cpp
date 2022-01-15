@@ -150,7 +150,7 @@ static ImVec2           InputTextCalcTextSizeW(const ImWchar* text_begin, const 
 // Implementing a simple custom widget using the public API.
 // You may also use the <imgui_internal.h> API to get raw access to more data/helpers, however the internal API isn't guaranteed to be forward compatible.
 // FIXME: Need at least proper label centering + clipping (internal functions RenderTextClipped provides both but api is flaky/temporary)
-bool ImGui::Knob(const char* label, float* p_value, float v_min, float v_max, bool tooltip, float x_text_offset)
+bool ImGui::Knob(const char* label, float* p_value, float v_min, float v_max, bool tooltip, bool active, float x_text_offset, bool* reminder_bool)
 {
     ImGuiIO& io = ImGui::GetIO();
     ImGuiStyle& style = ImGui::GetStyle();
@@ -183,10 +183,22 @@ bool ImGui::Knob(const char* label, float* p_value, float v_min, float v_max, bo
     float angle = ANGLE_MIN + (ANGLE_MAX - ANGLE_MIN) * t;
     float angle_cos = cosf(angle), angle_sin = sinf(angle);
     float radius_inner = radius_outer * 0.40f;
-    draw_list->AddCircleFilled(center, radius_outer, ImGui::GetColorU32(ImGuiCol_FrameBg), 16);
-    draw_list->AddLine(ImVec2(center.x + angle_cos * radius_inner, center.y + angle_sin * radius_inner), ImVec2(center.x + angle_cos * (radius_outer - 2), center.y + angle_sin * (radius_outer - 2)), ImGui::GetColorU32(ImGuiCol_SliderGrabActive), 2.0f);
-    draw_list->AddCircleFilled(center, radius_inner, ImGui::GetColorU32(is_active ? ImGuiCol_FrameBgActive : is_hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg), 16);
-    draw_list->AddText(ImVec2(pos.x, pos.y + radius_outer * 2 + style.ItemInnerSpacing.y), ImGui::GetColorU32(ImGuiCol_Text), label);
+    if (active)
+    {
+        draw_list->AddCircleFilled(center, radius_outer, ImGui::GetColorU32(ImGuiCol_FrameBg), 16);
+        draw_list->AddLine(ImVec2(center.x + angle_cos * radius_inner, center.y + angle_sin * radius_inner), ImVec2(center.x + angle_cos * (radius_outer - 2), center.y + angle_sin * (radius_outer - 2)), ImGui::GetColorU32(ImGuiCol_SliderGrabActive), 2.0f);
+        draw_list->AddCircleFilled(center, radius_inner, ImGui::GetColorU32(is_active ? ImGuiCol_FrameBgActive : is_hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg), 16);
+        draw_list->AddText(ImVec2(pos.x, pos.y + radius_outer * 2 + style.ItemInnerSpacing.y), ImGui::GetColorU32(ImGuiCol_Text), label);
+    }
+    else
+    {
+        draw_list->AddCircleFilled(center, radius_outer, ImGui::GetColorU32(ImGuiCol_Border, 0.5f), 16);
+        draw_list->AddLine(ImVec2(center.x + angle_cos * radius_inner, center.y + angle_sin * radius_inner), ImVec2(center.x + angle_cos * (radius_outer - 2), center.y + angle_sin * (radius_outer - 2)), ImGui::GetColorU32(ImGuiCol_PopupBg), 2.0f);
+        draw_list->AddCircleFilled(center, radius_inner, ImGui::GetColorU32(ImGui::GetColorU32(ImGuiCol_MenuBarBg)), 16);
+        draw_list->AddText(ImVec2(pos.x, pos.y + radius_outer * 2 + style.ItemInnerSpacing.y), ImGui::GetColorU32(ImGuiCol_Text), label);
+    }
+
+    if (!active) *p_value = (v_max + v_min) / 2;
 
     if (is_active || is_hovered)
     {
@@ -197,6 +209,19 @@ bool ImGui::Knob(const char* label, float* p_value, float v_min, float v_max, bo
             ImGui::Text("%.3f", *p_value);
             ImGui::EndTooltip();
         }
+    }
+
+    if (reminder_bool != nullptr)
+    {
+        bool ret = false;
+        //is_active ? ImGui::Text("True") : ImGui::Text("False");
+        //*reminder_bool ? ImGui::Text("True") : ImGui::Text("False");
+
+        if (*reminder_bool && !is_active) ret = true;
+
+        *reminder_bool = is_active;
+
+        return ret;
     }
 
     return value_changed;

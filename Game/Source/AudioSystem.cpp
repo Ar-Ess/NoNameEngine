@@ -96,15 +96,18 @@ ALuint AudioSystem::CreateAudioSource(ALuint audioBuffer, bool mono)
 {
 	ALuint source;
 	alec(alGenSources(1, &source));
-	if (mono)
-	{
-		alec(alSource3f(source, AL_POSITION, 1.0f, 0.0f, 0.0f));
-		alec(alSource3f(source, AL_VELOCITY, 0.f, 0.f, 0.f));
-	}
 	alec(alSourcef(source, AL_PITCH, 1.f));
 	alec(alSourcef(source, AL_GAIN, 1.f));
 	alec(alSourcei(source, AL_LOOPING, AL_FALSE));
 	alec(alSourcei(source, AL_BUFFER, audioBuffer));
+
+	if (mono)
+	{
+		alec(alDistanceModel(AL_LINEAR_DISTANCE_CLAMPED));
+		alSourcef(source, AL_ROLLOFF_FACTOR, 0.0f);
+		alSourcei(source, AL_SOURCE_RELATIVE, AL_TRUE);
+		alSource3f(source, AL_POSITION, 0, 0, 0);
+	}
 
 	return source;
 }
@@ -155,8 +158,13 @@ Track AudioSystem::LoadWav(const char* path)
 	Track track;
 	drwav_uint64 totalPCMFrameCount = 0;
 
+	std::string name = path;
+	unsigned int offset = name.find_last_of('/') + 1;
+	name.erase(name.begin(), name.begin() + offset);
+
 	track.format = WAV;
 	track.path = path;
+	track.name = name.c_str();
 	drwav_int16* pSampleData = drwav_open_file_and_read_pcm_frames_s16(path, &track.channels, &track.sampleRate, &totalPCMFrameCount, nullptr);
 	track.SetPCMFrameCount(totalPCMFrameCount);
 
@@ -165,6 +173,8 @@ Track AudioSystem::LoadWav(const char* path)
 		std::cerr << "failed to load audio file" << std::endl;
 		return Track();
 	}
+
+	track.bits = 16;
 
 	if (track.getTotalSamples() > drwav_uint64(std::numeric_limits<size_t>::max()))
 	{

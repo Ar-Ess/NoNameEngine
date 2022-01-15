@@ -46,12 +46,14 @@ public: // Methods
 
 public: // Variables
 	unsigned int channels = 0;
-	unsigned int sampleRate = 0;
+	unsigned int sampleRate = 44100;
+	unsigned int bits = 16;
 	AudioFormat format;
 	ALuint buffer;
 	ALuint source;
 	std::vector<uint16_t> pcmData;
 	std::string path;
+	std::string name;
 
 private: // Variables
 
