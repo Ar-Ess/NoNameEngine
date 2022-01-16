@@ -22,32 +22,52 @@ public:
 	void Update(Shape3D* afected)
 	{
 		if (gameTimer->GetTimerState() != RUNNING) return;
+
+		//audio->PlayAudio(track.source);
 	}
 
 	void Draw(bool* onWindow = nullptr)
 	{
-		if (ImGui::Button("Browse Mono"))
+		if (ImGui::Button("Browse Mono Wav"))
 		{
-			if (!BrowseAudio(false))
+			if (!BrowseAudio(false, false))
 			{
 				// Malament
 			}
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Browse Stereo"))
+		if (ImGui::Button("Browse Stereo Wav"))
 		{
-			if (!BrowseAudio(true))
+			if (!BrowseAudio(true, false))
 			{
 				// Malament
 			}
 		}
 
+		if (ImGui::Button("Browse Mono Mp3"))
+		{
+			if (!BrowseAudio(false, true))
+			{
+				// Malament
+			}
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Browse Stereo Mp3"))
+		{
+			if (!BrowseAudio(true, true))
+			{
+				// Malament
+			}
+		}
+
+		// Debug (Should be in the update)
+		if (play) play = audio->PlayAudio(track.source);
 
 		if (track.channels != 0)
 		{
 			if (ImGui::Button("Play Test"))
 			{
-				audio->PlayAudio(track.source);
+				play = true;
 			}
 			ImGui::SameLine();
 			if (ImGui::Button("Edit")) open = !open;
@@ -107,11 +127,21 @@ private: // Methods
 		ImGui::End();
 	}
 
-	bool BrowseAudio(bool stereo)
+	bool BrowseAudio(bool stereo, bool mp3)
 	{
-		if (stereo) track = audio->LoadAudio("Assets/Audio/SplitDuty_Meh_Fx.wav");
+		if (mp3)
+		{
+			if (stereo) track = audio->LoadAudio("Assets/Audio/SplitDuty_FinalBoss_Soundtrack.mp3");
+			else
+				track = audio->LoadAudio("Assets/Audio/SplitDuty_FinalBoss_Mono_Soundtrack.mp3");
+		}
 		else
-			track = audio->LoadAudio("Assets/Audio/bounce.wav");
+		{
+			if (stereo) track = audio->LoadAudio("Assets/Audio/SplitDuty_Meh_Fx.wav");
+			else
+				track = audio->LoadAudio("Assets/Audio/bounce.wav");
+		}
+		
 		track.source = audio->CreateAudioSource(track.buffer, true);
 
 		SetVolume(volume);
@@ -150,6 +180,7 @@ private: // Variables
 	float transpose = 0;
 	bool knobReminder1 = false;
 	bool knobReminder2 = false;
+	bool play = false;
 	Track track;
 
 	AudioSystem* audio = nullptr;

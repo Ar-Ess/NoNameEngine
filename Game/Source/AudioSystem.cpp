@@ -78,7 +78,7 @@ Track AudioSystem::LoadAudio(const char* path)
 
 	if (SameString("3", audioPath.c_str()))
 	{
-		LoadMP3(path);
+		ret = LoadMP3(path);
 	}
 	else if (SameString("v", audioPath.c_str()))
 	{
@@ -112,45 +112,62 @@ ALuint AudioSystem::CreateAudioSource(ALuint audioBuffer, bool mono)
 	return source;
 }
 
-void AudioSystem::PlayAudio(ALuint audioSource)
+bool AudioSystem::PlayAudio(ALuint audioSource)
 {
-	alec(alSourcePlay(audioSource));
+	bool ret = false;
 	ALint sourceState;
 	alec(alGetSourcei(audioSource, AL_SOURCE_STATE, &sourceState));
-	while (sourceState == AL_PLAYING)
-	{
-		//basically loop until we're done playing the mono sound source
-		alec(alGetSourcei(audioSource, AL_SOURCE_STATE, &sourceState));
-	}
+
+	if (sourceState == AL_STOPPED || sourceState == AL_INITIAL) alec(alSourcePlay(audioSource));
+
+	ret = (sourceState == AL_PLAYING);
+	ret = (sourceState == AL_PAUSED);
+
+	return ret;
 }
 
-ALuint AudioSystem::LoadMP3(const char* path)
+Track AudioSystem::LoadMP3(const char* path)
 {
-	//ReadTrack stereoData;
-	//{
-	//	drmp3_uint64 totalPCMFrameCountMp3;
-	//	drwav_int16* pSampleData = drmp3_open_file_and_read_pcm_frames_s16(path, &stereoData.channels, &stereoData.sampleRate, &totalPCMFrameCountMp3, nullptr);
-	//	if (pSampleData == NULL) {
-	//		std::cerr << "failed to load audio file" << std::endl;
-	//		return 0;
-	//	}
-	//	if (stereoData.getTotalSamples() > drwav_uint64(std::numeric_limits<size_t>::max))
-	//	{
-	//		std::cerr << "too much data in file for 32bit addressed vector" << std::endl;
-	//		return 0;
-	//	}
-	//	stereoData.pcmData.resize(size_t(stereoData.getTotalSamples()));
-	//	std::memcpy(stereoData.pcmData.data(), pSampleData, stereoData.pcmData.size() * /*twobytes_in_s15*/2);
-	//	drwav_free(pSampleData, nullptr);
-	//}
+	Track track;
+	drmp3_uint64 totalPCMFrameCount = 0;
+	drmp3_config mp3Config;
 
-	//ALuint stereoSoundBuffer;
-	//alec(alGenBuffers(1, &stereoSoundBuffer));
-	//alec(alBufferData(stereoSoundBuffer, stereoData.channels > 1 ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, stereoData.pcmData.data(), stereoData.pcmData.size() * 2 /*two bytes per sample*/, stereoData.sampleRate));
+	std::string name = path;
+	unsigned int offset = name.find_last_of('/') + 1;
+	name.erase(name.begin(), name.begin() + offset);
 
-	//return &stereoSoundBuffer;
+	track.format = MP3;
+	track.path = path;
+	track.name = name.c_str();
+	drmp3_int16* pSampleData = drmp3_open_file_and_read_pcm_frames_s16(path, &mp3Config, &totalPCMFrameCount, nullptr);
+	track.SetPCMFrameCount(totalPCMFrameCount);
+	track.channels = mp3Config.channels;
+	track.sampleRate = mp3Config.sampleRate;
 
-	return 0;
+	if (pSampleData == NULL)
+	{
+		std::cerr << "failed to load audio file" << std::endl;
+		return Track();
+	}
+
+	track.bits = 16;
+
+	if (track.getTotalSamples() > drmp3_uint64(std::numeric_limits<size_t>::max()))
+	{
+		std::cerr << "too much data in file for 32bit addressed vector" << std::endl;
+		return Track();
+	}
+
+	track.pcmData.resize(size_t(track.getTotalSamples()));
+	std::memcpy(track.pcmData.data(), pSampleData, track.pcmData.size() * /*twobytes_in_s15*/2);
+	drmp3_free(pSampleData, nullptr);
+
+	ALuint buffer;
+	alec(alGenBuffers(1, &buffer));
+	alec(alBufferData(buffer, track.channels > 1 ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, track.pcmData.data(), track.pcmData.size() * 2 /*two bytes per sample*/, track.sampleRate));
+	track.buffer = buffer;
+
+	return track;
 }
 
 Track AudioSystem::LoadWav(const char* path)

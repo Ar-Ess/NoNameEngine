@@ -74,7 +74,7 @@ public:
 
 	Track LoadAudio(const char* path);
 	ALuint CreateAudioSource(ALuint audioBuffer, bool mono = false);
-	void PlayAudio(ALuint audioSource);
+	bool PlayAudio(ALuint audioSource);
 
 	void CleanUp(ALuint monoBuffer, ALuint stereoBuffer, ALuint monoSource, ALuint stereoSource);
 
@@ -82,7 +82,7 @@ private: // Methods
 
 	void ListAudioDevices(const ALCchar* devices);
 
-	ALuint LoadMP3(const char* path);
+	Track LoadMP3(const char* path);
 	Track LoadWav(const char* path);
 
 	bool SameString(std::string a, std::string b)
