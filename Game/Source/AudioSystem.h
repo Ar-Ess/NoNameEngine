@@ -84,6 +84,7 @@ private: // Methods
 
 	Track LoadMP3(const char* path);
 	Track LoadWav(const char* path);
+	Track LoadFlac(const char* path);
 
 	bool SameString(std::string a, std::string b)
 	{

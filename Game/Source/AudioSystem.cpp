@@ -86,7 +86,7 @@ Track AudioSystem::LoadAudio(const char* path)
 	}
 	else if (SameString("c", audioPath.c_str()))
 	{
-
+		ret = LoadFlac(path);
 	}
 
 	return ret;
@@ -202,6 +202,47 @@ Track AudioSystem::LoadWav(const char* path)
 	track.pcmData.resize(size_t(track.getTotalSamples()));
 	std::memcpy(track.pcmData.data(), pSampleData, track.pcmData.size() * /*twobytes_in_s15*/2);
 	drwav_free(pSampleData, nullptr);
+
+	ALuint buffer;
+	alec(alGenBuffers(1, &buffer));
+	alec(alBufferData(buffer, track.channels > 1 ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, track.pcmData.data(), track.pcmData.size() * 2 /*two bytes per sample*/, track.sampleRate));
+	track.buffer = buffer;
+
+	return track;
+}
+
+Track AudioSystem::LoadFlac(const char* path)
+{
+	Track track;
+	drflac_uint64 totalPCMFrameCount = 0;
+
+	std::string name = path;
+	unsigned int offset = name.find_last_of('/') + 1;
+	name.erase(name.begin(), name.begin() + offset);
+
+	track.format = FLAC;
+	track.path = path;
+	track.name = name.c_str();
+	drflac_int16* pSampleData = drflac_open_file_and_read_pcm_frames_s16(path, &track.channels, &track.sampleRate, &totalPCMFrameCount, nullptr);
+	track.SetPCMFrameCount(totalPCMFrameCount);
+
+	if (pSampleData == NULL)
+	{
+		std::cerr << "failed to load audio file" << std::endl;
+		return Track();
+	}
+
+	track.bits = 16;
+
+	if (track.getTotalSamples() > drflac_uint64(std::numeric_limits<size_t>::max()))
+	{
+		std::cerr << "too much data in file for 32bit addressed vector" << std::endl;
+		return Track();
+	}
+
+	track.pcmData.resize(size_t(track.getTotalSamples()));
+	std::memcpy(track.pcmData.data(), pSampleData, track.pcmData.size() * /*twobytes_in_s15*/2);
+	drflac_free(pSampleData, nullptr);
 
 	ALuint buffer;
 	alec(alGenBuffers(1, &buffer));

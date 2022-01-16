@@ -28,33 +28,49 @@ public:
 
 	void Draw(bool* onWindow = nullptr)
 	{
-		if (ImGui::Button("Browse Mono Wav"))
+		if (ImGui::Button("Mono Wav"))
 		{
-			if (!BrowseAudio(false, false))
+			if (!BrowseAudio(false, false, false))
 			{
 				// Malament
 			}
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Browse Stereo Wav"))
+		if (ImGui::Button("Stereo Wav"))
 		{
-			if (!BrowseAudio(true, false))
+			if (!BrowseAudio(true, false, false))
 			{
 				// Malament
 			}
 		}
 
-		if (ImGui::Button("Browse Mono Mp3"))
+		if (ImGui::Button("Mono Mp3"))
 		{
-			if (!BrowseAudio(false, true))
+			if (!BrowseAudio(false, true, false))
 			{
 				// Malament
 			}
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Browse Stereo Mp3"))
+		if (ImGui::Button("Stereo Mp3"))
 		{
-			if (!BrowseAudio(true, true))
+			if (!BrowseAudio(true, true, false))
+			{
+				// Malament
+			}
+		}
+
+		if (ImGui::Button("Mono Flac"))
+		{
+			if (!BrowseAudio(false, false, true))
+			{
+				// Malament
+			}
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Stereo Flac"))
+		{
+			if (!BrowseAudio(true, false, true))
 			{
 				// Malament
 			}
@@ -127,19 +143,25 @@ private: // Methods
 		ImGui::End();
 	}
 
-	bool BrowseAudio(bool stereo, bool mp3)
+	bool BrowseAudio(bool stereo, bool mp3, bool flac)
 	{
-		if (mp3)
+		if (mp3 && !flac)
 		{
 			if (stereo) track = audio->LoadAudio("Assets/Audio/SplitDuty_FinalBoss_Soundtrack.mp3");
 			else
 				track = audio->LoadAudio("Assets/Audio/SplitDuty_FinalBoss_Mono_Soundtrack.mp3");
 		}
-		else
+		else if (!mp3 && !flac)
 		{
 			if (stereo) track = audio->LoadAudio("Assets/Audio/SplitDuty_Meh_Fx.wav");
 			else
 				track = audio->LoadAudio("Assets/Audio/bounce.wav");
+		}
+		else if (!mp3 && flac)
+		{
+			if (stereo) track = audio->LoadAudio("Assets/Audio/SplitDuty_NPCTalk_Fx.flac");
+			else
+				track = audio->LoadAudio("Assets/Audio/SplitDuty_NPCTalk_Mono_Fx.flac");
 		}
 		
 		track.source = audio->CreateAudioSource(track.buffer, true);
