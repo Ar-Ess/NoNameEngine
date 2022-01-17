@@ -3,6 +3,7 @@
 
 #include "Component.h"
 #include "AudioSystem.h"
+#include "External/ImGuiFileDialog/ImGuiFileDialog.h"
 
 class AudioSourceComponent : public Component
 {
@@ -28,53 +29,7 @@ public:
 
 	void Draw(bool* onWindow = nullptr)
 	{
-		if (ImGui::Button("Mono Wav"))
-		{
-			if (!BrowseAudio(false, false, false))
-			{
-				// Malament
-			}
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Stereo Wav"))
-		{
-			if (!BrowseAudio(true, false, false))
-			{
-				// Malament
-			}
-		}
-
-		if (ImGui::Button("Mono Mp3"))
-		{
-			if (!BrowseAudio(false, true, false))
-			{
-				// Malament
-			}
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Stereo Mp3"))
-		{
-			if (!BrowseAudio(true, true, false))
-			{
-				// Malament
-			}
-		}
-
-		if (ImGui::Button("Mono Flac"))
-		{
-			if (!BrowseAudio(false, false, true))
-			{
-				// Malament
-			}
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Stereo Flac"))
-		{
-			if (!BrowseAudio(true, false, true))
-			{
-				// Malament
-			}
-		}
+		if (ImGui::Button("Browse")) browsing = true;
 
 		// Debug (Should be in the update)
 		if (play) play = audio->PlayAudio(track.source);
@@ -90,6 +45,8 @@ public:
 		}
 
 		if (open) DrawWindow(onWindow);
+
+		if (browsing) browsing = BrowseAudio();
 	}
 
 	void End(Shape3D* afected)
@@ -143,34 +100,30 @@ private: // Methods
 		ImGui::End();
 	}
 
-	bool BrowseAudio(bool stereo, bool mp3, bool flac)
+	bool BrowseAudio()
 	{
-		if (mp3 && !flac)
-		{
-			if (stereo) track = audio->LoadAudio("Assets/Audio/SplitDuty_FinalBoss_Soundtrack.mp3");
-			else
-				track = audio->LoadAudio("Assets/Audio/SplitDuty_FinalBoss_Mono_Soundtrack.mp3");
-		}
-		else if (!mp3 && !flac)
-		{
-			if (stereo) track = audio->LoadAudio("Assets/Audio/SplitDuty_Meh_Fx.wav");
-			else
-				track = audio->LoadAudio("Assets/Audio/bounce.wav");
-		}
-		else if (!mp3 && flac)
-		{
-			if (stereo) track = audio->LoadAudio("Assets/Audio/SplitDuty_NPCTalk_Fx.flac");
-			else
-				track = audio->LoadAudio("Assets/Audio/SplitDuty_NPCTalk_Mono_Fx.flac");
-		}
-		
-		track.source = audio->CreateAudioSource(track.buffer, true);
+		bool ret = true;
 
-		SetVolume(volume);
-		SetPanning(pan);
-		SetTranspose(transpose);
+		// open Dialog Simple
+		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose an Audio File", ".wav,.mp3,.flac", ".");
 
-		return true;
+		//display
+		if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey"), ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove)
+		{
+			// action if OK
+			if (ImGuiFileDialog::Instance()->IsOk() == true)
+			{
+				std::string path = ImGuiFileDialog::Instance()->GetCurrentPath() + "\\" + ImGuiFileDialog::Instance()->GetCurrentFileName();
+				track = audio->LoadAudio(path.c_str());
+				track.source = audio->CreateAudioSource(track.buffer, true);
+				SetVolume(volume);
+				SetPanning(pan);
+				SetTranspose(transpose);
+				ret = false;
+			}
+		}
+
+		return ret;
 	}
 
 	void SetVolume(float volume)
@@ -203,6 +156,7 @@ private: // Variables
 	bool knobReminder1 = false;
 	bool knobReminder2 = false;
 	bool play = false;
+	bool browsing = false;
 	Track track;
 
 	AudioSystem* audio = nullptr;

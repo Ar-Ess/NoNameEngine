@@ -154,6 +154,15 @@
     <Filter Include="External\OpenAL">
       <UniqueIdentifier>{73c4a8ca-10ce-4899-bf63-f99cc7e3036f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External\Dirent">
+      <UniqueIdentifier>{83b182b3-96b3-4e32-8f8a-984eaa942e3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\ImGuiFileDialog">
+      <UniqueIdentifier>{0f92b098-7b06-469d-a670-fca7d0952968}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\ImGuiFileDialog\STB">
+      <UniqueIdentifier>{9b2b5e3c-83b5-4471-b1de-b4f9d8c92ac7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\External\imgui\imconfig.h">
@@ -1080,6 +1089,21 @@
     <ClInclude Include="Source\AudioSystem.h">
       <Filter>Utils\Managers</Filter>
     </ClInclude>
+    <ClInclude Include="Source\External\ImGuiFileDialog\ImGuiFileDialog.h">
+      <Filter>External\ImGuiFileDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\ImGuiFileDialog\ImGuiFileDialogConfig.h">
+      <Filter>External\ImGuiFileDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\ImGuiFileDialog\stb\stb_image.h">
+      <Filter>External\ImGuiFileDialog\STB</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\ImGuiFileDialog\stb\stb_image_resize.h">
+      <Filter>External\ImGuiFileDialog\STB</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\Dirent\dirent.h">
+      <Filter>External\Dirent</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\External\imgui\imgui_demo.cpp">
@@ -1348,6 +1372,9 @@
     </ClCompile>
     <ClCompile Include="Source\AudioSystem.cpp">
       <Filter>Utils\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\ImGuiFileDialog\ImGuiFileDialog.cpp">
+      <Filter>External\ImGuiFileDialog</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

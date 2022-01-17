@@ -49,7 +49,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ExceptionHandling>false</ExceptionHandling>
-      <PreprocessorDefinitions>WINDOWS_IGNORE_PACKING_MISMATCH;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WINDOWS_IGNORE_PACKING_MISMATCH;_CRT_SECURE_NO_WARNINGS;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)Game\Source\External\PhysFS\include;$(SolutionDir)Game\Source\External\Wwise\include;$(SolutionDir)Game\Source\External\DrWav;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -67,7 +67,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ExceptionHandling>false</ExceptionHandling>
-      <PreprocessorDefinitions>WINDOWS_IGNORE_PACKING_MISMATCH;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WINDOWS_IGNORE_PACKING_MISMATCH;_CRT_SECURE_NO_WARNINGS;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)Game\Source\External\PhysFS\include;$(SolutionDir)Game\Source\External\Wwise\include;$(SolutionDir)Game\Source\External\DrWav;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -106,9 +106,14 @@
     <ClInclude Include="Source\External\Density\density_api.h" />
     <ClInclude Include="Source\External\Density\globals.h" />
     <ClInclude Include="Source\External\Density\structure\header.h" />
+    <ClInclude Include="Source\External\Dirent\dirent.h" />
     <ClInclude Include="Source\External\DrWav\dr_flac.h" />
     <ClInclude Include="Source\External\DrWav\dr_mp3.h" />
     <ClInclude Include="Source\External\DrWav\dr_wav.h" />
+    <ClInclude Include="Source\External\ImGuiFileDialog\ImGuiFileDialog.h" />
+    <ClInclude Include="Source\External\ImGuiFileDialog\ImGuiFileDialogConfig.h" />
+    <ClInclude Include="Source\External\ImGuiFileDialog\stb\stb_image.h" />
+    <ClInclude Include="Source\External\ImGuiFileDialog\stb\stb_image_resize.h" />
     <ClInclude Include="Source\External\ImGuizmo-master\ImCurveEdit.h" />
     <ClInclude Include="Source\External\ImGuizmo-master\ImGradient.h" />
     <ClInclude Include="Source\External\ImGuizmo-master\ImGuizmo.h" />
@@ -407,6 +412,7 @@
     <ClCompile Include="Source\External\Density\buffers\buffer.c" />
     <ClCompile Include="Source\External\Density\globals.c" />
     <ClCompile Include="Source\External\Density\structure\header.c" />
+    <ClCompile Include="Source\External\ImGuiFileDialog\ImGuiFileDialog.cpp" />
     <ClCompile Include="Source\External\ImGuizmo-master\ImCurveEdit.cpp" />
     <ClCompile Include="Source\External\ImGuizmo-master\ImGradient.cpp" />
     <ClCompile Include="Source\External\ImGuizmo-master\ImGuizmo.cpp" />
