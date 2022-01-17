@@ -399,47 +399,47 @@ bool EditorScene::ShowConfigWindow(bool open)
 				if (ImGui::BeginTabItem("General"))
 				{
 					if (ImGui::CollapsingHeader("Application"))
-						{
-							AddSpacing(0);
-							ImGui::Text("PROJECT INFORMATION");
-							AddSpacing(1);
-							ImGui::Text("Project Name");
-							ImGui::InputText("New Project", &projectName);
-							if (!onWindow) onWindow = ImGui::IsItemEdited();
-							AddSpacing(0);
-							ImGui::Text("Developer Team");
-							ImGui::InputText("Team Name", &teamName);
-							if (!onWindow) onWindow = ImGui::IsItemEdited();
-							AddSpacing(1);
+					{
+						AddSpacing(0);
+						ImGui::Text("PROJECT INFORMATION");
+						AddSpacing(1);
+						ImGui::Text("Project Name");
+						ImGui::InputText("New Project", &projectName);
+						if (!onWindow) onWindow = ImGui::IsItemEdited();
+						AddSpacing(0);
+						ImGui::Text("Developer Team");
+						ImGui::InputText("Team Name", &teamName);
+						if (!onWindow) onWindow = ImGui::IsItemEdited();
+						AddSpacing(1);
 
-							AddSeparator(2);
+						AddSeparator(2);
 
-							AddSpacing(0);
-							ImGui::Text("ENGINE PERFORMANCE");
-							AddSpacing(1);
-							ImGui::Text("Framerate");
-							ImGui::SliderInt(" FPS", &app->fps, 5, 60, "FPS: %d");
-							AddSpacing(0);
+						AddSpacing(0);
+						ImGui::Text("ENGINE PERFORMANCE");
+						AddSpacing(1);
+						ImGui::Text("Framerate");
+						ImGui::SliderInt(" FPS", &app->fps, 5, 60, "FPS: %d");
+						AddSpacing(0);
 
-							char title[25];
-							framerate = app->fpsLog[app->fpsLog.size() - 2];
-							sprintf_s(title, 25, "Framerate %.1f", framerate);
-							ImGui::Text("Framerate Graph");
-							ImGui::PlotHistogram("##framerate", &app->fpsLog[0], app->fpsLog.size(), 0, title, 0.0f, 100.0f, ImVec2(307, 100));
-							ImGui::SliderInt(" FBL", (int*)&app->frameBarLimit, 30, 80, "Bars: %d");
+						char title[25];
+						framerate = app->fpsLog[app->fpsLog.size() - 2];
+						sprintf_s(title, 25, "Framerate %.1f", framerate);
+						ImGui::Text("Framerate Graph");
+						ImGui::PlotHistogram("##framerate", &app->fpsLog[0], app->fpsLog.size(), 0, title, 0.0f, 100.0f, ImVec2(307, 100));
+						ImGui::SliderInt(" FBL", (int*)&app->frameBarLimit, 30, 80, "Bars: %d");
 
-							AddSpacing(0);
+						AddSpacing(0);
 
-							milliseconds = app->msLog[app->msLog.size() - 2];
-							sprintf_s(title, 25, "Milliseconds %0.1f", milliseconds);
-							ImGui::Text("Milliseconds Graph");
-							ImGui::PlotHistogram("##milliseconds", &app->msLog[0], app->msLog.size(), 0, title, 0.0f, 40.0f, ImVec2(307, 100));
-							ImGui::SliderInt(" MSG", (int*)&app->msBarLimit, 30, 80, "Bars: %d");
+						milliseconds = app->msLog[app->msLog.size() - 2];
+						sprintf_s(title, 25, "Milliseconds %0.1f", milliseconds);
+						ImGui::Text("Milliseconds Graph");
+						ImGui::PlotHistogram("##milliseconds", &app->msLog[0], app->msLog.size(), 0, title, 0.0f, 40.0f, ImVec2(307, 100));
+						ImGui::SliderInt(" MSG", (int*)&app->msBarLimit, 30, 80, "Bars: %d");
 
-							AddSpacing(1);
+						AddSpacing(1);
 
-							AddSeparator(2);
-						}
+						AddSeparator(2);
+					}
 					if (ImGui::CollapsingHeader("Window"))
 					{
 						Point prev = wSize;
