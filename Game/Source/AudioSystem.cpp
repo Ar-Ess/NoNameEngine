@@ -112,18 +112,32 @@ ALuint AudioSystem::CreateAudioSource(ALuint audioBuffer, bool mono)
 	return source;
 }
 
-bool AudioSystem::PlayAudio(ALuint audioSource)
+void AudioSystem::PlayAudio(ALuint audioSource, float time)
 {
-	bool ret = false;
 	ALint sourceState;
 	alec(alGetSourcei(audioSource, AL_SOURCE_STATE, &sourceState));
 
-	if (sourceState == AL_STOPPED || sourceState == AL_INITIAL) alec(alSourcePlay(audioSource));
+	if (sourceState == AL_STOPPED || sourceState == AL_INITIAL)
+	{
+		if (time != 0.0f) alSourcef(audioSource, AL_SEC_OFFSET, time);
+		alec(alSourcePlay(audioSource));
+	}
+}
 
-	ret = (sourceState == AL_PLAYING);
-	ret = (sourceState == AL_PAUSED);
+void AudioSystem::PauseAudio(ALuint audioSource)
+{
+	ALint sourceState;
+	alec(alGetSourcei(audioSource, AL_SOURCE_STATE, &sourceState));
 
-	return ret;
+	if (sourceState == AL_PLAYING) alec(alSourcePause(audioSource));
+}
+
+void AudioSystem::StopAudio(ALuint audioSource)
+{
+	ALint sourceState;
+	alec(alGetSourcei(audioSource, AL_SOURCE_STATE, &sourceState));
+
+	if (sourceState == AL_PLAYING || sourceState == AL_PAUSED) alec(alSourceStop(audioSource));
 }
 
 Track AudioSystem::LoadMP3(const char* path)
@@ -134,7 +148,12 @@ Track AudioSystem::LoadMP3(const char* path)
 
 	std::string name = path;
 	unsigned int offset = name.find_last_of('/') + 1;
-	name.erase(name.begin(), name.begin() + offset);
+	if (offset != 0) name.erase(name.begin(), name.begin() + offset);
+	else
+	{
+		offset = name.find_last_of('\\') + 1;
+		name.erase(name.begin(), name.begin() + offset);
+	}
 
 	track.format = MP3;
 	track.path = path;
@@ -165,6 +184,11 @@ Track AudioSystem::LoadMP3(const char* path)
 	ALuint buffer;
 	alec(alGenBuffers(1, &buffer));
 	alec(alBufferData(buffer, track.channels > 1 ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, track.pcmData.data(), track.pcmData.size() * 2 /*two bytes per sample*/, track.sampleRate));
+	
+	ALint bufferSize;
+	alec(alGetBufferi(buffer, AL_SIZE, &bufferSize));
+	track.duration = bufferSize / (track.sampleRate * track.channels * 2); //(2 bytes == 16 Bits)
+	
 	track.buffer = buffer;
 
 	return track;
@@ -177,7 +201,12 @@ Track AudioSystem::LoadWav(const char* path)
 
 	std::string name = path;
 	unsigned int offset = name.find_last_of('/') + 1;
-	name.erase(name.begin(), name.begin() + offset);
+	if (offset != 0) name.erase(name.begin(), name.begin() + offset);
+	else
+	{
+		offset = name.find_last_of('\\') + 1;
+		name.erase(name.begin(), name.begin() + offset);
+	}
 
 	track.format = WAV;
 	track.path = path;
@@ -206,6 +235,11 @@ Track AudioSystem::LoadWav(const char* path)
 	ALuint buffer;
 	alec(alGenBuffers(1, &buffer));
 	alec(alBufferData(buffer, track.channels > 1 ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, track.pcmData.data(), track.pcmData.size() * 2 /*two bytes per sample*/, track.sampleRate));
+	
+	ALint bufferSize;
+	alec(alGetBufferi(buffer, AL_SIZE, &bufferSize));
+	track.duration = (float)bufferSize / (track.sampleRate * track.channels * 2); //(2 bytes == 16 Bits)
+
 	track.buffer = buffer;
 
 	return track;
@@ -218,7 +252,12 @@ Track AudioSystem::LoadFlac(const char* path)
 
 	std::string name = path;
 	unsigned int offset = name.find_last_of('/') + 1;
-	name.erase(name.begin(), name.begin() + offset);
+	if (offset != 0) name.erase(name.begin(), name.begin() + offset);
+	else
+	{
+		offset = name.find_last_of('\\') + 1;
+		name.erase(name.begin(), name.begin() + offset);
+	}
 
 	track.format = FLAC;
 	track.path = path;
@@ -247,6 +286,11 @@ Track AudioSystem::LoadFlac(const char* path)
 	ALuint buffer;
 	alec(alGenBuffers(1, &buffer));
 	alec(alBufferData(buffer, track.channels > 1 ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, track.pcmData.data(), track.pcmData.size() * 2 /*two bytes per sample*/, track.sampleRate));
+	
+	ALint bufferSize;
+	alec(alGetBufferi(buffer, AL_SIZE, &bufferSize));
+	track.duration = bufferSize / (track.sampleRate * track.channels * 2); //(2 bytes == 16 Bits)
+	
 	track.buffer = buffer;
 
 	return track;

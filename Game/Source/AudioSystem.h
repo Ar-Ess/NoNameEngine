@@ -48,6 +48,7 @@ public: // Variables
 	unsigned int channels = 0;
 	unsigned int sampleRate = 44100;
 	unsigned int bits = 16;
+	float duration;
 	AudioFormat format;
 	ALuint buffer;
 	ALuint source;
@@ -74,7 +75,9 @@ public:
 
 	Track LoadAudio(const char* path);
 	ALuint CreateAudioSource(ALuint audioBuffer, bool mono = false);
-	bool PlayAudio(ALuint audioSource);
+	void PlayAudio(ALuint audioSource, float time = 0.0f);
+	void StopAudio(ALuint audioSource);
+	void PauseAudio(ALuint audioSource);
 
 	void CleanUp(ALuint monoBuffer, ALuint stereoBuffer, ALuint monoSource, ALuint stereoSource);
 

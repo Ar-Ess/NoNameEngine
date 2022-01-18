@@ -18,6 +18,8 @@ public:
 	void Start(Shape3D* afected)
 	{
 		knobReminder1 = false;
+		knobReminder2 = false;
+
 	}
 
 	void Update(Shape3D* afected)
@@ -29,20 +31,20 @@ public:
 
 	void Draw(bool* onWindow = nullptr)
 	{
-		if (ImGui::Button("Browse")) browsing = true;
-
-		// Debug (Should be in the update)
-		if (play) play = audio->PlayAudio(track.source);
+		if (ImGui::Button("Browse Audio")) browsing = true;
 
 		if (track.channels != 0)
 		{
-			if (ImGui::Button("Play Test"))
+			if (ImGui::Button("Edit"))
 			{
-				play = true;
+				open = !open;
+				offset = 0;
+				knobReminder1 = false;
+				knobReminder2 = false;
 			}
-			ImGui::SameLine();
-			if (ImGui::Button("Edit")) open = !open;
 		}
+
+		UpdatePlayState();
 
 		if (open) DrawWindow(onWindow);
 
@@ -63,15 +65,49 @@ private: // Methods
 			if (onWindow != nullptr && !*onWindow) *onWindow = ImGui::IsWindowHovered();
 			bool mono = track.channels == 1;
 
-			ImGui::Text("%s", track.name.c_str());
-			ImGui::Spacing();
-			ImGui::Text("%d kHz | %d-Bits", track.sampleRate, track.bits);
-			ImGui::Spacing();
-			ImGui::Text("%d Channels", track.channels);
-			if (!mono)
+			if (ImGui::BeginTable("Upper Table", 2))
 			{
-				ImGui::SameLine(); ImGui::Text(" (No Pan)");
+				float winWidth = ImGui::GetWindowWidth();
+				float resultWidth = winWidth > 627 ? 350.0f : (350.0f - (627.0f - winWidth));
+				resultWidth = winWidth < 408 ? 148 : resultWidth;
+				float width = winWidth > 627 ? ((winWidth * 0.545f) - 350) : ((winWidth * ((54.4f + ((627.0f - winWidth) / 100)) / 100)) - resultWidth);
+
+				ImGui::TableSetupColumn("one", ImGuiTableColumnFlags_WidthFixed, resultWidth); // Default to 100.0f
+				ImGui::TableSetupColumn("two", ImGuiTableColumnFlags_WidthFixed);
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
+				{
+					ImGui::Text("%s", track.name.c_str());
+					ImGui::Spacing();
+					ImGui::Text("%d kHz | %d-Bits", track.sampleRate, track.bits);
+					ImGui::Spacing();
+					ImGui::Text("%d Channels", track.channels);
+					if (!mono)
+					{
+						ImGui::SameLine(); ImGui::Text(" (No Pan)");
+					}
+				}
+
+				ImGui::TableSetColumnIndex(1);
+				{
+					char t1[] = { "Play" };
+					char t2[] = { "Stop" };
+					char* t = play ? t = t2 : t = t1;
+					ImGui::Spacing();
+					ImGui::Spacing();
+					ImGui::Spacing();
+					ImGui::Spacing();
+					ImGui::Dummy(ImVec2{ width, 0.0f }); ImGui::SameLine();
+					if (ImGui::Button(t))
+					{
+						float time = track.duration * offset;
+						play ? audio->StopAudio(track.source) : audio->PlayAudio(track.source, time);
+					}
+				}
 			}
+			ImGui::EndTable();
+
 			ImGui::Dummy(ImVec2{ 0.0f, 4.2f });
 
 			if (ImGui::BeginTable("Group Table", 2))
@@ -83,6 +119,7 @@ private: // Methods
 				ImGui::TableSetColumnIndex(0);
 				{
 					// SLIDERS & KNOBS
+					ImGui::Dummy(ImVec2{ 0.0f, 35.0f });
 					ImGui::Dummy(ImVec2{ 3.8f, 0.0f }); ImGui::SameLine();
 					ImGui::VSliderFloat("-0", ImVec2{ 15, 155 }, &volume, 0.0f, 100.0f, "");
 					if (ImGui::IsItemDeactivatedAfterEdit()) SetVolume(volume);
@@ -106,51 +143,17 @@ private: // Methods
 				ImGui::TableSetColumnIndex(1);
 				{
 					// VOLUME GRAPHIC
-					float a[10] = { 10.0f, 9.0f, 8.0f, 7.0f, 6.0f, 5.0f, 4.0f, 3.0f, 2.0f, 1.0f };
+					float a[10] = {10.0f, 9.0f, 8.0f, 7.0f, 6.0f, 5.0f, 4.0f, 3.0f, 2.0f, 1.0f};
 					float width = ImGui::GetWindowWidth();
-					ImGui::PlotHistogram("##volumegraph", a, 10.0f, 0.0f, "Anything", 0.0f, 10.0f, ImVec2(width - 220, 100));
-					ImGui::PlotHistogram("##volumegraph", a, 10.0f, 0.0f, "Anything", 10.0f, 0.0f, ImVec2(width - 220, 100), 4, true);
+					ImGui::PushItemWidth(width - 220);
+					ImGui::SliderFloat("##offset", &offset, 0.0f, 1.0f, "");
+					ImGui::PopItemWidth();
+					ImGui::PlotHistogram("##volumegraph", a, 10, 100.0f, "", 0.0f, 10.0f, ImVec2(width - 220, 100));
+					ImGui::PlotHistogram("##volumegraph", a, 10, 0.0f, "", 10.0f, 0.0f, ImVec2(width - 220, 100), 4, true);
 				}
 
 				ImGui::EndTable();
 			}
-			
-
-			/*
-			if (ImGui::BeginTable("Group Table", 2, ImGuiTableFlags_Borders))
-			{
-				ImGui::TableNextColumn(); ImGui::TableSetColumnIndex(0);
-				//ImGui::TableSetupColumn();
-				{
-					// SLIDERS & KNOBS
-					ImGui::Dummy(ImVec2{ 3.8f, 0.0f }); ImGui::SameLine();
-					ImGui::VSliderFloat("-0", ImVec2{ 15, 155 }, &volume, 0.0f, 100.0f, "");
-					if (ImGui::IsItemDeactivatedAfterEdit()) SetVolume(volume);
-					ImGui::SameLine(0.0f, 20.0f);
-					if (ImGui::BeginTable("Column Table", 2))
-					{
-						ImGui::TableNextRow(); ImGui::TableSetColumnIndex(0);
-						ImGui::Dummy(ImVec2{ 0.0f, 6.0f });
-
-						ImGui::TableNextRow(); ImGui::TableSetColumnIndex(0);
-						ImGui::Dummy(ImVec2{ 4.5f, 0.0f }); ImGui::SameLine();
-						if (ImGui::Knob("L / R", &pan, -0.5, 0.5, false, mono, 2.5f, &knobReminder2) && mono) SetPanning(pan);
-						ImGui::Dummy(ImVec2{ 0.0f, 10.0f });
-
-						ImGui::TableNextRow(); ImGui::TableSetColumnIndex(0);
-						if (ImGui::Knob("Transpose", &transpose, -24.0, 24.0, false, true, -10, &knobReminder1)) SetTranspose(transpose);
-					}
-					ImGui::EndTable();
-				}
-
-				// VOLUME GRAPHIC
-				ImGui::TableNextColumn(); ImGui::TableSetColumnIndex(1);
-				{
-					ImGui::Button("hahahaaahahahahhahaha");
-				}
-			}
-			ImGui::EndTable();
-			*/
 		}
 		ImGui::End();
 	}
@@ -203,11 +206,19 @@ private: // Methods
 		alSourcef(track.source, AL_PITCH, transpose);
 	}
 
+	void UpdatePlayState()
+	{
+		ALint sourceState;
+		alGetSourcei(track.source, AL_SOURCE_STATE, &sourceState);
+		(sourceState == AL_PLAYING) ? play = true : play = false;
+	}
+
 private: // Variables
 
 	float volume = 100.0f;
 	float pan = 0;
 	float transpose = 0;
+	float offset = 0;
 	bool knobReminder1 = false;
 	bool knobReminder2 = false;
 	bool play = false;
