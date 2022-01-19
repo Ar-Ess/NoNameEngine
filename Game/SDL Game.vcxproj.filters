@@ -163,6 +163,12 @@
     <Filter Include="External\ImGuiFileDialog\STB">
       <UniqueIdentifier>{9b2b5e3c-83b5-4471-b1de-b4f9d8c92ac7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Components\Audio">
+      <UniqueIdentifier>{d42a7388-adbc-479a-b8e8-85ea8ec7b821}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components\Movement">
+      <UniqueIdentifier>{2d0ce776-6ff9-4b2b-8777-2a423ac2bfed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\External\imgui\imconfig.h">
@@ -1050,12 +1056,6 @@
     <ClInclude Include="Source\Component.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="Source\AudioSourceComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\LiniarVelocityComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
     <ClInclude Include="Source\External\DrWav\dr_flac.h">
       <Filter>External\DrWav</Filter>
     </ClInclude>
@@ -1083,9 +1083,6 @@
     <ClInclude Include="Source\External\OpenAL\include\AL\efx-presets.h">
       <Filter>External\OpenAL</Filter>
     </ClInclude>
-    <ClInclude Include="Source\SpacialAudioSourceComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
     <ClInclude Include="Source\AudioSystem.h">
       <Filter>Utils\Managers</Filter>
     </ClInclude>
@@ -1103,6 +1100,18 @@
     </ClInclude>
     <ClInclude Include="Source\External\Dirent\dirent.h">
       <Filter>External\Dirent</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AudioSourceComponent.h">
+      <Filter>Components\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SpacialAudioSourceComponent.h">
+      <Filter>Components\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LiniarVelocityComponent.h">
+      <Filter>Components\Movement</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Effects.h">
+      <Filter>Components\Audio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

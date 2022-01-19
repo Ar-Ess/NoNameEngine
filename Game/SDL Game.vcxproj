@@ -87,6 +87,7 @@
     <ClInclude Include="Source\Component.h" />
     <ClInclude Include="Source\Defs.h" />
     <ClInclude Include="Source\EditorScene.h" />
+    <ClInclude Include="Source\Effects.h" />
     <ClInclude Include="Source\External\Density\algorithms\algorithms.h" />
     <ClInclude Include="Source\External\Density\algorithms\chameleon\chameleon.h" />
     <ClInclude Include="Source\External\Density\algorithms\chameleon\core\chameleon_decode.h" />

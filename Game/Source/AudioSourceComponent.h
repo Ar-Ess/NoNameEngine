@@ -2,7 +2,7 @@
 #define __AUDIO_SOURCE_COMPONENT_H__
 
 #include "Component.h"
-#include "AudioSystem.h"
+#include "Effects.h"
 #include "External/ImGuiFileDialog/ImGuiFileDialog.h"
 
 class AudioSourceComponent : public Component
@@ -19,7 +19,7 @@ public:
 	{
 		knobReminder1 = false;
 		knobReminder2 = false;
-
+		if (playOnStart) audio->PlayAudio(track.source);
 	}
 
 	void Update(Shape3D* afected)
@@ -35,6 +35,7 @@ public:
 
 		if (track.channels != 0)
 		{
+			ImGui::SameLine();
 			if (ImGui::Button("Edit"))
 			{
 				open = !open;
@@ -42,6 +43,12 @@ public:
 				knobReminder1 = false;
 				knobReminder2 = false;
 			}
+			ImGui::Spacing();
+			ImGui::Text("Options");
+			if (ImGui::Checkbox("Mute", &mute)) SetVolume(volume);
+			ImGui::Checkbox("Play on start", &playOnStart);
+			if (ImGui::Checkbox("Loop", &loop)) SetLoop(loop);
+			ImGui::Checkbox("Bypass FX", &fx);
 		}
 
 		UpdatePlayState();
@@ -110,7 +117,7 @@ private: // Methods
 
 			ImGui::Dummy(ImVec2{ 0.0f, 4.2f });
 
-			if (ImGui::BeginTable("Group Table", 2))
+			if (ImGui::BeginTable("Middle Table", 2))
 			{
 				ImGui::TableSetupColumn("one", ImGuiTableColumnFlags_WidthFixed, 180.0f); // Default to 100.0f
 				ImGui::TableSetupColumn("two", ImGuiTableColumnFlags_WidthFixed);
@@ -121,8 +128,10 @@ private: // Methods
 					// SLIDERS & KNOBS
 					ImGui::Dummy(ImVec2{ 0.0f, 35.0f });
 					ImGui::Dummy(ImVec2{ 3.8f, 0.0f }); ImGui::SameLine();
+					if (mute) ImGui::BeginDisabled();
 					ImGui::VSliderFloat("-0", ImVec2{ 15, 155 }, &volume, 0.0f, 100.0f, "");
 					if (ImGui::IsItemDeactivatedAfterEdit()) SetVolume(volume);
+					if (mute) ImGui::EndDisabled();
 					ImGui::SameLine(0.0f, 20.0f);
 					if (ImGui::BeginTable("Column Table", 2))
 					{
@@ -151,9 +160,48 @@ private: // Methods
 					ImGui::PlotHistogram("##volumegraph", a, 10, 100.0f, "", 0.0f, 10.0f, ImVec2(width - 220, 100));
 					ImGui::PlotHistogram("##volumegraph", a, 10, 0.0f, "", 10.0f, 0.0f, ImVec2(width - 220, 100), 4, true);
 				}
-
-				ImGui::EndTable();
 			}
+			ImGui::EndTable();
+
+			ImGui::Dummy(ImVec2{ 6.f, 0.0f }); ImGui::SameLine();
+
+			if (ImGui::BeginTable("Bottom Table", 2))
+			{
+				ImGui::TableSetupColumn("one", ImGuiTableColumnFlags_WidthFixed, 150.0f); // Default to 100.0f
+				ImGui::TableSetupColumn("two", ImGuiTableColumnFlags_WidthFixed);
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
+				{
+					// SLIDERS & KNOBS
+					ImGui::Text("Effects:");
+					ImGui::Combo("##Effects", &currEffect, &fxTracker[0], totalEffects);
+					if (currEffect != 0)
+					{
+						ImGui::SameLine();
+						if (ImGui::Button("Add"))
+						{
+							effects.push_back(CreateEffect(currEffect));
+							fxTracker.erase(fxTracker.begin() + currEffect);
+							currEffect--;
+							totalEffects--;
+						}
+					}
+
+					for (unsigned int i = 0; i < effects.size(); i++)
+					{
+						Effect* e = effects[i];
+						if (i % 2 != 0) ImGui::SameLine();
+						ImGui::Selectable(e->GetName(), &e->selected, ImGuiSelectableFlags_None, ImVec2{ 50.0f, 15.0f});
+					}
+				}
+
+				ImGui::TableSetColumnIndex(1);
+				{
+					// VOLUME GRAPHIC
+				}
+			}
+			ImGui::EndTable();
 		}
 		ImGui::End();
 	}
@@ -173,7 +221,7 @@ private: // Methods
 			{
 				std::string path = ImGuiFileDialog::Instance()->GetCurrentPath() + "\\" + ImGuiFileDialog::Instance()->GetCurrentFileName();
 				track = audio->LoadAudio(path.c_str());
-				track.source = audio->CreateAudioSource(track.buffer, true);
+				track.source = audio->CreateAudioSource(track.buffer, false);
 				SetVolume(volume);
 				SetPanning(pan);
 				SetTranspose(transpose);
@@ -186,6 +234,12 @@ private: // Methods
 
 	void SetVolume(float volume)
 	{
+		if (mute)
+		{
+			alSourcef(track.source, AL_GAIN, 0);
+			return;
+		}
+
 		volume = Pow(volume, 2.5f) / 1000.0f;
 		if (volume > 99.0f) volume = 100.0f;
 		alSourcef(track.source, AL_GAIN, volume / 100);
@@ -206,6 +260,33 @@ private: // Methods
 		alSourcef(track.source, AL_PITCH, transpose);
 	}
 
+	void SetLoop(bool active)
+	{
+		alSourcei(track.source, AL_LOOPING, active);
+	}
+
+	Effect* CreateEffect(int effect)
+	{
+		Effect* e = nullptr;
+
+		const char* eName = fxTracker[effect];
+
+		if ("EQ" == eName) e = new EQ();
+		else if ("Compressor" == eName) e = new Compressor();
+		else if ("Reverb" == eName) e = new Reverb();
+		else if ("Distortion" == eName) e = new Distortion();
+		else if ("Flanger" == eName) e = new Flanger();
+		else if ("Delay" == eName) e = new Delay();
+		else if ("Chorus"== eName) e = new Chorus();
+		else if ("Auto Wah" == eName) e = new AutoWah();
+		else if ("Ring Mod" == eName) e = new RingMod();
+		else if ("Pitch Shift" == eName) e = new PitchShift();
+		else if ("Freq Shift" == eName) e = new FreqShift(); 
+		else if ("Vocal Morph" == eName) e = new VocalMorph();
+		
+		return e;
+	}
+
 	void UpdatePlayState()
 	{
 		ALint sourceState;
@@ -215,16 +296,20 @@ private: // Methods
 
 private: // Variables
 
-	float volume = 100.0f;
-	float pan = 0;
-	float transpose = 0;
-	float offset = 0;
-	bool knobReminder1 = false;
-	bool knobReminder2 = false;
-	bool play = false;
-	bool browsing = false;
-	Track track;
+	float volume = 100.0f, pan = 0, transpose = 0, offset = 0;
 
+	bool knobReminder1 = false, knobReminder2 = false;
+	bool play = false, browsing = false;
+	bool playOnStart = true, loop = false, mute = false, fx = false;
+
+	int currEffect = 0;
+
+	const char* fxNames[13] = { "-----", "EQ", "Compressor", "Reverb", "Distortion", "Flanger", "Delay", "Chorus", "Auto Wah", "Ring Mod", "Pitch Shift", "Freq Shift", "Vocal Morph" };
+	std::vector<const char*> fxTracker = { "-----", "EQ", "Compressor", "Reverb", "Distortion", "Flanger", "Delay", "Chorus", "Auto Wah", "Ring Mod", "Pitch Shift", "Freq Shift", "Vocal Morph" };
+	std::vector<Effect*> effects;
+	unsigned int totalEffects = 13;
+
+	Track track;
 	AudioSystem* audio = nullptr;
 };
 

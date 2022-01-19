@@ -9,6 +9,9 @@
 #include <dr_flac.h>
 #include <vector>
 #include <string>
+#include "External/OpenAL/include/AL/efx.h"
+#include "External/OpenAL/include/AL/efx-creative.h"
+#include "External/OpenAL/include/AL/efx-presets.h"
 
 enum AudioFormat
 {
@@ -74,12 +77,12 @@ public:
 	void CreateListener();
 
 	Track LoadAudio(const char* path);
-	ALuint CreateAudioSource(ALuint audioBuffer, bool mono = false);
+	ALuint CreateAudioSource(ALuint audioBuffer, bool spacial);
 	void PlayAudio(ALuint audioSource, float time = 0.0f);
 	void StopAudio(ALuint audioSource);
 	void PauseAudio(ALuint audioSource);
 
-	void CleanUp(ALuint monoBuffer, ALuint stereoBuffer, ALuint monoSource, ALuint stereoSource);
+	void CleanUp(ALuint buffer, ALuint source);
 
 private: // Methods
 
