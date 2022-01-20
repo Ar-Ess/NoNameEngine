@@ -6,7 +6,7 @@
 class Effect
 {
 public:
-	~Effect() {}
+	virtual ~Effect() {}
 
 	virtual void Start()
 	{
@@ -32,20 +32,37 @@ public: // Methods
 		return name.c_str();
 	}
 
+	void ToggleBypass(bool toggle)
+	{
+		toggle ? alAuxiliaryEffectSloti(slot, AL_EFFECTSLOT_EFFECT, (ALint)effect) : alAuxiliaryEffectSloti(slot, AL_EFFECTSLOT_EFFECT, AL_EFFECT_NULL);
+		nobypass = toggle;
+	
+	}
+
+	void Disconnect(ALuint source)
+	{
+		alSource3i(source, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 0, AL_FILTER_NULL);
+		alAuxiliaryEffectSloti(slot, AL_EFFECTSLOT_EFFECT, AL_EFFECT_NULL);
+		alDeleteAuxiliaryEffectSlots(1, &slot);
+		alDeleteEffects(1, &effect);
+	}
+
 public: // Variables
 
 	bool selected = false;
+	bool nobypass = true;
 
 protected:
 
-	Effect(const char* xname, ALint ID)
+	Effect(const char* xname, ALint ID, bool bypass = false)
 	{
 		name.clear();
 		name = xname;
 		id = ID;
+		nobypass = !bypass;
 	}
 
-	void Generate()
+	void Generate(ALuint source = 0, bool bypass = false)
 	{
 #define LOAD_PROC(T, x)  ((x) = (T)alGetProcAddress(#x))
 
@@ -77,6 +94,13 @@ protected:
 		alGenEffects(1, &effect);
 		alEffecti(effect, AL_EFFECT_TYPE, id);
 		alGenAuxiliaryEffectSlots(1, &slot);
+		ToggleBypass(!bypass);
+		alSource3i(source, AL_AUXILIARY_SEND_FILTER, (ALint)slot, 0, AL_FILTER_NULL);
+	}
+
+	void SetEffectValue(ALuint param, float value)
+	{
+		alEffectf(effect, param, value);
 		alAuxiliaryEffectSloti(slot, AL_EFFECTSLOT_EFFECT, (ALint)effect);
 	}
 
@@ -113,11 +137,13 @@ protected:
 class Reverb : public Effect
 {
 public:
-	Reverb() : Effect("Reverb", AL_EFFECT_EAXREVERB)
+	Reverb(ALuint source, bool bypass) : Effect("Reverb", AL_EFFECT_EAXREVERB, bypass)
 	{
-		Generate();
+		Generate(source, bypass);
 	}
-	~Reverb() {}
+	~Reverb() 
+	{
+	}
 
 	void Start()
 	{
@@ -129,6 +155,57 @@ public:
 
 	void Draw()
 	{
+		ImGui::Text("Reverb"); ImGui::SameLine();
+		if (ImGui::Checkbox("##Bypass", &nobypass)) ToggleBypass(nobypass);
+
+		ImGui::PushItemWidth(100.0f);
+
+		ImGui::SliderFloat("Wet", &gain, 0.0f, 1.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_GAIN, gain);
+		ImGui::SameLine();
+		ImGui::SliderFloat("Diffusion", &diffusion, 0.0f, 1.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_DIFFUSION, diffusion);
+		ImGui::SameLine();
+		ImGui::SliderFloat("Echo Time", &echoTime, 0.0f, 200.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_ECHO_TIME, echoTime);
+		ImGui::Spacing();
+
+		ImGui::SliderFloat("Decay", &decayTime, 0.0f, 100.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_DECAY_TIME, decayTime);
+		ImGui::SameLine();
+		ImGui::SliderFloat("Density", &density, 0.0f, 1.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_DENSITY, density);
+		ImGui::SameLine();
+		ImGui::SliderFloat("Echo Time", &echoTime, 0.0f, 200.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_ECHO_TIME, echoTime);
+		ImGui::Spacing();
+
+		ImGui::SliderFloat("Delay Time", &lateReverbDelay, 0.0f, 200.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_LATE_REVERB_DELAY, lateReverbDelay);
+		ImGui::SameLine();
+		ImGui::SliderFloat("Delay Gain", &lateReverbGain, 0.0f, 1.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_LATE_REVERB_GAIN, lateReverbGain);
+		ImGui::SameLine();
+		ImGui::SliderFloat("Echo Depth", &echoDepth, 0.0f, 1.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_ECHO_DEPTH, echoDepth);
+
+		ImGui::PopItemWidth();
+
+		/*
+		alEffectf(effect, AL_EAXREVERB_GAINHF,                gainhf);
+		alEffectf(effect, AL_EAXREVERB_GAINLF,                gainlf);
+		alEffectf(effect, AL_EAXREVERB_DECAY_HFRATIO,         decayhfRatio);
+		alEffectf(effect, AL_EAXREVERB_DECAY_LFRATIO,         decaylfRatio);
+		alEffectf(effect, AL_EAXREVERB_REFLECTIONS_GAIN,      reflectionGain);
+		alEffectf(effect, AL_EAXREVERB_REFLECTIONS_DELAY,     reflectionDelay);
+		alEffectf(effect, AL_EAXREVERB_MODULATION_TIME,       modulationTime);
+		alEffectf(effect, AL_EAXREVERB_MODULATION_DEPTH,      modulationDepth);
+		alEffectf(effect, AL_EAXREVERB_AIR_ABSORPTION_GAINHF, airAbsortion);
+		alEffectf(effect, AL_EAXREVERB_ROOM_ROLLOFF_FACTOR,   roomRolloff);
+		alEffectf(effect, AL_EAXREVERB_DECAY_HFLIMIT,         decayhfLimit);
+
+		alEffectf(effect, AL_EAXREVERB_HFREFERENCE,           hfreference);
+		alEffectf(effect, AL_EAXREVERB_LFREFERENCE,           lfreference);*/
 	}
 
 	void End()
@@ -139,6 +216,12 @@ public:
 private: // Methods
 
 private: // Variables
+
+	float density, diffusion, gain = 0.0f, gainhf, gainlf, decayTime,
+		decayhfRatio, decaylfRatio, reflectionGain, reflectionDelay,
+		lateReverbGain, lateReverbDelay, echoTime, echoDepth,
+		modulationTime, modulationDepth, airAbsortion, roomRolloff,
+		decayhfLimit, hfreference, lfreference;
 
 };
 
@@ -161,6 +244,7 @@ public:
 
 	void Draw()
 	{
+		ImGui::Text("Delay");
 	}
 
 	void End()
@@ -193,6 +277,7 @@ public:
 
 	void Draw()
 	{
+		ImGui::Text("Distortion");
 	}
 
 	void End()
@@ -225,6 +310,7 @@ public:
 
 	void Draw()
 	{
+		ImGui::Text("Flanger");
 	}
 
 	void End()
@@ -257,37 +343,7 @@ public:
 
 	void Draw()
 	{
-	}
-
-	void End()
-	{
-
-	}
-
-private: // Methods
-
-private: // Variables
-
-};
-
-class Doppler : public Effect
-{
-public:
-	Doppler() : Effect("Doppler", AL_DOPPLER_FACTOR)
-	{
-	}
-	~Doppler() {}
-
-	void Start()
-	{
-	}
-
-	void Update()
-	{
-	}
-
-	void Draw()
-	{
+		ImGui::Text("Chorus");
 	}
 
 	void End()
@@ -304,7 +360,7 @@ private: // Variables
 class AutoWah : public Effect
 {
 public:
-	AutoWah() : Effect("AutoWah", AL_EFFECT_AUTOWAH)
+	AutoWah() : Effect("Auto Wah", AL_EFFECT_AUTOWAH)
 	{
 		Generate();
 	}
@@ -320,6 +376,7 @@ public:
 
 	void Draw()
 	{
+		ImGui::Text("Auto Wah");
 	}
 
 	void End()
@@ -352,6 +409,7 @@ public:
 
 	void Draw()
 	{
+		ImGui::Text("EQ");
 	}
 
 	void End()
@@ -384,6 +442,7 @@ public:
 
 	void Draw()
 	{
+		ImGui::Text("Compressor");
 	}
 
 	void End()
@@ -416,6 +475,7 @@ public:
 
 	void Draw()
 	{
+		ImGui::Text("Frequency Shifter");
 	}
 
 	void End()
@@ -448,6 +508,7 @@ public:
 
 	void Draw()
 	{
+		ImGui::Text("Pitch Shifter");
 	}
 
 	void End()
@@ -480,6 +541,7 @@ public:
 
 	void Draw()
 	{
+		ImGui::Text("Ring Modulation");
 	}
 
 	void End()
@@ -512,6 +574,7 @@ public:
 
 	void Draw()
 	{
+		ImGui::Text("Vocal Morpher");
 	}
 
 	void End()

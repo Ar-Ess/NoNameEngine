@@ -48,7 +48,10 @@ public:
 			if (ImGui::Checkbox("Mute", &mute)) SetVolume(volume);
 			ImGui::Checkbox("Play on start", &playOnStart);
 			if (ImGui::Checkbox("Loop", &loop)) SetLoop(loop);
-			ImGui::Checkbox("Bypass FX", &fx);
+			if (ImGui::Checkbox("Bypass FX", &bypass))
+			{
+				for (unsigned int i = 0; i < effects.size(); i++) effects[i]->ToggleBypass(!bypass);
+			}
 		}
 
 		UpdatePlayState();
@@ -167,15 +170,15 @@ private: // Methods
 
 			if (ImGui::BeginTable("Bottom Table", 2))
 			{
-				ImGui::TableSetupColumn("one", ImGuiTableColumnFlags_WidthFixed, 150.0f); // Default to 100.0f
+				ImGui::TableSetupColumn("one", ImGuiTableColumnFlags_WidthFixed, 170.0f); // Default to 100.0f
 				ImGui::TableSetupColumn("two", ImGuiTableColumnFlags_WidthFixed);
 				ImGui::TableNextRow();
+				int selectId = -1;
 
+				// EFFECT SELECTOR
 				ImGui::TableSetColumnIndex(0);
 				{
-					// SLIDERS & KNOBS
 					ImGui::Text("Effects:");
-					ImGui::Combo("##Effects", &currEffect, &fxTracker[0], totalEffects);
 					if (currEffect != 0)
 					{
 						ImGui::SameLine();
@@ -188,17 +191,49 @@ private: // Methods
 						}
 					}
 
+					if (!effects.empty())
+					{
+						ImGui::SameLine();
+						if (ImGui::Button("Delete")) DeleteEffect();
+					}
+
+					ImGui::Combo("##Effects", &currEffect, &fxTracker[0], fxTracker.size());
+
+					bool select = false;
+					bool clicked = false;
 					for (unsigned int i = 0; i < effects.size(); i++)
 					{
 						Effect* e = effects[i];
+
 						if (i % 2 != 0) ImGui::SameLine();
-						ImGui::Selectable(e->GetName(), &e->selected, ImGuiSelectableFlags_None, ImVec2{ 50.0f, 15.0f});
+						bool click = ImGui::Selectable(e->GetName(), &e->selected, ImGuiSelectableFlags_None, ImVec2{ 85.0f, 12.0f});
+
+						if (click && e->selected)
+						{
+							selectId = i;
+							clicked = true;
+						}
+					}
+
+					for (unsigned int i = 0; selectId != -1 && clicked && i < effects.size(); i++)
+					{
+						if (i == selectId) continue;
+						effects[i]->selected = false;
 					}
 				}
 
+				// PARAMETER TWICK
 				ImGui::TableSetColumnIndex(1);
 				{
-					// VOLUME GRAPHIC
+					for (unsigned int i = 0; i < effects.size(); i++)
+					{
+						Effect* e = effects[i];
+						if (e->selected)
+						{
+							e->Draw();
+							break;
+						}
+					}
 				}
 			}
 			ImGui::EndTable();
@@ -273,7 +308,7 @@ private: // Methods
 
 		if ("EQ" == eName) e = new EQ();
 		else if ("Compressor" == eName) e = new Compressor();
-		else if ("Reverb" == eName) e = new Reverb();
+		else if ("Reverb" == eName) e = new Reverb(track.source, bypass);
 		else if ("Distortion" == eName) e = new Distortion();
 		else if ("Flanger" == eName) e = new Flanger();
 		else if ("Delay" == eName) e = new Delay();
@@ -294,13 +329,80 @@ private: // Methods
 		(sourceState == AL_PLAYING) ? play = true : play = false;
 	}
 
+	int GetEffectNameId(const char* eName)
+	{
+		if (audio->SameString("EQ", eName)) return 1;
+		else if (audio->SameString("Compressor", eName)) return 2;
+		else if (audio->SameString("Reverb", eName)) return 3;
+		else if (audio->SameString("Distortion", eName)) return 4;
+		else if (audio->SameString("Flanger", eName)) return 5;
+		else if (audio->SameString("Delay", eName)) return 6;
+		else if (audio->SameString("Chorus", eName)) return 7;
+		else if (audio->SameString("Auto Wah", eName)) return 8;
+		else if (audio->SameString("Ring Mod", eName)) return 9;
+		else if (audio->SameString("Pitch Shift", eName)) return 10;
+		else if (audio->SameString("Freq Shift", eName)) return 11;
+		else if (audio->SameString("Vocal Morph", eName)) return 12;
+
+		return -1;
+	}
+
+	const char* ReturnWrittedName(const char* eName)
+	{
+		if (audio->SameString("EQ", eName)) return "EQ";
+		else if (audio->SameString("Compressor", eName)) return "Compressor";
+		else if (audio->SameString("Reverb", eName)) return "Reverb";
+		else if (audio->SameString("Distortion", eName)) return "Distortion";
+		else if (audio->SameString("Flanger", eName)) return "Flanger";
+		else if (audio->SameString("Delay", eName)) return "Delay";
+		else if (audio->SameString("Chorus", eName)) return "Chorus";
+		else if (audio->SameString("Auto Wah", eName)) return "Auto Wah";
+		else if (audio->SameString("Ring Mod", eName)) return "Ring Mod";
+		else if (audio->SameString("Pitch Shift", eName)) return "Pitch Shift";
+		else if (audio->SameString("Freq Shift", eName)) return "Freq Shift";
+		else if (audio->SameString("Vocal Morph", eName)) return "Vocal Morph";
+
+		return "";
+	}
+
+	void DeleteEffect()
+	{
+		for (unsigned int i = 0; i < effects.size(); i++)
+		{
+			if (effects[i]->selected)
+			{
+				Effect* e = effects[i];
+				if (fxTracker.size() == 1) fxTracker.push_back(ReturnWrittedName(e->GetName()));
+				else
+				{
+					int delId = GetEffectNameId(e->GetName());
+					bool inserted = false;
+					for (unsigned int a = 1; a < fxTracker.size(); a++)
+					{
+						if (delId < GetEffectNameId(fxTracker[a]))
+						{
+							fxTracker.insert(fxTracker.begin() + a, ReturnWrittedName(e->GetName()));
+							inserted = true;
+							break;
+						}
+					}
+					if (!inserted) fxTracker.push_back(ReturnWrittedName(e->GetName()));
+				}
+				effects[i]->Disconnect(track.source);
+				delete effects[i];
+				effects.erase(effects.begin() + i);
+				break;
+			}
+		}
+	}
+
 private: // Variables
 
 	float volume = 100.0f, pan = 0, transpose = 0, offset = 0;
 
 	bool knobReminder1 = false, knobReminder2 = false;
 	bool play = false, browsing = false;
-	bool playOnStart = true, loop = false, mute = false, fx = false;
+	bool playOnStart = true, loop = false, mute = false, bypass = false;
 
 	int currEffect = 0;
 

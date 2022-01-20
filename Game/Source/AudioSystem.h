@@ -84,14 +84,6 @@ public:
 
 	void CleanUp(ALuint buffer, ALuint source);
 
-private: // Methods
-
-	void ListAudioDevices(const ALCchar* devices);
-
-	Track LoadMP3(const char* path);
-	Track LoadWav(const char* path);
-	Track LoadFlac(const char* path);
-
 	bool SameString(std::string a, std::string b)
 	{
 		bool ret = true;
@@ -106,6 +98,14 @@ private: // Methods
 
 		return true;
 	}
+
+private: // Methods
+
+	void ListAudioDevices(const ALCchar* devices);
+
+	Track LoadMP3(const char* path);
+	Track LoadWav(const char* path);
+	Track LoadFlac(const char* path);
 
 	void CleanUpSource(ALuint source);
 	void CleanUpBuffer(ALuint buffer);
