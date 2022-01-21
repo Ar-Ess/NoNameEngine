@@ -393,7 +393,10 @@ private: // Methods
 
 	void UpdateSpatialAudio(Shape3D* shape)
 	{
-		alSource3f(track.source, AL_POSITION, (shape->GetPosition().x - camPos->x) * -1, camPos->y - shape->GetPosition().y, shape->GetPosition().z - camPos->z);
+		ALfloat positionX = (shape->GetPosition().x - camPos->x) * -1;
+		alSource3f(track.source, AL_POSITION, positionX, camPos->y - shape->GetPosition().y, shape->GetPosition().z - camPos->z);
+		alSourcef(track.source, AL_ROLLOFF_FACTOR, 10.0f);
+		alSourcef(track.source, AL_MAX_DISTANCE, 100.0f);
 	}
 
 private: // Variables

@@ -101,7 +101,7 @@ ALuint AudioSystem::CreateAudioSource(ALuint audioBuffer, bool spacial)
 	alec(alSourcei(source, AL_LOOPING, AL_FALSE));
 
 	alec(alDistanceModel(AL_LINEAR_DISTANCE_CLAMPED));
-	alSourcef(source, AL_ROLLOFF_FACTOR, 0.0f); // Velocitat que es reduirà el volum quan la pos > AL_MAX_DISTANCE
+	alSourcef(source, AL_ROLLOFF_FACTOR, 10.0f); // Velocitat que es reduirà el volum quan la pos > AL_MAX_DISTANCE
 	alSourcei(source, AL_SOURCE_RELATIVE, AL_TRUE); // AL_TRUE = pos relativa al listener | AL_FALSE = pos relativa a general coords (for spacial)
 	alec(alSource3f, source, AL_POSITION, 0, 0, 0);
 	alec(alSource3f, source, AL_VELOCITY, 0, 0, 0);

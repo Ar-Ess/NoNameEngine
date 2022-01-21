@@ -588,5 +588,10 @@ private: // Variables
 
 };
 
+class Doppler : public Effect
+{
+
+};
+
 #endif // !__EFFECTS_H__
 
