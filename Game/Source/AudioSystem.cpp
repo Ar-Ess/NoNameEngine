@@ -99,14 +99,30 @@ ALuint AudioSystem::CreateAudioSource(ALuint audioBuffer, bool spacial)
 	alec(alSourcef(source, AL_PITCH, 1.f));
 	alec(alSourcef(source, AL_GAIN, 1.f));
 	alec(alSourcei(source, AL_LOOPING, AL_FALSE));
+
+	//alec(alDistanceModel(AL_LINEAR_DISTANCE_CLAMPED));
+	//alSourcef(source, AL_ROLLOFF_FACTOR, 0.0f); // Velocitat que es reduirà el volum quan la pos > AL_MAX_DISTANCE
+	//alSourcei(source, AL_SOURCE_RELATIVE, !spacial); // AL_TRUE = pos relativa al listener | AL_FALSE = pos relativa a general coords (for spacial)
+	alec(alSource3f, source, AL_POSITION, 0, 0, 0);
+	alec(alSource3f, source, AL_VELOCITY, 0, 0, 0);
+
 	alec(alSourcei(source, AL_BUFFER, audioBuffer));
-
-	alec(alDistanceModel(AL_LINEAR_DISTANCE_CLAMPED));
-	alSourcef(source, AL_ROLLOFF_FACTOR, 0.0f); // Velocitat que es reduirà el volum quan la pos > AL_MAX_DISTANCE
-	alSourcei(source, AL_SOURCE_RELATIVE, !spacial); // AL_TRUE = pos relativa al listener | AL_FALSE = pos relativa a general coords (for spacial)
-	alSource3f(source, AL_POSITION, 0, 0, 0);
-
+	
 	return source;
+}
+
+void AudioSystem::CreateSpatialAudioSource(ALuint audioBuffer)
+{
+	ALuint source;
+	alec(alGenSources, 1, &source);
+	alec(alSourcef, source, AL_PITCH, 1);
+	alec(alSourcef, source, AL_GAIN, 1.0f);
+	alec(alSourcei, source, AL_LOOPING, AL_FALSE);
+	alec(alSourcei, source, AL_BUFFER, audioBuffer);
+
+	alec(alSource3f, source, AL_POSITION, cam->position.x, cam->position->y, cam->position.z);
+	alec(alSource3f, source, AL_VELOCITY, 0, 0, 0);
+
 }
 
 void AudioSystem::PlayAudio(ALuint audioSource, float time)
@@ -295,9 +311,9 @@ Track AudioSystem::LoadFlac(const char* path)
 
 // ---------------------------
 
-void AudioSystem::CreateListener()
+void AudioSystem::CreateListener(float x, float y, float z)
 {
-	alec(alListener3f(AL_POSITION, 0.0f, 0.0f, 0.0f));
+	alec(alListener3f(AL_POSITION, x, y, z));
 	alec(alListener3f(AL_VELOCITY, 0.0f, 0.0f, 0.0f));
 	ALfloat forwardUpVec[] ={
 		1.0f, 0.0f, 0.0f,

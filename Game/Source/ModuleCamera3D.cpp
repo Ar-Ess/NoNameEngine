@@ -5,10 +5,13 @@
 #include "External/SDL/include/SDL.h"
 #include "ModuleSceneIntro.h"
 #include "glmath.h"
+#include "AudioSystem.h"
 
-ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(app, start_enabled)
+ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled, AudioSystem* audioSystem) : Module(app, start_enabled)
 {
 	CalculateViewMatrix();
+
+	audio = audioSystem;
 
 	X = vec3(1.0f, 0.0f, 0.0f);
 	Y = vec3(0.0f, 1.0f, 0.0f);
@@ -38,6 +41,7 @@ bool ModuleCamera3D::Start()
 {
 	LOG("Setting up the camera");
 	frustum.SetPos(float3(0.f, 0.f, -10.f));
+	audio->CreateListener(position.x, position.y, position.z);
 	bool ret = true;
 
 	return ret;
@@ -149,6 +153,8 @@ update_status ModuleCamera3D::PostUpdate()
 	// Recalculate matrix
 	LookAt(vec3{ lookPoint.x, lookPoint.y, lookPoint.z });
 	CalculateViewMatrix();
+
+	audio->CreateListener(position.x, position.y, position.z); // We constantly update the position of the listener with the camera position
 
 	return UPDATE_CONTINUE;
 }

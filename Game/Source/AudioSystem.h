@@ -74,10 +74,11 @@ public:
 	~AudioSystem();
 
 	void InitAudio();
-	void CreateListener();
+	void CreateListener(float x, float y, float z);
 
 	Track LoadAudio(const char* path);
 	ALuint CreateAudioSource(ALuint audioBuffer, bool spacial);
+	void CreateSpatialAudioSource(ALuint audioBuffer);
 	void PlayAudio(ALuint audioSource, float time = 0.0f);
 	void StopAudio(ALuint audioSource);
 	void PauseAudio(ALuint audioSource);

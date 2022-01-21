@@ -8,13 +8,14 @@
 #include "External/MathGeoLib/Geometry/LineSegment.h"
 #include "Shapes3D.h"
 #include "EditorScene.h"
+#include "AudioSystem.h"
 
 
 
 class ModuleCamera3D : public Module
 {
 public:
-	ModuleCamera3D(Application* app, bool start_enabled = true);
+	ModuleCamera3D(Application* app, bool start_enabled = true, AudioSystem* audioSystem = nullptr);
 	~ModuleCamera3D();
 
 	bool Start();
@@ -78,4 +79,5 @@ private:
 	Point3D lookPoint = {};
 	float ratio;
 	EditorScene* editor = nullptr;
+	AudioSystem* audio = nullptr;
 };

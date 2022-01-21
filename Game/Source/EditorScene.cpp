@@ -33,7 +33,7 @@ bool EditorScene::Start()
 	assets->ParseFiles();
 	import->LoadDefaultImages();
 	audio->InitAudio();
-	audio->CreateListener();
+	/*audio->CreateListener();*/
 
 	Plane3D* p = new Plane3D({ 0, 0, 0 }, { 0, 1, 0 }, Point3D(200));
 	p->solid = false;
