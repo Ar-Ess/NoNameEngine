@@ -4,11 +4,12 @@
 #include "Component.h"
 #include "AudioSystem.h"
 #include "glmath.h"
+#include "Effects.h"
 
 class SpacialAudioSourceComponent : public Component
 {
 public:
-	SpacialAudioSourceComponent(Timer* timer, AudioSystem* audioSystem, vec3* camPosition ) : Component("Spacial Audio Source", ComponentID::SPACIAL_AUDIO_SOURCE_COMPONENT)
+	SpacialAudioSourceComponent(Timer* timer, AudioSystem* audioSystem, vec3* camPosition) : Component("Spacial Audio Source", ComponentID::SPACIAL_AUDIO_SOURCE_COMPONENT)
 	{
 		gameTimer = timer;
 		audio = audioSystem;
@@ -27,7 +28,6 @@ public:
 	{
 		if (gameTimer->GetTimerState() != RUNNING) return;
 
-		/*track.source = audio->CreateAudioSource(track.buffer, true);*/
 		UpdateSpatialAudio(afected);
 	}
 
@@ -54,6 +54,12 @@ public:
 			{
 				for (unsigned int i = 0; i < effects.size(); i++) effects[i]->ToggleBypass(!bypass);
 			}
+			if (ImGui::Checkbox("Doppler Effect", &doppler)) track.sampleRate = DopplerEffect();
+			ImGui::SameLine();
+			if (ImGui::Button("Doppler"))
+			{
+				dopplerWindow = !dopplerWindow;
+			}
 		}
 
 		UpdatePlayState();
@@ -61,6 +67,8 @@ public:
 		if (open) DrawWindow(onWindow);
 
 		if (browsing) browsing = BrowseAudio();
+
+		if (dopplerWindow) DrawDopplerWindow();
 	}
 
 	void End(Shape3D* afected)
@@ -243,6 +251,16 @@ private: // Methods
 		ImGui::End();
 	}
 
+	void DrawDopplerWindow()
+	{
+		if (ImGui::Begin("Doppler options", &dopplerWindow))
+		{
+
+		}
+		ImGui::End();
+
+	}
+
 	bool BrowseAudio()
 	{
 		bool ret = true;
@@ -399,17 +417,30 @@ private: // Methods
 		alSourcef(track.source, AL_MAX_DISTANCE, 100.0f);
 	}
 
+	uint DopplerEffect()
+	{
+		alDopplerFactor(0.7);
+		alDopplerVelocity(1);
+
+		Track newTrack;
+
+		newTrack.sampleRate = AL_DOPPLER_FACTOR * track.sampleRate * (AL_DOPPLER_VELOCITY - 2) / (AL_DOPPLER_VELOCITY + 1);
+
+		return newTrack.sampleRate;
+	}
+
 private: // Variables
 
 	float volume = 100, transpose = 0, pan = 0, offset = 0;
 
 	bool knobReminder1 = false, knobReminder2 = false;
 	bool play = false, browsing = false;
-	bool playOnStart = true, loop = false, mute = false, bypass = false;
+	bool playOnStart = true, loop = false, mute = false, bypass = false, doppler = false;
+	bool dopplerWindow = false;
 	
 	int currEffect = 0;
 
-	const char* fxNames[13] = { "-----", "EQ", "Compressor", "Reverb", "Distortion", "Flanger", "Delay", "Chorus", "Auto Wah", "Ring Mod", "Pitch Shift", "Freq Shift", "Vocal Morph" };
+	const char* fxNames[14] = { "-----", "EQ", "Compressor", "Reverb", "Distortion", "Flanger", "Delay", "Chorus", "Auto Wah", "Ring Mod", "Pitch Shift", "Freq Shift", "Vocal Morph" };
 	std::vector<const char*> fxTracker = { "-----", "EQ", "Compressor", "Reverb", "Distortion", "Flanger", "Delay", "Chorus", "Auto Wah", "Ring Mod", "Pitch Shift", "Freq Shift", "Vocal Morph" };
 	std::vector<Effect*> effects;
 	unsigned int totalEffects = 13;
