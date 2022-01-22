@@ -22,12 +22,16 @@ public:
 		knobReminder1 = false;
 		knobReminder2 = false;
 		if (playOnStart) audio->PlayAudio(track.source);
+
+		if (dopplerEffect)
+		{
+			track.sampleRate = DopplerEffect();
+		}
 	}
 
 	void Update(Shape3D* afected)
 	{
 		if (gameTimer->GetTimerState() != RUNNING) return;
-
 		UpdateSpatialAudio(afected);
 	}
 
@@ -54,7 +58,7 @@ public:
 			{
 				for (unsigned int i = 0; i < effects.size(); i++) effects[i]->ToggleBypass(!bypass);
 			}
-			if (ImGui::Checkbox("Doppler Effect", &doppler)) track.sampleRate = DopplerEffect();
+			if (ImGui::Checkbox("Doppler Effect", &doppler)) dopplerEffect = !dopplerEffect;
 			ImGui::SameLine();
 			if (ImGui::Button("Doppler"))
 			{
@@ -255,7 +259,8 @@ private: // Methods
 	{
 		if (ImGui::Begin("Doppler options", &dopplerWindow))
 		{
-
+			ImGui::SliderFloat("Factor", &factor, 0.f, 100.f);
+			ImGui::SliderFloat("Sound speed", &velocity, 0.1, 5.f);
 		}
 		ImGui::End();
 
@@ -419,8 +424,8 @@ private: // Methods
 
 	uint DopplerEffect()
 	{
-		alDopplerFactor(0.7);
-		alDopplerVelocity(1);
+		alDopplerFactor(factor);
+		alDopplerVelocity(velocity);
 
 		Track newTrack;
 
@@ -437,6 +442,7 @@ private: // Variables
 	bool play = false, browsing = false;
 	bool playOnStart = true, loop = false, mute = false, bypass = false, doppler = false;
 	bool dopplerWindow = false;
+	bool dopplerEffect = false;
 	
 	int currEffect = 0;
 
@@ -449,6 +455,8 @@ private: // Variables
 
 	AudioSystem* audio = nullptr;
 	vec3* camPos = nullptr;
+
+	ALfloat factor, velocity;
 };
 
 #endif // !__SPACIAL_AUDIO_SOURCE_COMPONENT_H__
