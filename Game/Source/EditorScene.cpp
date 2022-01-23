@@ -1203,6 +1203,7 @@ void EditorScene::AddComponent(ComponentID component, Shape3D* recipient)
 	{
 	case LINIAR_VELOCITY_COMPONENT:
 		recipient->components.push_back(new LiniarVelocityComponent(timer));
+		moving = true;
 		break;
 
 	case AUDIO_SOURCE_COMPONENT:
@@ -1210,7 +1211,7 @@ void EditorScene::AddComponent(ComponentID component, Shape3D* recipient)
 		break;
 
 	case SPACIAL_AUDIO_SOURCE_COMPONENT:
-		recipient->components.push_back(new SpacialAudioSourceComponent(timer, audio, &app->camera->position));
+		recipient->components.push_back(new SpacialAudioSourceComponent(timer, audio, &app->camera->position, this));
 		break;
 	}
 }
@@ -1409,7 +1410,7 @@ void EditorScene::ComponentInfoInspector(Shape3D* s)
 		if (ImGui::CollapsingHeader(s->components[i]->GetTitle()))
 		{
 			AddSpacing(0);
-			s->components[i]->Draw(&onWindow);
+			s->components[i]->Draw(&s[i],&onWindow);
 			AddSpacing(0);
 		}
 

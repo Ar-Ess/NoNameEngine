@@ -314,6 +314,9 @@ public: // Variables
 	// Information for Cam
 	bool onWindow = false;
 
+	// Information for audio
+	bool moving = false;
+
 	Point wSize = { SCREEN_WIDTH, SCREEN_HEIGHT };
 	int wSizeProportion = 100;
 
@@ -338,6 +341,8 @@ private: // Variables
 	Shape3D* prevShape = nullptr;
 	bool createToolTip = false;
 	Timer* timer;
+
+	Shape3D* shape;
 
 	Image folderImage = { ImageTexture::IMG_NO_IMAGE };
 	Image fileImage = { ImageTexture::IMG_NO_IMAGE };

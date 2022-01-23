@@ -34,6 +34,8 @@ public:
 
 		float vel = velocity / 200;
 
+		afected->velocity = velocity;
+
 		!negx ? n.x = -1 : n.x = 1;
 		!negy ? n.y = -1 : n.y = 1;
 		!negz ? n.z = -1 : n.z = 1;
@@ -48,7 +50,7 @@ public:
 		afected->SetPosition(pos);
 	}
 
-	void Draw(bool* onWindow = nullptr)
+	void Draw(Shape3D* afected, bool* onWindow = nullptr)
 	{
 		char xText[3] = { 'x', ' ', '\0' };
 		char yText[3] = { 'y', ' ', '\0' };
@@ -69,7 +71,7 @@ public:
 
 		ImGui::PushID("SliderVel");
 		ImGui::Text("Velocity:");
-		ImGui::SliderFloat("", &velocity, 0.1f, 100.0f);
+		if(ImGui::SliderFloat("", &velocity, 0.1f, 100.0f)) afected->velocity = velocity;
 		ImGui::PopID();
 		ImGui::Spacing();
 

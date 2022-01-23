@@ -25,7 +25,7 @@ public:
 
 	virtual void Update(Shape3D* afected) {}
 
-	virtual void Draw(bool* onWindow = nullptr) {}
+	virtual void Draw(Shape3D* afected, bool* onWindow = nullptr) {}
 
 	virtual void End(Shape3D* afected) {}
 

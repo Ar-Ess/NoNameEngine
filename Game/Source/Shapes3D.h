@@ -144,6 +144,8 @@ public:
 	AABB boundingBox;
 	vector<Component*> components;
 
+	float velocity;
+
 protected:
 
 	Shape3D(Point3D pos, Point3D s, Rotation rot, ShapeType sT, const char* n, bool ax = false)

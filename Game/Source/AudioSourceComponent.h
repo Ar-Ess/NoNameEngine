@@ -29,7 +29,7 @@ public:
 		//audio->PlayAudio(track.source);
 	}
 
-	void Draw(bool* onWindow = nullptr)
+	void Draw(Shape3D* affected, bool* onWindow = nullptr)
 	{
 		if (ImGui::Button("Browse Audio")) browsing = true;
 

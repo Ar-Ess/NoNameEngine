@@ -5,15 +5,17 @@
 #include "AudioSystem.h"
 #include "glmath.h"
 #include "Effects.h"
+#include "Application.h"
 
 class SpacialAudioSourceComponent : public Component
 {
 public:
-	SpacialAudioSourceComponent(Timer* timer, AudioSystem* audioSystem, vec3* camPosition) : Component("Spacial Audio Source", ComponentID::SPACIAL_AUDIO_SOURCE_COMPONENT)
+	SpacialAudioSourceComponent(Timer* timer, AudioSystem* audioSystem, vec3* camPosition, EditorScene* sEditor) : Component("Spacial Audio Source", ComponentID::SPACIAL_AUDIO_SOURCE_COMPONENT)
 	{
 		gameTimer = timer;
 		audio = audioSystem;
 		camPos = camPosition;
+		editor = sEditor;
 	}
 	~SpacialAudioSourceComponent() {}
 
@@ -25,7 +27,7 @@ public:
 
 		if (dopplerEffect)
 		{
-			track.sampleRate = DopplerEffect();
+			track.sampleRate = DopplerEffect(afected->velocity, 1.f);
 		}
 	}
 
@@ -35,7 +37,7 @@ public:
 		UpdateSpatialAudio(afected);
 	}
 
-	void Draw(bool* onWindow = nullptr)
+	void Draw(Shape3D* afected, bool* onWindow = nullptr)
 	{
 		if (ImGui::Button("Browse Audio")) browsing = true;
 
@@ -422,14 +424,16 @@ private: // Methods
 		alSourcef(track.source, AL_MAX_DISTANCE, 100.0f);
 	}
 
-	uint DopplerEffect()
+	uint DopplerEffect(float sourceVelocity, float listenerVelocity)
 	{
 		alDopplerFactor(factor);
 		alDopplerVelocity(velocity);
 
+		if (!editor->moving) sourceVelocity = 0;
+
 		Track newTrack;
 
-		newTrack.sampleRate = AL_DOPPLER_FACTOR * track.sampleRate * (AL_DOPPLER_VELOCITY - 2) / (AL_DOPPLER_VELOCITY + 1);
+		newTrack.sampleRate = AL_DOPPLER_FACTOR * track.sampleRate * (AL_DOPPLER_VELOCITY - listenerVelocity) / (AL_DOPPLER_VELOCITY + sourceVelocity);
 
 		return newTrack.sampleRate;
 	}
@@ -457,6 +461,8 @@ private: // Variables
 	vec3* camPos = nullptr;
 
 	ALfloat factor, velocity;
+
+	EditorScene* editor;
 };
 
 #endif // !__SPACIAL_AUDIO_SOURCE_COMPONENT_H__
