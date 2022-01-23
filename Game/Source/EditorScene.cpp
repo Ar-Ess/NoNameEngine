@@ -1213,7 +1213,7 @@ void EditorScene::AddComponent(ComponentID component, Shape3D* recipient)
 		break;
 
 	case SPACIAL_AUDIO_SOURCE_COMPONENT:
-		recipient->components.push_back(new SpacialAudioSourceComponent(timer, audio, &app->camera->position, this));
+		recipient->components.push_back(new SpacialAudioSourceComponent(timer, audio, &app->camera->position, this, &app->camera->speed));
 		break;
 	}
 }

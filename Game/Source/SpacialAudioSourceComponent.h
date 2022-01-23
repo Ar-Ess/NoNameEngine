@@ -10,12 +10,13 @@
 class SpacialAudioSourceComponent : public Component
 {
 public:
-	SpacialAudioSourceComponent(Timer* timer, AudioSystem* audioSystem, vec3* camPosition, EditorScene* sEditor) : Component("Spacial Audio Source", ComponentID::SPACIAL_AUDIO_SOURCE_COMPONENT)
+	SpacialAudioSourceComponent(Timer* timer, AudioSystem* audioSystem, vec3* camPosition, EditorScene* scene,float* sCamSpeed) : Component("Spacial Audio Source", ComponentID::SPACIAL_AUDIO_SOURCE_COMPONENT)
 	{
 		gameTimer = timer;
 		audio = audioSystem;
 		camPos = camPosition;
-		editor = sEditor;
+		camSpeed = sCamSpeed;
+		editor = scene;
 	}
 	~SpacialAudioSourceComponent() {}
 
@@ -27,7 +28,7 @@ public:
 
 		if (dopplerEffect)
 		{
-			track.sampleRate = DopplerEffect(afected->velocity, 1.f);
+			track.sampleRate = DopplerEffect(afected->velocity, *camSpeed);
 		}
 	}
 
@@ -421,7 +422,7 @@ private: // Methods
 		ALfloat positionX = (shape->GetPosition().x - camPos->x) * -1;
 		alSource3f(track.source, AL_POSITION, positionX, camPos->y - shape->GetPosition().y, shape->GetPosition().z - camPos->z);
 		alSourcef(track.source, AL_ROLLOFF_FACTOR, 10.0f);
-		alSourcef(track.source, AL_MAX_DISTANCE, 100.0f);
+		alSourcef(track.source, AL_MAX_DISTANCE, 200.0f);
 	}
 
 	uint DopplerEffect(float sourceVelocity, float listenerVelocity)
@@ -461,6 +462,8 @@ private: // Variables
 	vec3* camPos = nullptr;
 
 	ALfloat factor, velocity;
+
+	float* camSpeed = nullptr;
 
 	EditorScene* editor;
 };
