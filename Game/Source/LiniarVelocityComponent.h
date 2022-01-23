@@ -152,12 +152,12 @@ private: // Variables
 
 	Point3D initialPosition = {};
 	Point3D finalPosition = {};
-	LiniarBehaviour lB = INFINIT;
-	float velocity = 0.1f;
+	LiniarBehaviour lB = OSCILATION;
+	float velocity = 17.0f;
 	bool x = true, y = false, z = false;
 	bool negx = false, negy = false, negz = false;
-	float maxDistance = 100.0f;
-	int currentBehaviour = 0;
+	float maxDistance = 20.0f;
+	int currentBehaviour = 2;
 	bool direction = true;
 };
 

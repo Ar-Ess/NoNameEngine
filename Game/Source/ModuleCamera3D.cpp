@@ -22,7 +22,6 @@ ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled, AudioSystem
 	reference = vec3(0.0f, 0.0f, 0.0f);
 
 	// Create our frustum using the MathGeoLib functions
-	ratio = float(app->window->GetWindowWidth() / app->window->GetWindowHeight()); // We calculate the screen ratio using SDL functions
 	frustum.SetPos(float3(0.f, 0.f, -10.f)); // Frustum position
 	frustum.SetViewPlaneDistances(0.1f, 1000.0f); // Frustum distances of the near plane and the far plane
 	frustum.SetPerspective(1.f, 1.f); // 1,1 perspective to get a pyramid-like frustum
@@ -56,7 +55,7 @@ bool ModuleCamera3D::CleanUp()
 
 update_status ModuleCamera3D::PostUpdate()
 {
-	//if (app->scene->GetWindowState(Windows::CONFIG_W) || app->scene->GetWindowState(Windows::DEMO_W) || app->scene->GetWindowState(Windows::OUTPUT_W) || app->scene->GetWindowState(Windows::ABOUT_W)) return UPDATE_CONTINUE;
+	
 	if (app->scene->GetOnWindow() || app->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT || (app->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_REPEAT)) return UPDATE_CONTINUE;
 	
 	vec3 newPos(0, 0, 0);

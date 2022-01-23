@@ -12,6 +12,15 @@ public:
 	{
 		gameTimer = timer;
 		audio = audioSystem;
+
+		track = audio->LoadAudio("Assets/Audio/SplitDuty_FinalBoss_Mono_Soundtrack.mp3");
+		track.source = audio->CreateAudioSource(track.buffer, true);
+		SetVolume(volume);
+		SetPanning(pan);
+		SetTranspose(transpose);
+
+		loop = true;
+		SetLoop(loop);
 	}
 	~AudioSourceComponent() 
 	{
@@ -73,7 +82,7 @@ public:
 
 	void End(Shape3D* afected)
 	{
-
+		audio->StopAudio(track.source);
 	}
 
 private: // Methods

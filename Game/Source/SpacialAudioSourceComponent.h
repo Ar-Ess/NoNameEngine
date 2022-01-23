@@ -17,6 +17,13 @@ public:
 		camPos = camPosition;
 		camSpeed = sCamSpeed;
 		editor = scene;
+
+		track = audio->LoadAudio("Assets/Audio/SplitDuty_NPCTalk_Mono_Fx.flac");
+		track.source = audio->CreateAudioSource(track.buffer, true);
+		SetVolume(volume);
+		SetTranspose(transpose);
+		loop = true;
+		SetLoop(loop);
 	}
 	~SpacialAudioSourceComponent() 
 	{
@@ -92,7 +99,7 @@ public:
 
 	void End(Shape3D* afected)
 	{
-
+		audio->StopAudio(track.source);
 	}
 
 private: // Methods
@@ -451,7 +458,7 @@ private: // Methods
 
 private: // Variables
 
-	float volume = 100, transpose = 0, pan = 0, offset = 0;
+	float volume = 100, transpose = -7, pan = 0, offset = 0;
 
 	bool knobReminder1 = false, knobReminder2 = false;
 	bool play = false, browsing = false;

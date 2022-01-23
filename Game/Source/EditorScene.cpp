@@ -27,6 +27,8 @@ EditorScene::~EditorScene()
 
 bool EditorScene::Start()
 {
+	this->timer = &app->scene->gameTimer;
+
 	bool ret = true;
 	//ret = file->OpenFile("test").Write((Shape3D*)m);
 
@@ -44,9 +46,17 @@ bool EditorScene::Start()
 	shapes->push_back(m);
 	DeleteAllShapes();
 
+	Cube3D* cube = new Cube3D({ 10, 0, 0 });
+	AddComponent(ComponentID::LINIAR_VELOCITY_COMPONENT, cube);
+	AddComponent(ComponentID::SPACIAL_AUDIO_SOURCE_COMPONENT, cube);
+	shapes->push_back(cube);
+
+	Pyramid3D* pyramid = new Pyramid3D();
+	AddComponent(ComponentID::AUDIO_SOURCE_COMPONENT, pyramid);
+	shapes->push_back(pyramid);
+
 	SetValidId(*shapes);
 
-	this->timer = &app->scene->gameTimer;
 
 	return ret;
 }

@@ -247,7 +247,7 @@ private: // Functions
 			Shape3D* s = shapes->at(i);
 			if (!s->childs.empty()) ComponentsSet(&s->childs, end);
 
-			for (unsigned int i = 0; !s->components.empty() && i < s->components.size(); i++)
+			for (unsigned int i = 0; !s->components.empty() && i < s->components.size() && s->draw; i++)
 			{
 				if (!end) s->components[i]->Start(s);
 				else
