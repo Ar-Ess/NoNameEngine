@@ -316,9 +316,6 @@ public: // Variables
 	// Information for Cam
 	bool onWindow = false;
 
-	// Information for audio
-	bool moving = false;
-
 	Point wSize = { SCREEN_WIDTH, SCREEN_HEIGHT };
 	int wSizeProportion = 100;
 

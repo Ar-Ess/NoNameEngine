@@ -144,7 +144,7 @@ public:
 	AABB boundingBox;
 	vector<Component*> components;
 
-	float velocity;
+	float velocity = 0;
 
 protected:
 

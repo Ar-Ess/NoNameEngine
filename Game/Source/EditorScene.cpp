@@ -1205,7 +1205,6 @@ void EditorScene::AddComponent(ComponentID component, Shape3D* recipient)
 	{
 	case LINIAR_VELOCITY_COMPONENT:
 		recipient->components.push_back(new LiniarVelocityComponent(timer));
-		moving = true;
 		break;
 
 	case AUDIO_SOURCE_COMPONENT:

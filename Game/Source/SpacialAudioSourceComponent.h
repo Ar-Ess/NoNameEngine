@@ -36,6 +36,8 @@ public:
 		knobReminder2 = false;
 		if (playOnStart) audio->PlayAudio(track.source);
 
+		afected->velocity = 0;
+
 		if (dopplerEffect)
 		{
 			track.sampleRate = DopplerEffect(afected->velocity, *camSpeed);
@@ -440,9 +442,6 @@ private: // Methods
 		alDopplerFactor(factor);
 		alDopplerVelocity(velocity);
 
-		//if (!editor->moving) sourceVelocity = 0;
-		if (gameTimer->GetTimerState() == STOPPED) sourceVelocity = 0;
-
 		Track newTrack;
 
 		newTrack.sampleRate = AL_DOPPLER_FACTOR * track.sampleRate * (AL_DOPPLER_VELOCITY - listenerVelocity) / (AL_DOPPLER_VELOCITY + sourceVelocity);
@@ -473,10 +472,8 @@ private: // Variables
 	vec3* camPos = nullptr;
 
 	ALfloat factor, velocity;
-
 	float* camSpeed = nullptr;
-
-	EditorScene* editor;
+	EditorScene* editor = nullptr;
 };
 
 #endif // !__SPACIAL_AUDIO_SOURCE_COMPONENT_H__
