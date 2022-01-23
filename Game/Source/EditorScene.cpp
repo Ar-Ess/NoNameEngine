@@ -336,8 +336,10 @@ bool EditorScene::ShowAboutWindow(bool open)
 			ImGui::BulletText("JSON 1.9.4");
 			ImGui::BulletText("Parson 1.2.1");
 			ImGui::BulletText("STB Image v2.27");
+			ImGui::BulletText("OpenAL v1.1");
+			ImGui::BulletText("DrWav v0.12.0");
 
-			ImGui::Text("\n\nMIT License\n\nCopyright (c) 2021 Marti Buxeda and Victor Jara\n\n");
+			ImGui::Text("\n\nMIT License\n\nCopyright (c) 2021 Marti Buxeda, Victor Jara and Jordi Espriu\n\n");
 			
 			ImGui::Text("Permission is hereby granted, free of charge, to any person obtaining a copy \nof this software and associated documentation files(the 'Software'), to deal \nin the Software without restriction, including without limitation the rights \nto use, copy, modify, merge, publish, distribute, sublicense, and /or sell \ncopies of the Software, and to permit persons to whom the Software is \nfurnished to do so, subject to the following conditions :\n ");
 			ImGui::Text("The above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\n");
