@@ -13,7 +13,17 @@ public:
 		gameTimer = timer;
 		audio = audioSystem;
 	}
-	~AudioSourceComponent() {}
+	~AudioSourceComponent() 
+	{
+		fxTracker.clear();
+		for (unsigned int i = 0; i < effects.size(); i++)
+		{
+			effects[i]->Disconnect(track.source);
+			delete effects[i];
+		}
+		effects.clear();
+		this->title.clear();
+	}
 
 	void Start(Shape3D* afected)
 	{
@@ -194,7 +204,7 @@ private: // Methods
 					if (!effects.empty())
 					{
 						ImGui::SameLine();
-						if (ImGui::Button("Delete")) DeleteEffect();
+						if (ImGui::Button("Delete")) RemoveEffect();
 					}
 
 					ImGui::Combo("##Effects", &currEffect, &fxTracker[0], fxTracker.size());
@@ -309,7 +319,7 @@ private: // Methods
 		if ("EQ" == eName) e = new EQ();
 		else if ("Compressor" == eName) e = new Compressor();
 		else if ("Reverb" == eName) e = new Reverb(track.source, bypass);
-		else if ("Distortion" == eName) e = new Distortion();
+		else if ("Distortion" == eName) e = new Distortion(track.source, bypass);
 		else if ("Flanger" == eName) e = new Flanger();
 		else if ("Delay" == eName) e = new Delay();
 		else if ("Chorus"== eName) e = new Chorus();
@@ -365,7 +375,7 @@ private: // Methods
 		return "";
 	}
 
-	void DeleteEffect()
+	void RemoveEffect()
 	{
 		for (unsigned int i = 0; i < effects.size(); i++)
 		{

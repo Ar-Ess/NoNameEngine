@@ -65,7 +65,6 @@ protected:
 	void Generate(ALuint source = 0, bool bypass = false)
 	{
 #define LOAD_PROC(T, x)  ((x) = (T)alGetProcAddress(#x))
-
 		LOAD_PROC(LPALGENEFFECTS, alGenEffects);
 		LOAD_PROC(LPALDELETEEFFECTS, alDeleteEffects);
 		LOAD_PROC(LPALISEFFECT, alIsEffect);
@@ -92,7 +91,11 @@ protected:
 #undef LOAD_PROC
 
 		alGenEffects(1, &effect);
-		alEffecti(effect, AL_EFFECT_TYPE, id);
+		alEffecti(effect, AL_EFFECT_TYPE, id); // Error on the id
+		if (alGetError() == AL_INVALID_VALUE)
+		{
+			printf("Reverb Effect not supported\n");
+		}
 		alGenAuxiliaryEffectSlots(1, &slot);
 		ToggleBypass(!bypass);
 		alSource3i(source, AL_AUXILIARY_SEND_FILTER, (ALint)slot, 0, AL_FILTER_NULL);
@@ -105,7 +108,8 @@ protected:
 	}
 
 	std::string name = "Effect";
-	ALuint id = 0, effect = 0, slot = 0;
+	ALuint effect = 0, slot = 0;
+	ALint id = 0;
 
 	/* Effect object functions */
 	LPALGENEFFECTS alGenEffects;
@@ -156,38 +160,48 @@ public:
 	void Draw()
 	{
 		ImGui::Text("Reverb"); ImGui::SameLine();
+
 		if (ImGui::Checkbox("##Bypass", &nobypass)) ToggleBypass(nobypass);
 
-		ImGui::PushItemWidth(100.0f);
+		ImGui::PushItemWidth(70.0f);
 
-		ImGui::SliderFloat("Wet", &gain, 0.0f, 1.0f, "%f");
+		ImGui::SliderFloat("Wet       ", &gain, 0.0f, 1.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_GAIN, gain);
 		ImGui::SameLine();
-		ImGui::SliderFloat("Diffusion", &diffusion, 0.0f, 1.0f, "%f");
+		ImGui::SliderFloat("Diffusion ", &diffusion, 0.0f, 1.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_DIFFUSION, diffusion);
 		ImGui::SameLine();
-		ImGui::SliderFloat("Echo Time", &echoTime, 0.0f, 200.0f, "%f");
+		ImGui::SliderFloat("Echo Time ", &echoTime, 0.075f, 0.25f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_ECHO_TIME, echoTime);
+		ImGui::SameLine();
+		ImGui::SliderFloat("Rflc Gain ", &reflectionGain, 0.0f, 3.16f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_REFLECTIONS_GAIN, reflectionGain);
 		ImGui::Spacing();
 
-		ImGui::SliderFloat("Decay", &decayTime, 0.0f, 100.0f, "%f");
+		ImGui::SliderFloat("Decay     ", &decayTime, 0.1f, 20.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_DECAY_TIME, decayTime);
 		ImGui::SameLine();
-		ImGui::SliderFloat("Density", &density, 0.0f, 1.0f, "%f");
+		ImGui::SliderFloat("Density   ", &density, 0.0f, 1.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_DENSITY, density);
-		ImGui::SameLine();
-		ImGui::SliderFloat("Echo Time", &echoTime, 0.0f, 200.0f, "%f");
-		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_ECHO_TIME, echoTime);
-		ImGui::Spacing();
-
-		ImGui::SliderFloat("Delay Time", &lateReverbDelay, 0.0f, 200.0f, "%f");
-		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_LATE_REVERB_DELAY, lateReverbDelay);
-		ImGui::SameLine();
-		ImGui::SliderFloat("Delay Gain", &lateReverbGain, 0.0f, 1.0f, "%f");
-		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_LATE_REVERB_GAIN, lateReverbGain);
 		ImGui::SameLine();
 		ImGui::SliderFloat("Echo Depth", &echoDepth, 0.0f, 1.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_ECHO_DEPTH, echoDepth);
+		ImGui::SameLine();
+		ImGui::SliderFloat("Rflc Delay", &reflectionDelay, 0.0f, 0.3f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_REFLECTIONS_DELAY, reflectionDelay);
+		ImGui::Spacing();
+
+		ImGui::SliderFloat("Delay Time", &lateReverbDelay, 0.0f, 0.1f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_LATE_REVERB_DELAY, lateReverbDelay);
+		ImGui::SameLine();
+		ImGui::SliderFloat("Delay Gain", &lateReverbGain, 0.0f, 3.16f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_LATE_REVERB_GAIN, lateReverbGain);
+		ImGui::SameLine();
+		ImGui::SliderFloat("Mod Time  ", &modulationTime, 0.04f, 4.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_MODULATION_TIME, modulationTime);
+		ImGui::SameLine();
+		ImGui::SliderFloat("Mod Depth ", &modulationDepth, 0.0f, 1.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_MODULATION_DEPTH, modulationDepth);
 
 		ImGui::PopItemWidth();
 
@@ -217,11 +231,11 @@ private: // Methods
 
 private: // Variables
 
-	float density, diffusion, gain = 0.0f, gainhf, gainlf, decayTime,
-		decayhfRatio, decaylfRatio, reflectionGain, reflectionDelay,
-		lateReverbGain, lateReverbDelay, echoTime, echoDepth,
-		modulationTime, modulationDepth, airAbsortion, roomRolloff,
-		decayhfLimit, hfreference, lfreference;
+	float density = 1.0f, diffusion = 1.0f, gain = 0.32f, /*gainhf, gainlf,*/ decayTime = 1.49f,
+		/*decayhfRatio, decaylfRatio,*/ reflectionGain = 0.05f, reflectionDelay = 0.007f,
+		lateReverbGain = 0.05f, lateReverbDelay = 0.011f, echoTime = 0.25f, echoDepth = 0.0f,
+		modulationTime = 0.25f, modulationDepth = 0.0f/*, airAbsortion, roomRolloff,
+		decayhfLimit, hfreference, lfreference*/;
 
 };
 
@@ -261,9 +275,9 @@ private: // Variables
 class Distortion : public Effect
 {
 public:
-	Distortion() : Effect("Distortion", AL_EFFECT_DISTORTION)
+	Distortion(ALint source, bool bypass) : Effect("Distortion", AL_EFFECT_DISTORTION)
 	{
-		Generate();
+		Generate(source, bypass);
 	}
 	~Distortion() {}
 
@@ -277,7 +291,28 @@ public:
 
 	void Draw()
 	{
-		ImGui::Text("Distortion");
+		ImGui::Text("Distortion"); ImGui::SameLine();
+		if (ImGui::Checkbox("##Bypass", &nobypass)) ToggleBypass(nobypass);
+
+		ImGui::PushItemWidth(150.0f);
+
+		ImGui::SliderFloat("Wet      ", &gain, 0.01f, 1.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_DISTORTION_GAIN, gain);
+		ImGui::SameLine(0.0f, 4.0f);
+		ImGui::SliderFloat("Edge     ", &edge, 0.0f, 1.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_DISTORTION_EDGE, edge);
+		ImGui::Spacing();
+
+		ImGui::SliderFloat("LP Cutoff", &lowpassCutoff, 80.0f, 24000.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_DISTORTION_LOWPASS_CUTOFF, lowpassCutoff);
+		ImGui::SameLine(0.0f, 4.0f);
+		ImGui::SliderFloat("EQ Center", &eqCenter, 80.0f, 24000.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_DISTORTION_EQCENTER, eqCenter);
+		ImGui::SameLine(0.0f, 4.0f);
+		ImGui::SliderFloat("EQ Band W", &eqBandWidth, 80.0f, 24000.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_DISTORTION_EQBANDWIDTH, eqBandWidth);
+
+		ImGui::PopItemWidth();
 	}
 
 	void End()
@@ -288,6 +323,9 @@ public:
 private: // Methods
 
 private: // Variables
+
+	float edge = 0.2f, eqBandWidth = 3600.0f, gain = 0.05f,
+		eqCenter = 3600.0f, lowpassCutoff = 8000.0f;
 
 };
 

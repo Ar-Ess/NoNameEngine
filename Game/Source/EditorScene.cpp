@@ -1218,6 +1218,13 @@ void EditorScene::AddComponent(ComponentID component, Shape3D* recipient)
 	}
 }
 
+void EditorScene::RemoveComponent(Component* comp)
+{
+	comp->~Component();
+	delete comp;
+	comp = nullptr;
+}
+
 // ==== INFO INSPECTOR ========================================================
 
 void EditorScene::GeneralInfoInspector(Shape3D* s)
@@ -1409,8 +1416,16 @@ void EditorScene::ComponentInfoInspector(Shape3D* s)
 	for (int i = 0; i < s->components.size(); i++)
 	{
 		ImGui::PushID(i);
-		if (ImGui::CollapsingHeader(s->components[i]->GetTitle()))
+		if (ImGui::CollapsingHeader(s->components[i]->GetTitle(), ImGuiTreeNodeFlags_AllowItemOverlap))
 		{
+			ImGui::SameLine(0.0f, 5.0f); 
+			if (ImGui::Button("X"))
+			{
+				RemoveComponent(s->components[i]);
+				s->components.erase(s->components.begin() + i);
+				ImGui::PopID();
+				return;
+			}
 			AddSpacing(0);
 			s->components[i]->Draw(&s[i],&onWindow);
 			AddSpacing(0);

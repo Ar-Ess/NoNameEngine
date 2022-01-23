@@ -268,6 +268,8 @@ private: // Functions
 	// Component Functions
 	void AddComponent(ComponentID component, Shape3D* recipient);
 
+	void RemoveComponent(Component* comp);
+
 	// Inspector information
 
 	void GeneralInfoInspector(Shape3D* s);

@@ -17,7 +17,10 @@ public:
 	{
 		gameTimer = timer;
 	}
-	~LiniarVelocityComponent() {}
+	~LiniarVelocityComponent() 
+	{
+		this->title.clear();
+	}
 
 	void Start(Shape3D* afected)
 	{
