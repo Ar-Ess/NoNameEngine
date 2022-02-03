@@ -1,5 +1,5 @@
 #include "AudioSystem.h"
-#pragma comment (lib, "Source/External/OpenAL/libs/debug/OpenAL/OpenAL32.lib")
+#pragma comment (lib, "Source/External/OpenAL/libs/release/OpenAL32.lib")
 
 #define OpenAL_ErrorCheck(message)\
 {\

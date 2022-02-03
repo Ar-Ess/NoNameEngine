@@ -332,3 +332,6 @@ ASALocalRun/
 
 # Local History for Visual Studio
 .localhistory/
+
+# Commiting OpenAL32 lib
+!Game/Source/External/OpenAL/libs/release/OpenAL32.lib
