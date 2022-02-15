@@ -13,13 +13,9 @@ public:
 		gameTimer = timer;
 		audio = audioSystem;
 
-		track = audio->LoadAudio("Assets/Audio/SplitDuty_FinalBoss_Mono_Soundtrack.mp3");
-		track.source = audio->CreateAudioSource(track.buffer, true);
 		SetVolume(volume);
 		SetPanning(pan);
 		SetTranspose(transpose);
-
-		loop = true;
 		SetLoop(loop);
 	}
 	~AudioSourceComponent() 
@@ -325,18 +321,18 @@ private: // Methods
 
 		const char* eName = fxTracker[effect];
 
-		if ("EQ" == eName) e = new EQ();
-		else if ("Compressor" == eName) e = new Compressor();
+		if ("EQ" == eName) e = new EQ(track.source, bypass);
+		else if ("Compressor" == eName) e = new Compressor(track.source, bypass);
 		else if ("Reverb" == eName) e = new Reverb(track.source, bypass);
 		else if ("Distortion" == eName) e = new Distortion(track.source, bypass);
-		else if ("Flanger" == eName) e = new Flanger();
-		else if ("Delay" == eName) e = new Delay();
-		else if ("Chorus"== eName) e = new Chorus();
-		else if ("Auto Wah" == eName) e = new AutoWah();
-		else if ("Ring Mod" == eName) e = new RingMod();
-		else if ("Pitch Shift" == eName) e = new PitchShift();
-		else if ("Freq Shift" == eName) e = new FreqShift(); 
-		else if ("Vocal Morph" == eName) e = new VocalMorph();
+		else if ("Flanger" == eName) e = new Flanger(track.source, bypass);
+		else if ("Delay" == eName) e = new Delay(track.source, bypass);
+		else if ("Chorus"== eName) e = new Chorus(track.source, bypass);
+		else if ("Auto Wah" == eName) e = new AutoWah(track.source, bypass);
+		else if ("Ring Mod" == eName) e = new RingMod(track.source, bypass);
+		else if ("Pitch Shift" == eName) e = new PitchShift(track.source, bypass);
+		else if ("Freq Shift" == eName) e = new FreqShift(track.source, bypass);
+		else if ("Vocal Morph" == eName) e = new VocalMorph(track.source, bypass);
 		
 		return e;
 	}

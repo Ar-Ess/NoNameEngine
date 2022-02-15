@@ -35,7 +35,6 @@ bool EditorScene::Start()
 	assets->ParseFiles();
 	import->LoadDefaultImages();
 	audio->InitAudio();
-	/*audio->CreateListener();*/
 
 	Plane3D* p = new Plane3D({ 0, 0, 0 }, { 0, 1, 0 }, Point3D(200));
 	p->solid = false;
@@ -45,15 +44,6 @@ bool EditorScene::Start()
 	m->LoadModel("Assets/Models/cube.fbx");
 	shapes->push_back(m);
 	DeleteAllShapes();
-
-	Cube3D* cube = new Cube3D({ 10, 0, 0 });
-	AddComponent(ComponentID::LINIAR_VELOCITY_COMPONENT, cube);
-	AddComponent(ComponentID::SPACIAL_AUDIO_SOURCE_COMPONENT, cube);
-	shapes->push_back(cube);
-
-	Pyramid3D* pyramid = new Pyramid3D();
-	AddComponent(ComponentID::AUDIO_SOURCE_COMPONENT, pyramid);
-	shapes->push_back(pyramid);
 
 	SetValidId(*shapes);
 
@@ -1425,16 +1415,16 @@ void EditorScene::ComponentInfoInspector(Shape3D* s)
 	for (int i = 0; i < s->components.size(); i++)
 	{
 		ImGui::PushID(i);
+		if (ImGui::Button("X"))
+		{
+			RemoveComponent(s->components[i]);
+			s->components.erase(s->components.begin() + i);
+			ImGui::PopID();
+			return;
+		}
+		ImGui::SameLine();
 		if (ImGui::CollapsingHeader(s->components[i]->GetTitle(), ImGuiTreeNodeFlags_AllowItemOverlap))
 		{
-			ImGui::SameLine(0.0f, 5.0f); 
-			if (ImGui::Button("X"))
-			{
-				RemoveComponent(s->components[i]);
-				s->components.erase(s->components.begin() + i);
-				ImGui::PopID();
-				return;
-			}
 			AddSpacing(0);
 			s->components[i]->Draw(&s[i],&onWindow);
 			AddSpacing(0);

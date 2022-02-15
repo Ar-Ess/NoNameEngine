@@ -39,6 +39,21 @@ public: // Methods
 	
 	}
 
+	void AddHelper(const char* title = "(?)", const char* desc = "", bool sameLine = false)
+	{
+		if (sameLine) ImGui::SameLine();
+		ImGui::TextDisabled(title);
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+			ImGui::TextUnformatted(desc);
+			ImGui::PopTextWrapPos();
+			ImGui::EndTooltip();
+		}
+	}
+
+
 	void Disconnect(ALuint source)
 	{
 		alSource3i(source, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 0, AL_FILTER_NULL);
@@ -64,6 +79,7 @@ protected:
 
 	void Generate(ALuint source = 0, bool bypass = false)
 	{
+
 #define LOAD_PROC(T, x)  ((x) = (T)alGetProcAddress(#x))
 		LOAD_PROC(LPALGENEFFECTS, alGenEffects);
 		LOAD_PROC(LPALDELETEEFFECTS, alDeleteEffects);
@@ -161,34 +177,56 @@ public:
 	{
 		ImGui::Text("Reverb"); ImGui::SameLine();
 
-		if (ImGui::Checkbox("##Bypass", &nobypass)) ToggleBypass(nobypass);
+		if (ImGui::Checkbox("##BypassR", &nobypass)) ToggleBypass(nobypass);
 
 		ImGui::PushItemWidth(70.0f);
 
-		ImGui::SliderFloat("Wet       ", &gain, 0.0f, 1.0f, "%f");
+		//REVERB
+		ImGui::SliderFloat("##ReverbWet", &gain, 0.0f, 1.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_GAIN, gain);
-		ImGui::SameLine();
-		ImGui::SliderFloat("Diffusion ", &diffusion, 0.0f, 1.0f, "%f");
+		AddHelper("Wet", "WET PROPERTY:\nThe Reverb Gain property controls the volume of the reverb track. Setting it to maximum will set full reverb track.\nSetting it to minimum will not apply reverb", true);
+		ImGui::SameLine(); ImGui::Text("      "); ImGui::SameLine();
+
+		//DIFFUSION
+		ImGui::SliderFloat("##ReverbDiffusion  ", &diffusion, 0.0f, 1.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_DIFFUSION, diffusion);
+		AddHelper("Diffusion  ", "DIFFUSION PROPERTY:\nThe Reverb Diffusion property controls the echo density in the reverberation decay.\nReducing diffusion gives the reverberation a more “grainy” character that is especially noticeable with percussive sound sources.\nIf you set a diffusion value of 0.0, the later reverberation sounds like a succession of distinct echoes.", true);
 		ImGui::SameLine();
-		ImGui::SliderFloat("Echo Time ", &echoTime, 0.075f, 0.25f, "%f");
+
+		//ECHO TIME
+		ImGui::SliderFloat("##ReverbEchoTime", &echoTime, 0.075f, 0.25f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_ECHO_TIME, echoTime);
+		AddHelper("Echo Time", "ECHO TIME PROPERTY:\nEcho Time controls the rate at which the cyclic echo repeats itself along the reverberation decay.\nFor example, the default setting for Echo Time is 250 ms, causing the echo to occur 4 times per second.\nTherefore, if you were to clap your hands in this type of environment, you will hear four repetitions of clap per second.", true);
 		ImGui::SameLine();
-		ImGui::SliderFloat("Rflc Gain ", &reflectionGain, 0.0f, 3.16f, "%f");
+
+		//REFLECT GAIN
+		ImGui::SliderFloat("##ReverbRflcGain", &reflectionGain, 0.0f, 3.16f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_REFLECTIONS_GAIN, reflectionGain);
+		AddHelper("Rflc Gain", "REFLECT GAIN PROPERTY:\nThe Reflections Gain property controls the overall amount of initial reflections relative to the Gain property.\nYou can increase the amount of initial reflections to simulate a more narrow space or closer walls,\nespecially effective if you associate the initial reflections increase with a reduction in reflections delays by lowering the value of the Reflection Delay property.\nTo simulate open or semi - open environments, you can maintain the amount of early reflections while reducing the value of the Late Reverb Gain property, which controls later reflections. ", true);
 		ImGui::Spacing();
 
-		ImGui::SliderFloat("Decay     ", &decayTime, 0.1f, 20.0f, "%f");
+		//DECAY
+		ImGui::SliderFloat("##ReverbDecay", &decayTime, 0.1f, 20.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_DECAY_TIME, decayTime);
-		ImGui::SameLine();
-		ImGui::SliderFloat("Density   ", &density, 0.0f, 1.0f, "%f");
+		AddHelper("Decay", "DECAY PROPERTY:\nThe Decay Time property sets the reverberation decay time.\nMinimum value sets typical small room with very dead surface.\n Maximum value sets typical large room with very live surfaces.", true);
+		ImGui::SameLine(); ImGui::Text("    "); ImGui::SameLine();
+
+		//DENSITY
+		ImGui::SliderFloat("##ReverbDensity", &density, 0.0f, 1.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_DENSITY, density);
-		ImGui::SameLine();
-		ImGui::SliderFloat("Echo Depth", &echoDepth, 0.0f, 1.0f, "%f");
+		AddHelper("Density", "DENSITY PROPERTY:\nReverb Density property controls the coloration of the late reverb.\nLowering the value adds more coloration to the late reverb.", true);
+		ImGui::SameLine(); ImGui::Text("   "); ImGui::SameLine();
+
+		//ECHO DEPTH
+		ImGui::SliderFloat("##ReverbEchoDepth", &echoDepth, 0.0f, 1.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_ECHO_DEPTH, echoDepth);
+		AddHelper("Echo Depth", "ECHO DEPTH PROPERTY:\nEcho Depth property introduces a cyclic echo in the reverberation decay, which will be noticeable with transient or percussive sounds.\nA larger value of Echo Depth will make this effect more prominent.", true);
 		ImGui::SameLine();
-		ImGui::SliderFloat("Rflc Delay", &reflectionDelay, 0.0f, 0.3f, "%f");
+
+		//REFLECT DELAY
+		ImGui::SliderFloat("##ReverbReflectDelay", &reflectionDelay, 0.0f, 0.3f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_REFLECTIONS_DELAY, reflectionDelay);
+		AddHelper("Rflc Delay", "REFLECT DELAY PROPERTY:\nThe Reflections Delay property is the amount of delay between the arrival time of the direct path from the source to the first reflection from the source.\nYou can reduce or increase Reflections Delay to simulate closer or more distant reflective surfaces\nand therefore control the perceived size of the room.", true);
 		ImGui::Spacing();
 
 		ImGui::SliderFloat("Delay Time", &lateReverbDelay, 0.0f, 0.1f, "%f");
@@ -242,9 +280,9 @@ private: // Variables
 class Delay : public Effect
 {
 public:
-	Delay() : Effect("Delay", AL_EFFECT_ECHO)
+	Delay(ALint source, bool bypass) : Effect("Delay", AL_EFFECT_ECHO)
 	{
-		Generate();
+		Generate(source, bypass);
 	}
 	~Delay() {}
 
@@ -258,7 +296,29 @@ public:
 
 	void Draw()
 	{
-		ImGui::Text("Delay");
+		ImGui::Text("Delay"); ImGui::SameLine();
+		if (ImGui::Checkbox("##BypassDl", &nobypass)) ToggleBypass(nobypass);
+
+		ImGui::PushItemWidth(150.0f);
+
+		ImGui::SliderFloat("Wet       ", &feedback, 0.0f, 1.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_ECHO_FEEDBACK, feedback);
+		ImGui::SameLine(0.0f, 4.0f);
+		ImGui::SliderFloat("Spread    ", &spread, -1.0f, 1.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_ECHO_SPREAD, spread);
+		ImGui::Spacing();
+
+		ImGui::SliderFloat("Time     ", &delaylr, 0.0f, 0.404f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_ECHO_LRDELAY, delaylr);
+		ImGui::SameLine(0.0f, 4.0f);
+		ImGui::SliderFloat("Delay    ", &delay, 0.0f, 0.207f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_ECHO_DELAY, delay);
+		ImGui::Spacing();
+
+		ImGui::SliderFloat("Damping  ", &damping, 0.0f, 0.99f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_ECHO_DAMPING, damping);
+
+		ImGui::PopItemWidth();
 	}
 
 	void End()
@@ -269,6 +329,9 @@ public:
 private: // Methods
 
 private: // Variables
+
+	float feedback = 0.5f, spread = -1.0f, delaylr = 0.1f,
+		delay = 0.1f, damping = 0.5f;
 
 };
 
@@ -292,24 +355,25 @@ public:
 	void Draw()
 	{
 		ImGui::Text("Distortion"); ImGui::SameLine();
-		if (ImGui::Checkbox("##Bypass", &nobypass)) ToggleBypass(nobypass);
+		if (ImGui::Checkbox("##BypassD", &nobypass)) ToggleBypass(nobypass);
 
 		ImGui::PushItemWidth(150.0f);
 
-		ImGui::SliderFloat("Wet      ", &gain, 0.01f, 1.0f, "%f");
+		ImGui::SliderFloat("Wet       ", &gain, 0.01f, 1.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_DISTORTION_GAIN, gain);
 		ImGui::SameLine(0.0f, 4.0f);
-		ImGui::SliderFloat("Edge     ", &edge, 0.0f, 1.0f, "%f");
+		ImGui::SliderFloat("Edge      ", &edge, 0.0f, 1.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_DISTORTION_EDGE, edge);
 		ImGui::Spacing();
 
-		ImGui::SliderFloat("LP Cutoff", &lowpassCutoff, 80.0f, 24000.0f, "%f");
+		ImGui::SliderFloat("LP Cutoff ", &lowpassCutoff, 80.0f, 24000.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_DISTORTION_LOWPASS_CUTOFF, lowpassCutoff);
 		ImGui::SameLine(0.0f, 4.0f);
-		ImGui::SliderFloat("EQ Center", &eqCenter, 80.0f, 24000.0f, "%f");
+		ImGui::SliderFloat("EQ Center ", &eqCenter, 80.0f, 24000.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_DISTORTION_EQCENTER, eqCenter);
-		ImGui::SameLine(0.0f, 4.0f);
-		ImGui::SliderFloat("EQ Band W", &eqBandWidth, 80.0f, 24000.0f, "%f");
+		ImGui::Spacing();
+
+		ImGui::SliderFloat("EQ Band W ", &eqBandWidth, 80.0f, 24000.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_DISTORTION_EQBANDWIDTH, eqBandWidth);
 
 		ImGui::PopItemWidth();
@@ -332,9 +396,9 @@ private: // Variables
 class Flanger : public Effect
 {
 public:
-	Flanger() : Effect("Flanger", AL_EFFECT_FLANGER)
+	Flanger(ALint source, bool bypass) : Effect("Flanger", AL_EFFECT_FLANGER)
 	{
-		Generate();
+		Generate(source, bypass);
 	}
 	~Flanger() {}
 
@@ -348,7 +412,36 @@ public:
 
 	void Draw()
 	{
-		ImGui::Text("Flanger");
+		ImGui::Text("Flanger"); ImGui::SameLine();
+		if (ImGui::Checkbox("##BypassF", &nobypass)) ToggleBypass(nobypass);
+
+		ImGui::PushItemWidth(150.0f);
+
+		ImGui::SliderFloat("Depth     ", &depth, 0.01f, 1.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_FLANGER_DEPTH, depth);
+		ImGui::SameLine(0.0f, 4.0f);
+		ImGui::SliderFloat("Feedback  ", &feedback, -1.0f, 1.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_FLANGER_FEEDBACK, feedback);
+		ImGui::Spacing();
+
+		ImGui::SliderFloat("Delay     ", &delay, 0.0f, 0.004f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_FLANGER_DELAY, delay);
+		ImGui::SameLine(0.0f, 4.0f);
+		ImGui::SliderFloat("Rate      ", &rate, 0.0f, 10.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_FLANGER_RATE, rate);
+		ImGui::Spacing();
+
+		if (ImGui::Combo("          ", &waveformIndex, &waveform[0], waveform.size()))
+		{
+			ALint wave = AL_FLANGER_WAVEFORM_TRIANGLE;
+			waveformIndex == 0 ? wave = AL_FLANGER_WAVEFORM_SINUSOID : wave = AL_FLANGER_WAVEFORM_TRIANGLE;
+			SetEffectValue(AL_FLANGER_WAVEFORM, wave);
+		}
+		ImGui::SameLine(0.0f, 4.0f);
+		ImGui::SliderFloat("Phase     ", &phase, -180.0f, 180.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_FLANGER_PHASE, phase);
+
+		ImGui::PopItemWidth();
 	}
 
 	void End()
@@ -360,14 +453,20 @@ private: // Methods
 
 private: // Variables
 
+	std::vector<const char*> waveform = {"Sinoidal", "Triangular"};
+	int waveformIndex = 0;
+
+	float depth = 1.0f, feedback = -0.5f, delay = 0.002f,
+		rate = 0.27f, phase = 0.0f;
+
 };
 
 class Chorus : public Effect
 {
 public:
-	Chorus() : Effect("Chorus", AL_EFFECT_CHORUS)
+	Chorus(ALint source, bool bypass) : Effect("Chorus", AL_EFFECT_CHORUS)
 	{
-		Generate();
+		Generate(source, bypass);
 	}
 	~Chorus() {}
 
@@ -381,7 +480,36 @@ public:
 
 	void Draw()
 	{
-		ImGui::Text("Chorus");
+		ImGui::Text("Chorus"); ImGui::SameLine();
+		if (ImGui::Checkbox("##BypassC", &nobypass)) ToggleBypass(nobypass);
+
+		ImGui::PushItemWidth(150.0f);
+
+		ImGui::SliderFloat("Depth     ", &depth, 0.01f, 1.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_CHORUS_DEPTH, depth);
+		ImGui::SameLine(0.0f, 4.0f);
+		ImGui::SliderFloat("Feedback  ", &feedback, -1.0f, 1.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_CHORUS_FEEDBACK, feedback);
+		ImGui::Spacing();
+
+		ImGui::SliderFloat("Delay     ", &delay, 0.0f, 0.016f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_CHORUS_DELAY, delay);
+		ImGui::SameLine(0.0f, 4.0f);
+		ImGui::SliderFloat("Rate      ", &rate, 0.0f, 10.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_CHORUS_RATE, rate);
+		ImGui::Spacing();
+
+		if (ImGui::Combo("          ", &waveformIndex, &waveform[0], waveform.size()))
+		{
+			ALint wave = AL_CHORUS_WAVEFORM_TRIANGLE;
+			waveformIndex == 0 ? wave = AL_CHORUS_WAVEFORM_SINUSOID : wave = AL_CHORUS_WAVEFORM_TRIANGLE;
+			SetEffectValue(AL_CHORUS_WAVEFORM, wave);
+		}
+		ImGui::SameLine(0.0f, 4.0f);
+		ImGui::SliderFloat("Phase     ", &phase, -180.0f, 180.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_CHORUS_PHASE, phase);
+
+		ImGui::PopItemWidth();
 	}
 
 	void End()
@@ -393,12 +521,18 @@ private: // Methods
 
 private: // Variables
 
+	std::vector<const char*> waveform = { "Sinoidal", "Triangular" };
+	int waveformIndex = 0;
+
+	float depth = 0.1f, feedback = 0.25f, delay = 0.016f,
+		rate = 1.1f, phase = 90.0f;
+
 };
 
 class AutoWah : public Effect
 {
 public:
-	AutoWah() : Effect("Auto Wah", AL_EFFECT_AUTOWAH)
+	AutoWah(ALint source, bool bypass) : Effect("Auto Wah", AL_EFFECT_AUTOWAH)
 	{
 		Generate();
 	}
@@ -431,7 +565,7 @@ private: // Variables
 class EQ : public Effect
 {
 public:
-	EQ() : Effect("EQ", AL_EFFECT_EQUALIZER)
+	EQ(ALint source, bool bypass) : Effect("EQ", AL_EFFECT_EQUALIZER)
 	{
 		Generate();
 	}
@@ -464,7 +598,7 @@ private: // Variables
 class Compressor : public Effect
 {
 public:
-	Compressor() : Effect("Compressor", AL_EFFECT_COMPRESSOR)
+	Compressor(ALint source, bool bypass) : Effect("Compressor", AL_EFFECT_COMPRESSOR)
 	{
 		Generate();
 	}
@@ -497,7 +631,7 @@ private: // Variables
 class FreqShift : public Effect
 {
 public:
-	FreqShift() : Effect("Freq Shift", AL_EFFECT_FREQUENCY_SHIFTER)
+	FreqShift(ALint source, bool bypass) : Effect("Freq Shift", AL_EFFECT_FREQUENCY_SHIFTER)
 	{
 		Generate();
 	}
@@ -530,7 +664,7 @@ private: // Variables
 class PitchShift : public Effect
 {
 public:
-	PitchShift() : Effect("Pitch Shift", AL_EFFECT_PITCH_SHIFTER)
+	PitchShift(ALint source, bool bypass) : Effect("Pitch Shift", AL_EFFECT_PITCH_SHIFTER)
 	{
 		Generate();
 	}
@@ -563,7 +697,7 @@ private: // Variables
 class RingMod : public Effect
 {
 public:
-	RingMod() : Effect("Ring Mod", AL_EFFECT_RING_MODULATOR)
+	RingMod(ALint source, bool bypass) : Effect("Ring Mod", AL_EFFECT_RING_MODULATOR)
 	{
 		Generate();
 	}
@@ -596,7 +730,7 @@ private: // Variables
 class VocalMorph : public Effect
 {
 public:
-	VocalMorph() : Effect("Vocal Morph", AL_EFFECT_VOCAL_MORPHER)
+	VocalMorph(ALint source, bool bypass) : Effect("Vocal Morph", AL_EFFECT_VOCAL_MORPHER)
 	{
 		Generate();
 	}
