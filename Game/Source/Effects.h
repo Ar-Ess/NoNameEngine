@@ -197,7 +197,7 @@ public:
 		ImGui::SliderFloat("##ReverbEchoTime", &echoTime, 0.075f, 0.25f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_ECHO_TIME, echoTime);
 		AddHelper("Echo Time", "ECHO TIME PROPERTY:\nEcho Time controls the rate at which the cyclic echo repeats itself along the reverberation decay.\nFor example, the default setting for Echo Time is 250 ms, causing the echo to occur 4 times per second.\nTherefore, if you were to clap your hands in this type of environment, you will hear four repetitions of clap per second.", true);
-		ImGui::SameLine();
+		ImGui::SameLine(); ImGui::Text(" "); ImGui::SameLine();
 
 		//REFLECT GAIN
 		ImGui::SliderFloat("##ReverbRflcGain", &reflectionGain, 0.0f, 3.16f, "%f");
@@ -229,12 +229,19 @@ public:
 		AddHelper("Rflc Delay", "REFLECT DELAY PROPERTY:\nThe Reflections Delay property is the amount of delay between the arrival time of the direct path from the source to the first reflection from the source.\nYou can reduce or increase Reflections Delay to simulate closer or more distant reflective surfaces\nand therefore control the perceived size of the room.", true);
 		ImGui::Spacing();
 
-		ImGui::SliderFloat("Delay Time", &lateReverbDelay, 0.0f, 0.1f, "%f");
+		//DELAY TIME
+		ImGui::SliderFloat("##ReverbDelayTime", &lateReverbDelay, 0.0f, 0.1f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_LATE_REVERB_DELAY, lateReverbDelay);
+		AddHelper("Delay Time", "DELAY TIME PROPERTY:\nThe Late Reverb Delay property defines the begin time of the late reverberation relative to the\ntime of the initial reflection (the first of the early reflections).\nReducing or increasing Late Reverb Delay is useful for simulating a smaller or larger room.", true);
 		ImGui::SameLine();
+
+		//DELAY GAIN
 		ImGui::SliderFloat("Delay Gain", &lateReverbGain, 0.0f, 3.16f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_LATE_REVERB_GAIN, lateReverbGain);
+		AddHelper("Delay Gain", "DELAY GAIN PROPERTY:\nThe Late Reverb Gain property controls the overall amount of later reverberation relative to the Gain property.\nNote that Late Reverb Gain and Decay Time are independent properties:\nIf you adjust Decay Time without changing Late Reverb Gain, the total intensity(the averaged square of the amplitude) of the late reverberation remains constant.", true);
 		ImGui::SameLine();
+
+		//MOD TIME
 		ImGui::SliderFloat("Mod Time  ", &modulationTime, 0.04f, 4.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_MODULATION_TIME, modulationTime);
 		ImGui::SameLine();
