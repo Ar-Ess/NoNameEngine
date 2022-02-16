@@ -1,94 +1,141 @@
-#ifndef __AUDIO_SOURCE_COMPONENT_H__
-#define __AUDIO_SOURCE_COMPONENT_H__
+#ifndef __SWITCH_AUDIO_SOURCE_COMPONENT_H__
+#define __SWITCH_AUDIO_SOURCE_COMPONENT_H__
 
 #include "Component.h"
 #include "Effects.h"
 #include "External/ImGuiFileDialog/ImGuiFileDialog.h"
 
-class AudioSourceComponent : public Component
+struct TrackInstance
 {
-public:
-	AudioSourceComponent(Timer* timer, AudioSystem* audioSystem) : Component("Audio Source", ComponentID::AUDIO_SOURCE_COMPONENT)
-	{
-		gameTimer = timer;
-		audio = audioSystem;
-
-		SetVolume(volume);
-		SetPanning(pan);
-		SetTranspose(transpose);
-		SetLoop(loop);
-	}
-	~AudioSourceComponent() 
-	{
-		fxTracker.clear();
-		for (unsigned int i = 0; i < effects.size(); i++)
-		{
-			effects[i]->Disconnect(track.source);
-			delete effects[i];
-		}
-		effects.clear();
-		this->title.clear();
-	}
-
-	void Start(Shape3D* afected)
+	void Start(AudioSystem* audio)
 	{
 		knobReminder1 = false;
 		knobReminder2 = false;
 		if (playOnStart) audio->PlayAudio(track.source);
 	}
 
+	Track track;
+	std::vector<Effect*> effects;
+	bool play = false;
+	bool playOnStart = true, loop = false, mute = false, bypass = false;
+	bool knobReminder1 = false, knobReminder2 = false;
+	float volume = 100.0f, pan = 0, transpose = 0, offset = 0;
+	int currEffect = 0;
+};
+
+class SwitchAudioSourceComponent : public Component
+{
+public:
+	SwitchAudioSourceComponent(Timer* timer, AudioSystem* audioSystem) : Component("Switch Audio Source", ComponentID::AUDIO_SOURCE_COMPONENT)
+	{
+		gameTimer = timer;
+		audio = audioSystem;
+
+		tracks.push_back({});
+		tracks.push_back({});
+
+		for (unsigned int i = 0; i < tracks.size(); i++)
+		{
+			SetVolume(tracks[i].volume, &tracks[i]);
+			SetPanning(tracks[i].pan, &tracks[i]);
+			SetTranspose(tracks[i].transpose, &tracks[i]);
+			SetLoop(tracks[i].loop, &tracks[i]);
+		}
+	}
+	~SwitchAudioSourceComponent()
+	{
+		fxTracker.clear();
+		for (unsigned int i = 0; i < tracks.size(); i++)
+		{
+			for (unsigned int i = 0; i < tracks[i].effects.size(); i++)
+			{
+				tracks[i].effects[i]->Disconnect(tracks[i].track.source);
+				delete tracks[i].effects[i];
+			}
+			tracks[i].effects.clear();
+		}
+		this->title.clear();
+	}
+
+	void Start(Shape3D* afected)
+	{
+		for (unsigned int i = 0; i < tracks.size(); i++) tracks[i].Start(audio);
+	}
+
 	void Update(Shape3D* afected)
 	{
 		if (gameTimer->GetTimerState() != RUNNING) return;
-
-		//audio->PlayAudio(track.source);
 	}
 
 	void Draw(Shape3D* affected, bool* onWindow = nullptr)
 	{
-		if (ImGui::Button("Browse Audio")) browsing = true;
-
-		if (track.channels != 0)
+		ImGui::SliderInt("Total Tracks", &totalTracks, 2, 10);
+		if (ImGui::IsItemDeactivatedAfterEdit() && totalTracks != tracks.size())
 		{
-			ImGui::SameLine();
-			if (ImGui::Button("Edit"))
+			while (totalTracks < tracks.size()) tracks.erase(tracks.end());
+
+			while (totalTracks > tracks.size())
 			{
-				open = !open;
-				offset = 0;
-				knobReminder1 = false;
-				knobReminder2 = false;
+				tracks.push_back({});
+				TrackInstance* last = &tracks.at(tracks.size() - 1);
+				SetVolume(last->volume, last);
+				SetPanning(last->pan, last);
+				SetTranspose(last->transpose, last);
+				SetLoop(last->loop, last);
 			}
-			ImGui::Spacing();
-			ImGui::Text("Options");
-			if (ImGui::Checkbox("Mute", &mute)) SetVolume(volume);
-			ImGui::Checkbox("Play on start", &playOnStart);
-			if (ImGui::Checkbox("Loop", &loop)) SetLoop(loop);
-			if (ImGui::Checkbox("Bypass FX", &bypass))
+		}
+
+		for (int i = 0; i < tracks.size(); i++)
+		{
+			TrackInstance* index = &tracks[i];
+			if (ImGui::CollapsingHeader(trackNaming[i].c_str()))
 			{
-				for (unsigned int i = 0; i < effects.size(); i++) effects[i]->ToggleBypass(!bypass);
+				if (ImGui::Button("Browse Audio")) browsing = true;
+
+				if (index->track.channels != 0)
+				{
+					ImGui::SameLine();
+					if (ImGui::Button("Edit"))
+					{
+						currentTrackEditor = i;
+						open = true;
+						index->offset = 0;
+						index->knobReminder1 = false;
+						index->knobReminder2 = false;
+					}
+					ImGui::Spacing();
+					ImGui::Text("Options");
+					if (ImGui::Checkbox("Mute", &index->mute)) SetVolume(index->volume, &tracks[i]);
+					ImGui::Checkbox("Play on start", &index->playOnStart);
+					if (ImGui::Checkbox("Loop", &index->loop)) SetLoop(index->loop, &tracks[i]);
+					if (ImGui::Checkbox("Bypass FX", &index->bypass))
+					{
+						for (unsigned int i = 0; i < index->effects.size(); i++) index->effects[i]->ToggleBypass(!index->bypass);
+					}
+				}
 			}
 		}
 
 		UpdatePlayState();
 
-		if (open) DrawWindow(onWindow);
+		if (open) DrawWindow(onWindow, &tracks[currentTrackEditor]);
 
 		if (browsing) browsing = BrowseAudio();
 	}
 
 	void End(Shape3D* afected)
 	{
-		audio->StopAudio(track.source);
+		for (unsigned int i = 0; i < tracks.size(); i++) audio->StopAudio(tracks[i].track.source);
 	}
 
 private: // Methods
 
-	void DrawWindow(bool* onWindow)
+	void DrawWindow(bool* onWindow, TrackInstance* index)
 	{
 		if (ImGui::Begin(title.c_str(), &open))
 		{
 			if (onWindow != nullptr && !*onWindow) *onWindow = ImGui::IsWindowHovered();
-			bool mono = track.channels == 1;
+			bool mono = index->track.channels == 1;
 
 			if (ImGui::BeginTable("Upper Table", 2))
 			{
@@ -103,11 +150,11 @@ private: // Methods
 
 				ImGui::TableSetColumnIndex(0);
 				{
-					ImGui::Text("%s", track.name.c_str());
+					ImGui::Text("%s", index->track.name.c_str());
 					ImGui::Spacing();
-					ImGui::Text("%d kHz | %d-Bits", track.sampleRate, track.bits);
+					ImGui::Text("%d kHz | %d-Bits", index->track.sampleRate, index->track.bits);
 					ImGui::Spacing();
-					ImGui::Text("%d Channels", track.channels);
+					ImGui::Text("%d Channels", index->track.channels);
 					if (!mono)
 					{
 						ImGui::SameLine(); ImGui::Text(" (No Pan)");
@@ -118,7 +165,7 @@ private: // Methods
 				{
 					char t1[] = { "Play" };
 					char t2[] = { "Stop" };
-					char* t = play ? t = t2 : t = t1;
+					char* t = index->play ? t = t2 : t = t1;
 					ImGui::Spacing();
 					ImGui::Spacing();
 					ImGui::Spacing();
@@ -126,8 +173,8 @@ private: // Methods
 					ImGui::Dummy(ImVec2{ width, 0.0f }); ImGui::SameLine();
 					if (ImGui::Button(t))
 					{
-						float time = track.duration * offset;
-						play ? audio->StopAudio(track.source) : audio->PlayAudio(track.source, time);
+						float time = index->track.duration * index->offset;
+						index->play ? audio->StopAudio(index->track.source) : audio->PlayAudio(index->track.source, time);
 					}
 				}
 			}
@@ -146,10 +193,10 @@ private: // Methods
 					// SLIDERS & KNOBS
 					ImGui::Dummy(ImVec2{ 0.0f, 35.0f });
 					ImGui::Dummy(ImVec2{ 3.8f, 0.0f }); ImGui::SameLine();
-					if (mute) ImGui::BeginDisabled();
-					ImGui::VSliderFloat("-0", ImVec2{ 15, 155 }, &volume, 0.0f, 100.0f, "");
-					if (ImGui::IsItemDeactivatedAfterEdit()) SetVolume(volume);
-					if (mute) ImGui::EndDisabled();
+					if (index->mute) ImGui::BeginDisabled();
+					ImGui::VSliderFloat("-0", ImVec2{ 15, 155 }, &index->volume, 0.0f, 100.0f, "");
+					if (ImGui::IsItemDeactivatedAfterEdit()) SetVolume(index->volume, index);
+					if (index->mute) ImGui::EndDisabled();
 					ImGui::SameLine(0.0f, 20.0f);
 					if (ImGui::BeginTable("Column Table", 2))
 					{
@@ -158,11 +205,11 @@ private: // Methods
 
 						ImGui::TableNextRow(); ImGui::TableSetColumnIndex(0);
 						ImGui::Dummy(ImVec2{ 4.5f, 0.0f }); ImGui::SameLine();
-						if (ImGui::Knob("L / R", &pan, -0.5, 0.5, false, mono, 2.5f, &knobReminder2) && mono) SetPanning(pan);
+						if (ImGui::Knob("L / R", &index->pan, -0.5, 0.5, false, mono, 2.5f, &index->knobReminder2) && mono) SetPanning(index->pan);
 						ImGui::Dummy(ImVec2{ 0.0f, 10.0f });
 
 						ImGui::TableNextRow(); ImGui::TableSetColumnIndex(0);
-						if (ImGui::Knob("Transpose", &transpose, -24.0, 24.0, false, true, -10, &knobReminder1)) SetTranspose(transpose);
+						if (ImGui::Knob("Transpose", &transpose, -24.0, 24.0, false, true, -10, &index->knobReminder1)) SetTranspose(index->transpose);
 					}
 					ImGui::EndTable();
 				}
@@ -170,10 +217,10 @@ private: // Methods
 				ImGui::TableSetColumnIndex(1);
 				{
 					// VOLUME GRAPHIC
-					float a[10] = {10.0f, 9.0f, 8.0f, 7.0f, 6.0f, 5.0f, 4.0f, 3.0f, 2.0f, 1.0f};
+					float a[10] = { 10.0f, 9.0f, 8.0f, 7.0f, 6.0f, 5.0f, 4.0f, 3.0f, 2.0f, 1.0f };
 					float width = ImGui::GetWindowWidth();
 					ImGui::PushItemWidth(width - 220);
-					ImGui::SliderFloat("##offset", &offset, 0.0f, 1.0f, "");
+					ImGui::SliderFloat("##offset", &index->offset, 0.0f, 1.0f, "");
 					ImGui::PopItemWidth();
 					ImGui::PlotHistogram("##volumegraph", a, 10, 100.0f, "", 0.0f, 10.0f, ImVec2(width - 220, 100));
 					ImGui::PlotHistogram("##volumegraph", a, 10, 0.0f, "", 10.0f, 0.0f, ImVec2(width - 220, 100), 4, true);
@@ -194,34 +241,34 @@ private: // Methods
 				ImGui::TableSetColumnIndex(0);
 				{
 					ImGui::Text("Effects:");
-					if (currEffect != 0)
+					if (index->currEffect != 0)
 					{
 						ImGui::SameLine();
 						if (ImGui::Button("Add"))
 						{
-							effects.push_back(CreateEffect(currEffect));
-							fxTracker.erase(fxTracker.begin() + currEffect);
-							currEffect--;
+							index->effects.push_back(CreateEffect(index->currEffect, index));
+							fxTracker.erase(fxTracker.begin() + index->currEffect);
+							index->currEffect--;
 							totalEffects--;
 						}
 					}
 
-					if (!effects.empty())
+					if (!index->effects.empty())
 					{
 						ImGui::SameLine();
 						if (ImGui::Button("Delete")) RemoveEffect();
 					}
 
-					ImGui::Combo("##Effects", &currEffect, &fxTracker[0], fxTracker.size());
+					ImGui::Combo("##Effects", &index->currEffect, &fxTracker[0], fxTracker.size());
 
 					bool select = false;
 					bool clicked = false;
-					for (unsigned int i = 0; i < effects.size(); i++)
+					for (unsigned int i = 0; i < index->effects.size(); i++)
 					{
-						Effect* e = effects[i];
+						Effect* e = index->effects[i];
 
 						if (i % 2 != 0) ImGui::SameLine();
-						bool click = ImGui::Selectable(e->GetName(), &e->selected, ImGuiSelectableFlags_None, ImVec2{ 85.0f, 12.0f});
+						bool click = ImGui::Selectable(e->GetName(), &e->selected, ImGuiSelectableFlags_None, ImVec2{ 85.0f, 12.0f });
 
 						if (click && e->selected)
 						{
@@ -230,19 +277,19 @@ private: // Methods
 						}
 					}
 
-					for (unsigned int i = 0; selectId != -1 && clicked && i < effects.size(); i++)
+					for (unsigned int i = 0; selectId != -1 && clicked && i < index->effects.size(); i++)
 					{
 						if (i == selectId) continue;
-						effects[i]->selected = false;
+						index->effects[i]->selected = false;
 					}
 				}
 
 				// PARAMETER TWICK
 				ImGui::TableSetColumnIndex(1);
 				{
-					for (unsigned int i = 0; i < effects.size(); i++)
+					for (unsigned int i = 0; i < index->effects.size(); i++)
 					{
-						Effect* e = effects[i];
+						Effect* e = index->effects[i];
 						if (e->selected)
 						{
 							e->Draw();
@@ -256,7 +303,7 @@ private: // Methods
 		ImGui::End();
 	}
 
-	bool BrowseAudio()
+	bool BrowseAudio(TrackInstance* index)
 	{
 		bool ret = true;
 
@@ -270,11 +317,11 @@ private: // Methods
 			if (ImGuiFileDialog::Instance()->IsOk() == true)
 			{
 				std::string path = ImGuiFileDialog::Instance()->GetCurrentPath() + "\\" + ImGuiFileDialog::Instance()->GetCurrentFileName();
-				track = audio->LoadAudio(path.c_str());
-				track.source = audio->CreateAudioSource(track.buffer, false);
-				SetVolume(volume);
-				SetPanning(pan);
-				SetTranspose(transpose);
+				index->track = audio->LoadAudio(path.c_str());
+				index->track.source = audio->CreateAudioSource(index->track.buffer, false);
+				SetVolume(index->volume, index);
+				SetPanning(index->pan, index);
+				SetTranspose(index->transpose, index);
 				ret = false;
 			}
 		}
@@ -282,66 +329,70 @@ private: // Methods
 		return ret;
 	}
 
-	void SetVolume(float volume)
+	void SetVolume(float volume, TrackInstance* index)
 	{
-		if (mute)
+		if (index->mute)
 		{
-			alSourcef(track.source, AL_GAIN, 0);
+			alSourcef(index->track.source, AL_GAIN, 0);
 			return;
 		}
 
 		volume = Pow(volume, 2.5f) / 1000.0f;
 		if (volume > 99.0f) volume = 100.0f;
-		alSourcef(track.source, AL_GAIN, volume / 100);
+		alSourcef(index->track.source, AL_GAIN, volume / 100);
 	}
 
-	void SetPanning(float pan)
+	void SetPanning(float pan, TrackInstance* index)
 	{
 		pan = pan * -1;
-		alSource3f(track.source, AL_POSITION, pan, 0, -sqrtf(1.0f - pan * pan));
+		alSource3f(index->track.source, AL_POSITION, pan, 0, -sqrtf(1.0f - pan * pan));
 	}
 
-	void SetTranspose(float transpose)
+	void SetTranspose(float transpose, TrackInstance* index)
 	{
 		transpose = exp(0.0577623f * transpose);
 		if (transpose > 4.0f) transpose = 4.0f;
 		if (transpose < 0.25f) transpose = 0.25f;
 		if (transpose > 0.98f && transpose < 1.2f) transpose = 1.0f;
-		alSourcef(track.source, AL_PITCH, transpose);
+		alSourcef(index->track.source, AL_PITCH, transpose);
 	}
 
-	void SetLoop(bool active)
+	void SetLoop(bool active, TrackInstance* index)
 	{
-		alSourcei(track.source, AL_LOOPING, active);
+		alSourcei(index->track.source, AL_LOOPING, active);
 	}
 
-	Effect* CreateEffect(int effect)
+	Effect* CreateEffect(int effect, TrackInstance* index)
 	{
 		Effect* e = nullptr;
 
 		const char* eName = fxTracker[effect];
 
-		if ("EQ" == eName) e = new EQ(track.source, bypass);
-		else if ("Compressor" == eName) e = new Compressor(track.source, bypass);
-		else if ("Reverb" == eName) e = new Reverb(track.source, bypass);
-		else if ("Distortion" == eName) e = new Distortion(track.source, bypass);
-		else if ("Flanger" == eName) e = new Flanger(track.source, bypass);
-		else if ("Delay" == eName) e = new Delay(track.source, bypass);
-		else if ("Chorus"== eName) e = new Chorus(track.source, bypass);
-		else if ("Auto Wah" == eName) e = new AutoWah(track.source, bypass);
-		else if ("Ring Mod" == eName) e = new RingMod(track.source, bypass);
-		else if ("Pitch Shift" == eName) e = new PitchShift(track.source, bypass);
-		else if ("Freq Shift" == eName) e = new FreqShift(track.source, bypass);
-		else if ("Vocal Morph" == eName) e = new VocalMorph(track.source, bypass);
-		
+		if ("EQ" == eName) e = new EQ(index->track.source, index->bypass);
+		else if ("Compressor" == eName) e = new Compressor(index->track.source, index->bypass);
+		else if ("Reverb" == eName) e = new Reverb(index->track.source, index->bypass);
+		else if ("Distortion" == eName) e = new Distortion(index->track.source, index->bypass);
+		else if ("Flanger" == eName) e = new Flanger(index->track.source, index->bypass);
+		else if ("Delay" == eName) e = new Delay(index->track.source, index->bypass);
+		else if ("Chorus" == eName) e = new Chorus(index->track.source, index->bypass);
+		else if ("Auto Wah" == eName) e = new AutoWah(index->track.source, index->bypass);
+		else if ("Ring Mod" == eName) e = new RingMod(index->track.source, index->bypass);
+		else if ("Pitch Shift" == eName) e = new PitchShift(index->track.source, index->bypass);
+		else if ("Freq Shift" == eName) e = new FreqShift(index->track.source, index->bypass);
+		else if ("Vocal Morph" == eName) e = new VocalMorph(index->track.source, index->bypass);
+
 		return e;
 	}
 
 	void UpdatePlayState()
 	{
-		ALint sourceState;
-		alGetSourcei(track.source, AL_SOURCE_STATE, &sourceState);
-		(sourceState == AL_PLAYING) ? play = true : play = false;
+		for (unsigned int i = 0; i < tracks.size(); i++)
+		{
+			TrackInstance* index = &tracks[i];
+			ALint sourceState;
+			alGetSourcei(index->track.source, AL_SOURCE_STATE, &sourceState);
+			(sourceState == AL_PLAYING) ? index->play = true : index->play = false;
+		}
 	}
 
 	int GetEffectNameId(const char* eName)
@@ -380,13 +431,13 @@ private: // Methods
 		return "";
 	}
 
-	void RemoveEffect()
+	void RemoveEffect(TrackInstance* index)
 	{
-		for (unsigned int i = 0; i < effects.size(); i++)
+		for (unsigned int i = 0; i < index->effects.size(); i++)
 		{
-			if (effects[i]->selected)
+			if (index->effects[i]->selected)
 			{
-				Effect* e = effects[i];
+				Effect* e = index->effects[i];
 				if (fxTracker.size() == 1) fxTracker.push_back(ReturnWrittedName(e->GetName()));
 				else
 				{
@@ -403,9 +454,9 @@ private: // Methods
 					}
 					if (!inserted) fxTracker.push_back(ReturnWrittedName(e->GetName()));
 				}
-				effects[i]->Disconnect(track.source);
-				delete effects[i];
-				effects.erase(effects.begin() + i);
+				index->effects[i]->Disconnect(index->track.source);
+				delete index->effects[i];
+				index->effects.erase(index->effects.begin() + i);
 				break;
 			}
 		}
@@ -413,21 +464,20 @@ private: // Methods
 
 private: // Variables
 
-	float volume = 100.0f, pan = 0, transpose = 0, offset = 0;
+	bool browsing = false;
 
-	bool knobReminder1 = false, knobReminder2 = false;
-	bool play = false, browsing = false;
-	bool playOnStart = true, loop = false, mute = false, bypass = false;
-
-	int currEffect = 0;
+	int totalTracks = 2;
+	int currentTrackEditor = 0;
 
 	const char* fxNames[13] = { "-----", "EQ", "Compressor", "Reverb", "Distortion", "Flanger", "Delay", "Chorus", "Auto Wah", "Ring Mod", "Pitch Shift", "Freq Shift", "Vocal Morph" };
 	std::vector<const char*> fxTracker = { "-----", "EQ", "Compressor", "Reverb", "Distortion", "Flanger", "Delay", "Chorus", "Auto Wah", "Ring Mod", "Pitch Shift", "Freq Shift", "Vocal Morph" };
-	std::vector<Effect*> effects;
 	unsigned int totalEffects = 13;
 
-	Track track;
+	std::vector<TrackInstance> tracks;
+
+	std::string trackNaming[10] = {"Track 1", "Track 2", "Track 3", "Track 4", "Track 5", "Track 6", "Track 7", "Track 8", "Track 9", "Track 10"};
 	AudioSystem* audio = nullptr;
+
 };
 
-#endif // !__AUDIO_SOURCE_COMPONENT_H__
+#endif // !__SWITCH_AUDIO_SOURCE_COMPONENT_H__

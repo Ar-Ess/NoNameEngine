@@ -184,7 +184,7 @@ public:
 		//REVERB
 		ImGui::SliderFloat("##ReverbWet", &gain, 0.0f, 1.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_GAIN, gain);
-		AddHelper("Wet", "WET PROPERTY:\nThe Reverb Gain property controls the volume of the reverb track. Setting it to maximum will set full reverb track.\nSetting it to minimum will not apply reverb", true);
+		AddHelper("Wet", "WET PROPERTY:\nThe Wet property controls the volume of the reverb track. Setting it to maximum will set full reverb track.\nSetting it to minimum will not apply reverb", true);
 		ImGui::SameLine(); ImGui::Text("      "); ImGui::SameLine();
 
 		//DIFFUSION
@@ -197,7 +197,7 @@ public:
 		ImGui::SliderFloat("##ReverbEchoTime", &echoTime, 0.075f, 0.25f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_ECHO_TIME, echoTime);
 		AddHelper("Echo Time", "ECHO TIME PROPERTY:\nEcho Time controls the rate at which the cyclic echo repeats itself along the reverberation decay.\nFor example, the default setting for Echo Time is 250 ms, causing the echo to occur 4 times per second.\nTherefore, if you were to clap your hands in this type of environment, you will hear four repetitions of clap per second.", true);
-		ImGui::SameLine(); ImGui::Text(" "); ImGui::SameLine();
+		ImGui::SameLine(); ImGui::Text(""); ImGui::SameLine();
 
 		//REFLECT GAIN
 		ImGui::SliderFloat("##ReverbRflcGain", &reflectionGain, 0.0f, 3.16f, "%f");
@@ -236,35 +236,24 @@ public:
 		ImGui::SameLine();
 
 		//DELAY GAIN
-		ImGui::SliderFloat("Delay Gain", &lateReverbGain, 0.0f, 3.16f, "%f");
+		ImGui::SliderFloat("##ReverbDelayGain", &lateReverbGain, 0.0f, 10.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_LATE_REVERB_GAIN, lateReverbGain);
-		AddHelper("Delay Gain", "DELAY GAIN PROPERTY:\nThe Late Reverb Gain property controls the overall amount of later reverberation relative to the Gain property.\nNote that Late Reverb Gain and Decay Time are independent properties:\nIf you adjust Decay Time without changing Late Reverb Gain, the total intensity(the averaged square of the amplitude) of the late reverberation remains constant.", true);
-		ImGui::SameLine();
+		AddHelper("Delay Gain", "DELAY GAIN PROPERTY:\nThe Delay Gain property controls the overall amount of later reverberation relative to the Gain property.\nNote that Delay Gain and Decay Time are independent properties:\nIf you adjust Decay Time without changing Delay Gain, the total intensity (the averaged square of the amplitude) of the late reverberation remains constant.", true);
+		ImGui::SameLine(); ImGui::Text(""); ImGui::SameLine();
 
 		//MOD TIME
-		ImGui::SliderFloat("Mod Time  ", &modulationTime, 0.04f, 4.0f, "%f");
+		ImGui::SliderFloat("##ReverbModTime", &modulationTime, 0.004f, 4.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_MODULATION_TIME, modulationTime);
-		ImGui::SameLine();
-		ImGui::SliderFloat("Mod Depth ", &modulationDepth, 0.0f, 1.0f, "%f");
+		AddHelper("Mod Time", "MODULATION TIME PROPERTY:\nModulation Time controls the speed of the vibrato (rate of periodic changes in pitch).", true);
+		ImGui::SameLine(); ImGui::Text(" "); ImGui::SameLine();
+
+		//MOD DEPTH
+		ImGui::SliderFloat("##ReverbModDepth", &modulationDepth, 0.0f, 1.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_EAXREVERB_MODULATION_DEPTH, modulationDepth);
+		AddHelper("Mod Time", "MODULATION DEPTH PROPERTY:\nModulation Depth controls the amount of pitch change.\nLow values of Diffusion will contribute to reinforcing the perceived effect by reducing the mixing of overlapping reflections in the reverberation decay.", true);
+		ImGui::SameLine(); ImGui::Text(""); ImGui::SameLine();
 
 		ImGui::PopItemWidth();
-
-		/*
-		alEffectf(effect, AL_EAXREVERB_GAINHF,                gainhf);
-		alEffectf(effect, AL_EAXREVERB_GAINLF,                gainlf);
-		alEffectf(effect, AL_EAXREVERB_DECAY_HFRATIO,         decayhfRatio);
-		alEffectf(effect, AL_EAXREVERB_DECAY_LFRATIO,         decaylfRatio);
-		alEffectf(effect, AL_EAXREVERB_REFLECTIONS_GAIN,      reflectionGain);
-		alEffectf(effect, AL_EAXREVERB_REFLECTIONS_DELAY,     reflectionDelay);
-		alEffectf(effect, AL_EAXREVERB_MODULATION_TIME,       modulationTime);
-		alEffectf(effect, AL_EAXREVERB_MODULATION_DEPTH,      modulationDepth);
-		alEffectf(effect, AL_EAXREVERB_AIR_ABSORPTION_GAINHF, airAbsortion);
-		alEffectf(effect, AL_EAXREVERB_ROOM_ROLLOFF_FACTOR,   roomRolloff);
-		alEffectf(effect, AL_EAXREVERB_DECAY_HFLIMIT,         decayhfLimit);
-
-		alEffectf(effect, AL_EAXREVERB_HFREFERENCE,           hfreference);
-		alEffectf(effect, AL_EAXREVERB_LFREFERENCE,           lfreference);*/
 	}
 
 	void End()
@@ -278,7 +267,7 @@ private: // Variables
 
 	float density = 1.0f, diffusion = 1.0f, gain = 0.32f, /*gainhf, gainlf,*/ decayTime = 1.49f,
 		/*decayhfRatio, decaylfRatio,*/ reflectionGain = 0.05f, reflectionDelay = 0.007f,
-		lateReverbGain = 0.05f, lateReverbDelay = 0.011f, echoTime = 0.25f, echoDepth = 0.0f,
+		lateReverbGain = 1.26f, lateReverbDelay = 0.011f, echoTime = 0.25f, echoDepth = 0.0f,
 		modulationTime = 0.25f, modulationDepth = 0.0f/*, airAbsortion, roomRolloff,
 		decayhfLimit, hfreference, lfreference*/;
 
@@ -306,24 +295,31 @@ public:
 		ImGui::Text("Delay"); ImGui::SameLine();
 		if (ImGui::Checkbox("##BypassDl", &nobypass)) ToggleBypass(nobypass);
 
-		ImGui::PushItemWidth(150.0f);
+		ImGui::PushItemWidth(185.0f);
 
-		ImGui::SliderFloat("Wet       ", &feedback, 0.0f, 1.0f, "%f");
+		ImGui::SliderFloat("##DelayFeedback", &feedback, 0.0f, 1.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_ECHO_FEEDBACK, feedback);
-		ImGui::SameLine(0.0f, 4.0f);
-		ImGui::SliderFloat("Spread    ", &spread, -1.0f, 1.0f, "%f");
+		AddHelper("Feedback", "FEEDBACK PROPERTY:\nThis property controls how hard panned the individual echoes are.\nWith maxim value, the first ‘tap’ will be panned hard left, and the second tap hard right.\nA minim value gives the opposite result.Settings nearer to 0.0 result in less emphasized panning.", true);
+		ImGui::SameLine(); ImGui::Text("      "); ImGui::SameLine(0.f, 4.0f);
+
+		ImGui::SliderFloat("##DelaySpread", &spread, -1.0f, 1.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_ECHO_SPREAD, spread);
+		AddHelper("Spread", "SPREAD PROPERTY:\nThis property controls the amount of feedback the output signal fed back into the input.\nUse this parameter to create “cascading” echoes. At full magnitude, the identical sample will repeat endlessly.\nBelow full magnitude, the sample will repeat and fade.", true);
 		ImGui::Spacing();
 
-		ImGui::SliderFloat("Time     ", &delaylr, 0.0f, 0.404f, "%f");
+		ImGui::SliderFloat("##DelayTime", &delaylr, 0.0f, 0.404f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_ECHO_LRDELAY, delaylr);
-		ImGui::SameLine(0.0f, 4.0f);
-		ImGui::SliderFloat("Delay    ", &delay, 0.0f, 0.207f, "%f");
+		AddHelper("Time", "TIME PROPERTY:\nThis property controls the delay between the first ‘tap’ and the second ‘tap’.\nSubsequently, the value for Delay Time is used to determine the time delay between each ‘first tap’ and the next ‘second tap’.", true);
+		ImGui::SameLine(); ImGui::Text("      "); ImGui::SameLine(0.f, 4.0f);
+
+		ImGui::SliderFloat("##DelayOffset", &delay, 0.0f, 0.207f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_ECHO_DELAY, delay);
+		AddHelper("Offset", "OFFSET PROPERTY:\nThis property controls the offset delay between the original sound and the first ‘tap’, or echo instance.\nSubsequently, the value for DELAY OFFSET is used to determine the time delay between each ‘second tap’and the next ‘first tap’.", true);
 		ImGui::Spacing();
 
-		ImGui::SliderFloat("Damping  ", &damping, 0.0f, 0.99f, "%f");
+		ImGui::SliderFloat("##DelayDamping", &damping, 0.0f, 0.99f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_ECHO_DAMPING, damping);
+		AddHelper("Damping", "DAMPING PROPERTY:\nThis property controls the amount of high frequency damping applied to each echo.\nAs the sound is subsequently fed back for further echoes, damping results in an echo which progressively gets softer in tone as well as intensity.", true);
 
 		ImGui::PopItemWidth();
 	}
@@ -364,24 +360,32 @@ public:
 		ImGui::Text("Distortion"); ImGui::SameLine();
 		if (ImGui::Checkbox("##BypassD", &nobypass)) ToggleBypass(nobypass);
 
-		ImGui::PushItemWidth(150.0f);
+		ImGui::PushItemWidth(130.0f);
 
-		ImGui::SliderFloat("Wet       ", &gain, 0.01f, 1.0f, "%f");
-		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_DISTORTION_GAIN, gain);
-		ImGui::SameLine(0.0f, 4.0f);
-		ImGui::SliderFloat("Edge      ", &edge, 0.0f, 1.0f, "%f");
+		//WET
+		ImGui::SliderFloat("##DistortionWet", &gain, 0.01f, 1.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_DISTORTION_GAIN, gain); 
+		AddHelper("Wet", "WET PROPERTY:\nThe Wet property controls the volume of the distorted track. Setting it to maximum will set full distortion track.\nSetting it to minimum will not apply distortion", true);
+		ImGui::SameLine(); ImGui::Text("      "); ImGui::SameLine(0.f, 4.0f);
+		
+		ImGui::SliderFloat("##DistortionEdge", &edge, 0.0f, 1.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_DISTORTION_EDGE, edge);
-		ImGui::Spacing();
+		AddHelper("Edge", "EDGE PROPERTY:\nThis property controls the shape of the distortion.\nThe higher the value for Edge, the ‘dirtier’ and ‘fuzzier’ the effect.", true);
+		ImGui::SameLine(); ImGui::Text("     "); ImGui::SameLine(0.f, 4.0f);
 
-		ImGui::SliderFloat("LP Cutoff ", &lowpassCutoff, 80.0f, 24000.0f, "%f");
+		ImGui::SliderFloat("##DistortionLPCutoff", &lowpassCutoff, 80.0f, 24000.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_DISTORTION_LOWPASS_CUTOFF, lowpassCutoff);
-		ImGui::SameLine(0.0f, 4.0f);
-		ImGui::SliderFloat("EQ Center ", &eqCenter, 80.0f, 24000.0f, "%f");
-		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_DISTORTION_EQCENTER, eqCenter);
+		AddHelper("LP Cutoff", "LOW PASS CUTOFF PROPERTY:\nInput signal can have a low pass filter applied,\nto limit the amount of high frequency signal feeding into the distortion effect.", true);
 		ImGui::Spacing();
 
-		ImGui::SliderFloat("EQ Band W ", &eqBandWidth, 80.0f, 24000.0f, "%f");
+		ImGui::SliderFloat("##DistortionEQCenter", &eqCenter, 80.0f, 24000.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_DISTORTION_EQCENTER, eqCenter);
+		AddHelper("EQ Center", "EQ CENTER PROPERTY:\nThis property controls the frequency at which the post-distortion attenuation (Distortion Gain) is active.", true);
+		ImGui::SameLine(); ImGui::Text(""); ImGui::SameLine(0.f, 4.0f);
+
+		ImGui::SliderFloat("##DistortionEQBandW ", &eqBandWidth, 80.0f, 24000.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_DISTORTION_EQBANDWIDTH, eqBandWidth);
+		AddHelper("EQ Band W", "EQ BAND WIDTH PROPERTY:\nThis property controls the bandwidth of the post-distortion attenuation.", true);
 
 		ImGui::PopItemWidth();
 	}
@@ -422,31 +426,41 @@ public:
 		ImGui::Text("Flanger"); ImGui::SameLine();
 		if (ImGui::Checkbox("##BypassF", &nobypass)) ToggleBypass(nobypass);
 
-		ImGui::PushItemWidth(150.0f);
+		ImGui::PushItemWidth(130.0f);
 
-		ImGui::SliderFloat("Depth     ", &depth, 0.01f, 1.0f, "%f");
+		ImGui::SliderFloat("##FlangerDepth", &depth, 0.01f, 1.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_FLANGER_DEPTH, depth);
-		ImGui::SameLine(0.0f, 4.0f);
-		ImGui::SliderFloat("Feedback  ", &feedback, -1.0f, 1.0f, "%f");
+		AddHelper("Depth", "DEPTH PROPERTY:\nThe ratio by which the delay time is modulated by the LFO.\nUse this parameter to increase the pitch modulation.", true);
+		ImGui::SameLine(); ImGui::Text("    "); ImGui::SameLine(0.f, 4.0f);
+
+		ImGui::SliderFloat("##FlangerFeedback", &feedback, -1.0f, 1.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_FLANGER_FEEDBACK, feedback);
-		ImGui::Spacing();
+		AddHelper("Feedback", "FEEDBACK PROPERTY:\nThis is the amount of the output signal level fed back into the effect’s input.\nA negative value will reverse the phase of the feedback signal.\nUse this parameter to create an “intense metallic” effect.\nAt full magnitude, the identical sample will repeat endlessly.\nAt less than full magnitude, the sample will repeat and fade out over time. ", true);
+		ImGui::SameLine(); ImGui::Text(" "); ImGui::SameLine(0.f, 4.0f);
 
-		ImGui::SliderFloat("Delay     ", &delay, 0.0f, 0.004f, "%f");
+		ImGui::SliderFloat("##FlangerDelay     ", &delay, 0.0f, 0.004f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_FLANGER_DELAY, delay);
-		ImGui::SameLine(0.0f, 4.0f);
-		ImGui::SliderFloat("Rate      ", &rate, 0.0f, 10.0f, "%f");
-		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_FLANGER_RATE, rate);
+		AddHelper("Delay", "DELAY PROPERTY:\nThe average amount of time the sample is delayed before it is played back; with feedback, the amount of time between iterations of the sample. ", true);
 		ImGui::Spacing();
 
-		if (ImGui::Combo("          ", &waveformIndex, &waveform[0], waveform.size()))
+		ImGui::SliderFloat("##FlangerRate", &rate, 0.0f, 10.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_FLANGER_RATE, rate);
+		AddHelper("Rate", "RATE PROPERTY:\nThe number of times per second the LFO controlling the amount of delay repeats.\nHigher values increase the pitch modulation.", true);
+		ImGui::SameLine(); ImGui::Text("     "); ImGui::SameLine(0.f, 4.0f);
+
+		if (ImGui::Combo("##FlangerWaveform", &waveformIndex, &waveform[0], waveform.size()))
 		{
 			ALint wave = AL_FLANGER_WAVEFORM_TRIANGLE;
 			waveformIndex == 0 ? wave = AL_FLANGER_WAVEFORM_SINUSOID : wave = AL_FLANGER_WAVEFORM_TRIANGLE;
 			SetEffectValue(AL_FLANGER_WAVEFORM, wave);
 		}
-		ImGui::SameLine(0.0f, 4.0f);
-		ImGui::SliderFloat("Phase     ", &phase, -180.0f, 180.0f, "%f");
+		AddHelper("Waveform", "WAVEFORM PROPERTY:\nSelects the shape of the LFO waveform that controls the amount of the delay of the sampled signal.Zero is a sinusoid and one is a triangle.", true);
+		ImGui::SameLine(); ImGui::Text(" "); ImGui::SameLine(0.f, 4.0f);
+
+		ImGui::SliderFloat("##FlangerPhase", &phase, -180.0f, 180.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_FLANGER_PHASE, phase);
+		AddHelper("Phase", "PHASE PROPERTY:\nThis changes the phase difference between the left and right LFO’s.\nAt zero degrees the two LFOs are synchronized.", true);
+
 
 		ImGui::PopItemWidth();
 	}
@@ -490,31 +504,40 @@ public:
 		ImGui::Text("Chorus"); ImGui::SameLine();
 		if (ImGui::Checkbox("##BypassC", &nobypass)) ToggleBypass(nobypass);
 
-		ImGui::PushItemWidth(150.0f);
+		ImGui::PushItemWidth(130.0f);
 
-		ImGui::SliderFloat("Depth     ", &depth, 0.01f, 1.0f, "%f");
+		ImGui::SliderFloat("##ChorusDepth", &depth, 0.01f, 1.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_CHORUS_DEPTH, depth);
-		ImGui::SameLine(0.0f, 4.0f);
-		ImGui::SliderFloat("Feedback  ", &feedback, -1.0f, 1.0f, "%f");
+		AddHelper("Depth", "DEPTH PROPERTY:\nThis property controls the amount of processed signal that is fed back to the input of the chorus effect.\nNegative values will reverse the phase of the feedback signal. At full magnitude theidentical sample will repeat endlessly.\nAt lower magnitudes the sample will repeat and fade out over time.\nUse this parameter to create a “cascading” chorus effect.", true);
+		ImGui::SameLine(); ImGui::Text("    "); ImGui::SameLine(0.f, 4.0f);
+
+		ImGui::SliderFloat("##ChorusFeedback", &feedback, -1.0f, 1.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_CHORUS_FEEDBACK, feedback);
-		ImGui::Spacing();
+		AddHelper("Feedback", "FEEDBACK PROPERTY:\nThis is the amount of the output signal level fed back into the effect’s input.\nA negative value will reverse the phase of the feedback signal.\nUse this parameter to create an “intense metallic” effect.\nAt full magnitude, the identical sample will repeat endlessly.\nAt less than full magnitude, the sample will repeat and fade out over time. ", true);
+		ImGui::SameLine(); ImGui::Text(" "); ImGui::SameLine(0.f, 4.0f);
 
-		ImGui::SliderFloat("Delay     ", &delay, 0.0f, 0.016f, "%f");
+		ImGui::SliderFloat("##ChorusDelay     ", &delay, 0.0f, 0.004f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_CHORUS_DELAY, delay);
-		ImGui::SameLine(0.0f, 4.0f);
-		ImGui::SliderFloat("Rate      ", &rate, 0.0f, 10.0f, "%f");
-		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_CHORUS_RATE, rate);
+		AddHelper("Delay", "DELAY PROPERTY:\nThis property controls the average amount of time the sample is delayed before it is played back, and with feedback, the amount of time between iterations of the sample. Larger values lower thepitch.\nSmaller values make the chorus sound like a flanger, but with different frequency characteristics. ", true);
 		ImGui::Spacing();
 
-		if (ImGui::Combo("          ", &waveformIndex, &waveform[0], waveform.size()))
+		ImGui::SliderFloat("##ChorusRate", &rate, 0.0f, 10.0f, "%f");
+		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_CHORUS_RATE, rate);
+		AddHelper("Rate", "RATE PROPERTY:\nThis property sets the modulation rate of the LFO that controls the delay time of the delayed signals. ", true);
+		ImGui::SameLine(); ImGui::Text("     "); ImGui::SameLine(0.f, 4.0f);
+
+		if (ImGui::Combo("##ChorusWaveform", &waveformIndex, &waveform[0], waveform.size()))
 		{
 			ALint wave = AL_CHORUS_WAVEFORM_TRIANGLE;
 			waveformIndex == 0 ? wave = AL_CHORUS_WAVEFORM_SINUSOID : wave = AL_CHORUS_WAVEFORM_TRIANGLE;
 			SetEffectValue(AL_CHORUS_WAVEFORM, wave);
 		}
-		ImGui::SameLine(0.0f, 4.0f);
-		ImGui::SliderFloat("Phase     ", &phase, -180.0f, 180.0f, "%f");
+		AddHelper("Waveform", "WAVEFORM PROPERTY:\nThis property sets the waveform shape of the LFO that controls the delay time of the delayed signals.", true);
+		ImGui::SameLine(); ImGui::Text(" "); ImGui::SameLine(0.f, 4.0f);
+
+		ImGui::SliderFloat("##ChorusPhase", &phase, -180.0f, 180.0f, "%f");
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_CHORUS_PHASE, phase);
+		AddHelper("Phase", "PHASE PROPERTY:\nThis property controls the phase difference between the left and right LFO’s.\nAt zero degrees the two LFOs are synchronized.\nUse this parameter to create the illusion of an expanded stereo field of the output signal. ", true);
 
 		ImGui::PopItemWidth();
 	}
