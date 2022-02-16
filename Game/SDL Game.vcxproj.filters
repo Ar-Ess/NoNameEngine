@@ -1113,6 +1113,9 @@
     <ClInclude Include="Source\Effects.h">
       <Filter>Components\Audio</Filter>
     </ClInclude>
+    <ClInclude Include="Source\SwitchAudioSourceComponent.h">
+      <Filter>Components\Audio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\External\imgui\imgui_demo.cpp">

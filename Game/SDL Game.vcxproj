@@ -393,6 +393,7 @@
     <ClInclude Include="Source\ModuleWindow.h" />
     <ClInclude Include="Source\PerfTimer.h" />
     <ClInclude Include="Source\Shapes3D.h" />
+    <ClInclude Include="Source\SwitchAudioSourceComponent.h" />
     <ClInclude Include="Source\Timer.h" />
   </ItemGroup>
   <ItemGroup>
