@@ -1,17 +1,17 @@
-- Bug: If effect disconected, and then change config, it reconnects.
+- Bug: If effect bypassed, and then change it's config, it reconnects.
 
-- Bug: Stop audio if it is playing before (avans) creating the plugin in code. 
+- Bug: Stop audio if it is playing before (avans) creating the plugin in code.
 
-// NOT POSSIBLE - Todo: Add gain slider or change slider config to be able to gain up sound
+// NOT POSSIBLE - Todo: Add gain slider or change slider config to be able to gain up sound.
 
-// DONE - Todo: Delete specific tracks
+// DONE - Todo: Delete specific tracks.
 
 - Todo: 2 tracks can't play at the same time. After play, stop all other tracks if not stopped.
 
-- Todo: If 1 track's window closed, stop audio from playing
+- Todo: If 1 track's window closed, stop audio from playing.
 
-- Todo: Switch between track pause with pause button correctly
+- Todo: Switch between track pause with pause button correctly.
 
-- Todo: Plat on start, but just one track. If 2 tracks has play on start checked == bad
+- Todo: Play on start, but just one track. If 2 tracks has play on start checked == bad.
 
-- Todo: Save&Load of audio module
+- Todo: Save&Load of audio module.

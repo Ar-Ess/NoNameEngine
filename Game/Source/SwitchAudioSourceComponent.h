@@ -78,7 +78,7 @@ public:
 
 	void Update(Shape3D* afected)
 	{
-		SwitchFade(3);
+		SwitchFade(fadeTime);
 
 		if (gameTimer->GetTimerState() == STOPPED) return;
 		
@@ -124,9 +124,9 @@ public:
 
 			ImGui::Spacing();
 
-			/*ImGui::Text("Fade time ");
+			ImGui::Text("Fade time ");
 			ImGui::SameLine();
-			ImGui::DragInt("##FadeTime", &fadeTime, 0.1f, 10.0f, , "%d sec");*/
+			ImGui::DragFloat("##FadeTime", &fadeTime, 0.1f, 0.1f, 10.0f, "%f.3 sec");
 
 			ImGui::Spacing();
 			ImGui::Spacing();
@@ -642,7 +642,7 @@ private: // Variables
 
 	int nextSwitchTrack = 1;
 
-	int fadeTime = 100;
+	float fadeTime = 2.0f;
 
 	TrackInstance* oldTrack = nullptr;
 	TrackInstance* newTrack = nullptr;
