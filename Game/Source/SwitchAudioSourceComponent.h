@@ -3,7 +3,6 @@
 
 #include "Component.h"
 #include "Effects.h"
-//#include "AudioSystem.h"
 #include "External/ImGuiFileDialog/ImGuiFileDialog.h"
 
 struct TrackInstance
@@ -14,6 +13,18 @@ struct TrackInstance
 		knobReminder2 = false;
 		bypass = false;
 		if (playOnStart) audio->PlayAudio(track.source);
+	}
+
+	void Delete(AudioSystem* audio)
+	{
+		fxTracker.clear();
+		for (unsigned int i = 0; i < effects.size(); i++)
+		{
+			audio->StopAudio(track.source);
+			effects[i]->Disconnect(track.source);
+			delete effects[i];
+		}
+		effects.clear();
 	}
 
 	Track track;
@@ -52,15 +63,7 @@ public:
 	{
 		for (unsigned int i = 0; i < tracks.size(); i++)
 		{
-			TrackInstance* index = &tracks[i]; 
-			index->fxTracker.clear();
-			for (unsigned int i = 0; i < index->effects.size(); i++)
-			{
-				audio->StopAudio(index->track.source);
-				index->effects[i]->Disconnect(index->track.source);
-				delete index->effects[i];
-			}
-			index->effects.clear();
+			tracks[i].Delete(audio);
 		}
 		this->title.clear();
 	}
@@ -94,82 +97,137 @@ public:
 
 	void Draw(Shape3D* affected, bool* onWindow = nullptr)
 	{
-		ImGui::PushItemWidth(80);
-		ImGui::SliderInt("Tracks", &totalTracks, 2, 8);
-		if (ImGui::IsItemDeactivatedAfterEdit() && totalTracks != tracks.size())
+		if (ImGui::BeginTable("SwitchAudioSourceComp", 2))
 		{
-			while (totalTracks < tracks.size())
+			ImGui::TableSetupColumn("SAST10", ImGuiTableColumnFlags_WidthFixed, 2);
+			ImGui::TableSetupColumn("SAST11");
+
+			ImGui::TableNextRow();
+
+			ImGui::TableSetColumnIndex(0);
+			ImGui::TableSetColumnIndex(1);
+
+			// SWITCH BUTTON
+			if (ImGui::Button("Switch To") && !switching)
 			{
-				tracks.erase(tracks.end() - 1);
-			}
+				oldTrack = GetPlayingTrack();
+				newTrack = &tracks[nextSwitchTrack - 1];
 
-			while (totalTracks > tracks.size())
-			{
-				tracks.push_back({});
-				TrackInstance* last = &tracks.at(tracks.size() - 1);
-				SetVolume(last->volume, last);
-				SetPanning(last->pan, last);
-				SetTranspose(last->transpose, last);
-				SetLoop(last->loop, last);
-				if (totalTracks == 10 && tracks.size() == 10) last->bypass = true;
-			}
-		}
-		ImGui::PopItemWidth();
-
-		ImGui::Spacing();
-
-		if (ImGui::Button("Switch To") && !switching)
-		{
-			oldTrack = GetPlayingTrack();
-			newTrack = &tracks[nextSwitchTrack - 1];
-
-			if (oldTrack != nullptr && !newTrack->play && newTrack->track.channels != 0)
-			{
-				switching = true;
-				switchTime = gameTimer->RealReadSec();
-			}
-		}
-		ImGui::Text("Track"); ImGui::SameLine(); 
-		ImGui::DragInt("##Switch", &nextSwitchTrack, 1.0f, 1, tracks.size());
-
-		ImGui::Spacing();
-
-		for (int i = 0; i < tracks.size(); i++)
-		{
-			ImGui::PushID(i + 50);
-			TrackInstance* index = &tracks[i];
-			if (ImGui::CollapsingHeader(trackNaming[i].c_str()))
-			{
-				if (ImGui::Button("Browse Audio"))
+				if (oldTrack != nullptr && !newTrack->play && newTrack->track.channels != 0)
 				{
-					browsing = true;
-					currentBrowsingTrack = i;
+					switching = true;
+					switchTime = gameTimer->RealReadSec();
+				}
+			}
+			ImGui::SameLine();
+			ImGui::DragInt("##Switch", &nextSwitchTrack, 1.0f, 1, tracks.size(), "Track %d");
+
+			ImGui::Spacing();
+
+			/*ImGui::Text("Fade time ");
+			ImGui::SameLine();
+			ImGui::DragInt("##FadeTime", &fadeTime, 0.1f, 10.0f, , "%d sec");*/
+
+			ImGui::Spacing();
+			ImGui::Spacing();
+
+			// TRACK LIST
+
+			ImGui::PushItemWidth(80);
+			ImGui::Text("Tracks"); ImGui::SameLine(); ImGui::SliderInt("##TrackCount", &totalTracks, 2, 8);
+			if (ImGui::IsItemDeactivatedAfterEdit() && totalTracks != tracks.size())
+			{
+				while (totalTracks < tracks.size())
+				{
+					tracks.erase(tracks.end() - 1);
 				}
 
-				if (index->track.channels != 0)
+				while (totalTracks > tracks.size())
 				{
+					tracks.push_back({});
+					TrackInstance* last = &tracks.at(tracks.size() - 1);
+					SetVolume(last->volume, last);
+					SetPanning(last->pan, last);
+					SetTranspose(last->transpose, last);
+					SetLoop(last->loop, last);
+					if (totalTracks == 10 && tracks.size() == 10) last->bypass = true;
+				}
+			}
+			ImGui::PopItemWidth();
+			ImGui::Spacing();
+			for (int i = 0; i < tracks.size(); i++)
+			{
+				ImGui::PushID(i + 50);
+				TrackInstance* index = &tracks[i];
+				if (tracks.size() > 2)
+				{
+					if (ImGui::Button("X"))
+					{
+						totalTracks--;
+						nextSwitchTrack--;
+						tracks.at(i).Delete(audio);
+						tracks.erase(tracks.begin() + i);
+						ImGui::PopID();
+						ImGui::SameLine();
+						continue;
+					}
 					ImGui::SameLine();
-					if (ImGui::Button("Edit"))
-					{
-						currentTrackEditor = i;
-						open = true;
-						index->offset = 0;
-						index->knobReminder1 = false;
-						index->knobReminder2 = false;
-					}
-					ImGui::Spacing();
-					ImGui::Text("Options");
-					if (ImGui::Checkbox("Mute", &index->mute)) SetVolume(index->volume, &tracks[i]);
-					ImGui::Checkbox("Play on start", &index->playOnStart);
-					if (ImGui::Checkbox("Loop", &index->loop)) SetLoop(index->loop, &tracks[i]);
-					if (ImGui::Checkbox("Bypass FX", &index->bypass))
-					{
-						for (unsigned int i = 0; i < index->effects.size(); i++) index->effects[i]->ToggleBypass(!index->bypass);
-					}
 				}
+				std::string trackName = trackNaming[i];
+				if (index->track.channels == 0)
+				{
+					ImGui::PushStyleColor(ImGuiCol_Header, ImVec4{ 0.7f, 0, 0, 0.2f });
+					trackName += " (no audio)";
+				}
+
+				if (ImGui::CollapsingHeader(trackName.c_str(), ImGuiTreeNodeFlags_Framed))
+				{
+					if (ImGui::BeginTable("TrackInsights", 2))
+					{
+						ImGui::TableSetupColumn("SAST20", ImGuiTableColumnFlags_WidthFixed, 3);
+						ImGui::TableSetupColumn("SAST21");
+
+						ImGui::TableNextRow();
+
+						ImGui::TableSetColumnIndex(0);
+						ImGui::TableSetColumnIndex(1);
+
+						if (ImGui::Button("Browse Audio"))
+						{
+							browsing = true;
+							currentBrowsingTrack = i;
+						}
+
+						if (index->track.channels != 0)
+						{
+							ImGui::SameLine();
+							if (ImGui::Button("Edit"))
+							{
+								currentTrackEditor = i;
+								open = true;
+								index->offset = 0;
+								index->knobReminder1 = false;
+								index->knobReminder2 = false;
+							}
+							ImGui::Spacing();
+							ImGui::Text("Options");
+							if (ImGui::Checkbox("Mute", &index->mute)) SetVolume(index->volume, &tracks[i]);
+							ImGui::Checkbox("Play on start", &index->playOnStart);
+							if (ImGui::Checkbox("Loop", &index->loop)) SetLoop(index->loop, &tracks[i]);
+							if (ImGui::Checkbox("Bypass FX", &index->bypass))
+							{
+								for (unsigned int i = 0; i < index->effects.size(); i++) index->effects[i]->ToggleBypass(!index->bypass);
+							}
+						}
+					}
+					ImGui::EndTable();
+				}
+				if (index->track.channels == 0) ImGui::PopStyleColor();
+				ImGui::PopID();
 			}
-			ImGui::PopID();
+
 		}
+		ImGui::EndTable();
 
 		UpdatePlayState();
 

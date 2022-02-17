@@ -4,10 +4,14 @@
 
 // NOT POSSIBLE - Todo: Add gain slider or change slider config to be able to gain up sound
 
-- Todo: Delete specific tracks
+// DONE - Todo: Delete specific tracks
 
 - Todo: 2 tracks can't play at the same time. After play, stop all other tracks if not stopped.
 
+- Todo: If 1 track's window closed, stop audio from playing
+
 - Todo: Switch between track pause with pause button correctly
+
+- Todo: Plat on start, but just one track. If 2 tracks has play on start checked == bad
 
 - Todo: Save&Load of audio module

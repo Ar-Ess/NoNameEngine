@@ -143,8 +143,8 @@ private: // Methods
 
 			if (ImGui::BeginTable("Middle Table", 2))
 			{
-				ImGui::TableSetupColumn("one", ImGuiTableColumnFlags_WidthFixed, 180.0f); // Default to 100.0f
-				ImGui::TableSetupColumn("two", ImGuiTableColumnFlags_WidthFixed);
+				ImGui::TableSetupColumn("T10", ImGuiTableColumnFlags_WidthFixed, 180.0f); // Default to 100.0f
+				ImGui::TableSetupColumn("T11", ImGuiTableColumnFlags_WidthFixed);
 				ImGui::TableNextRow();
 
 				ImGui::TableSetColumnIndex(0);
