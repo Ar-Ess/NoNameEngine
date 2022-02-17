@@ -82,3 +82,13 @@ float Timer::ReadSec() const
 		return time / 1000.0f;
 	}
 }
+
+uint32 Timer::RealRead() const
+{
+	return SDL_GetPerformanceCounter();
+}
+
+float Timer::RealReadSec() const
+{
+	return SDL_GetTicks() / 1000.0f;
+}

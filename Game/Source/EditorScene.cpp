@@ -9,6 +9,7 @@
 
 #include "AudioSourceComponent.h"
 #include "SpacialAudioSourceComponent.h"
+#include "SwitchAudioSourceComponent.h"
 #include "LiniarVelocityComponent.h"
 
 EditorScene::EditorScene(Application* App, vector<Shape3D*>* s, AssetsManager* assetsManager, ImportManager* importManager, FileManager* fileManager, AudioSystem* audioSystem)
@@ -733,6 +734,9 @@ bool EditorScene::ShowInspectorWindow(bool open)
 						if (ImGui::MenuItem("Spacial Audio Source"))
 							AddComponent(SPACIAL_AUDIO_SOURCE_COMPONENT, s);
 
+						if (ImGui::MenuItem("Switch Audio Source"))
+							AddComponent(SWITCH_AUDIO_SOURCE_COMPONENT, s);
+
 						ImGui::EndMenu();
 					}
 
@@ -1213,6 +1217,10 @@ void EditorScene::AddComponent(ComponentID component, Shape3D* recipient)
 
 	case SPACIAL_AUDIO_SOURCE_COMPONENT:
 		recipient->components.push_back(new SpacialAudioSourceComponent(timer, audio, &app->camera->position, this, &app->camera->speed));
+		break;
+
+	case SWITCH_AUDIO_SOURCE_COMPONENT:
+		recipient->components.push_back(new SwitchAudioSourceComponent(timer, audio));
 		break;
 	}
 }

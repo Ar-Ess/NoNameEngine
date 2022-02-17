@@ -145,12 +145,35 @@ void AudioSystem::PauseAudio(ALuint audioSource)
 	if (sourceState == AL_PLAYING) alec(alSourcePause(audioSource));
 }
 
+void AudioSystem::ResumeAudio(ALuint audioSource)
+{
+	ALint sourceState;
+	alec(alGetSourcei(audioSource, AL_SOURCE_STATE, &sourceState));
+
+	if (sourceState == AL_PAUSED) alec(alSourcePlay(audioSource));
+}
+
 void AudioSystem::StopAudio(ALuint audioSource)
 {
 	ALint sourceState;
 	alec(alGetSourcei(audioSource, AL_SOURCE_STATE, &sourceState));
 
 	if (sourceState == AL_PLAYING || sourceState == AL_PAUSED) alec(alSourceStop(audioSource));
+}
+
+void AudioSystem::ReplayAudio(ALuint audioSource)
+{
+	ALint sourceState;
+	alec(alGetSourcei(audioSource, AL_SOURCE_STATE, &sourceState));
+
+	if (sourceState == AL_PLAYING) alec(alSourcePlay(audioSource));
+}
+
+bool AudioSystem::isAudioPlaying(ALuint audioSource)
+{
+	ALint sourceState;
+	alec(alGetSourcei(audioSource, AL_SOURCE_STATE, &sourceState));
+	return sourceState == AL_PLAYING;
 }
 
 Track AudioSystem::LoadMP3(const char* path)

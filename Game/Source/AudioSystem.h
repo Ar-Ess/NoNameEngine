@@ -80,8 +80,12 @@ public:
 	ALuint CreateAudioSource(ALuint audioBuffer, bool spacial);
 	void CreateSpatialAudioSource(ALuint audioBuffer);
 	void PlayAudio(ALuint audioSource, float time = 0.0f);
+	void ResumeAudio(ALuint audioSource);
 	void StopAudio(ALuint audioSource);
 	void PauseAudio(ALuint audioSource);
+	void ReplayAudio(ALuint audioSource);
+
+	bool isAudioPlaying(ALuint audioSource);
 
 	void CleanUp(ALuint buffer, ALuint source);
 

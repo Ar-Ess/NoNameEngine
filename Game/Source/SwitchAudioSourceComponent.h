@@ -3,6 +3,7 @@
 
 #include "Component.h"
 #include "Effects.h"
+//#include "AudioSystem.h"
 #include "External/ImGuiFileDialog/ImGuiFileDialog.h"
 
 struct TrackInstance
@@ -11,6 +12,7 @@ struct TrackInstance
 	{
 		knobReminder1 = false;
 		knobReminder2 = false;
+		bypass = false;
 		if (playOnStart) audio->PlayAudio(track.source);
 	}
 
@@ -21,6 +23,10 @@ struct TrackInstance
 	bool knobReminder1 = false, knobReminder2 = false;
 	float volume = 100.0f, pan = 0, transpose = 0, offset = 0;
 	int currEffect = 0;
+
+	const char* fxNames[13] = { "-----", "EQ", "Compressor", "Reverb", "Distortion", "Flanger", "Delay", "Chorus", "Auto Wah", "Ring Mod", "Pitch Shift", "Freq Shift", "Vocal Morph" };
+	std::vector<const char*> fxTracker = { "-----", "EQ", "Compressor", "Reverb", "Distortion", "Flanger", "Delay", "Chorus", "Auto Wah", "Ring Mod", "Pitch Shift", "Freq Shift", "Vocal Morph" };
+	unsigned int totalEffects = 13;
 };
 
 class SwitchAudioSourceComponent : public Component
@@ -44,15 +50,17 @@ public:
 	}
 	~SwitchAudioSourceComponent()
 	{
-		fxTracker.clear();
 		for (unsigned int i = 0; i < tracks.size(); i++)
 		{
-			for (unsigned int i = 0; i < tracks[i].effects.size(); i++)
+			TrackInstance* index = &tracks[i]; 
+			index->fxTracker.clear();
+			for (unsigned int i = 0; i < index->effects.size(); i++)
 			{
-				tracks[i].effects[i]->Disconnect(tracks[i].track.source);
-				delete tracks[i].effects[i];
+				audio->StopAudio(index->track.source);
+				index->effects[i]->Disconnect(index->track.source);
+				delete index->effects[i];
 			}
-			tracks[i].effects.clear();
+			index->effects.clear();
 		}
 		this->title.clear();
 	}
@@ -60,19 +68,40 @@ public:
 	void Start(Shape3D* afected)
 	{
 		for (unsigned int i = 0; i < tracks.size(); i++) tracks[i].Start(audio);
+		switching = false;
+		browsing = false;
+		switchTime = 0;
 	}
 
 	void Update(Shape3D* afected)
 	{
-		if (gameTimer->GetTimerState() != RUNNING) return;
+		SwitchFade(3);
+
+		if (gameTimer->GetTimerState() == STOPPED) return;
+		
+		for (unsigned int i = 0; i < tracks.size(); i++)
+		{
+			TrackInstance* index = &tracks[i];
+			if (gameTimer->GetTimerState() == PAUSED)
+			{
+				audio->PauseAudio(index->track.source);
+				return;
+			}
+
+			audio->PlayAudio(index->track.source);
+		}
 	}
 
 	void Draw(Shape3D* affected, bool* onWindow = nullptr)
 	{
-		ImGui::SliderInt("Total Tracks", &totalTracks, 2, 10);
+		ImGui::PushItemWidth(80);
+		ImGui::SliderInt("Tracks", &totalTracks, 2, 8);
 		if (ImGui::IsItemDeactivatedAfterEdit() && totalTracks != tracks.size())
 		{
-			while (totalTracks < tracks.size()) tracks.erase(tracks.end());
+			while (totalTracks < tracks.size())
+			{
+				tracks.erase(tracks.end() - 1);
+			}
 
 			while (totalTracks > tracks.size())
 			{
@@ -82,15 +111,40 @@ public:
 				SetPanning(last->pan, last);
 				SetTranspose(last->transpose, last);
 				SetLoop(last->loop, last);
+				if (totalTracks == 10 && tracks.size() == 10) last->bypass = true;
 			}
 		}
+		ImGui::PopItemWidth();
+
+		ImGui::Spacing();
+
+		if (ImGui::Button("Switch To") && !switching)
+		{
+			oldTrack = GetPlayingTrack();
+			newTrack = &tracks[nextSwitchTrack - 1];
+
+			if (oldTrack != nullptr && !newTrack->play && newTrack->track.channels != 0)
+			{
+				switching = true;
+				switchTime = gameTimer->RealReadSec();
+			}
+		}
+		ImGui::Text("Track"); ImGui::SameLine(); 
+		ImGui::DragInt("##Switch", &nextSwitchTrack, 1.0f, 1, tracks.size());
+
+		ImGui::Spacing();
 
 		for (int i = 0; i < tracks.size(); i++)
 		{
+			ImGui::PushID(i + 50);
 			TrackInstance* index = &tracks[i];
 			if (ImGui::CollapsingHeader(trackNaming[i].c_str()))
 			{
-				if (ImGui::Button("Browse Audio")) browsing = true;
+				if (ImGui::Button("Browse Audio"))
+				{
+					browsing = true;
+					currentBrowsingTrack = i;
+				}
 
 				if (index->track.channels != 0)
 				{
@@ -114,13 +168,14 @@ public:
 					}
 				}
 			}
+			ImGui::PopID();
 		}
 
 		UpdatePlayState();
 
 		if (open) DrawWindow(onWindow, &tracks[currentTrackEditor]);
 
-		if (browsing) browsing = BrowseAudio();
+		if (browsing) browsing = BrowseAudio(&tracks[currentBrowsingTrack]);
 	}
 
 	void End(Shape3D* afected)
@@ -205,11 +260,11 @@ private: // Methods
 
 						ImGui::TableNextRow(); ImGui::TableSetColumnIndex(0);
 						ImGui::Dummy(ImVec2{ 4.5f, 0.0f }); ImGui::SameLine();
-						if (ImGui::Knob("L / R", &index->pan, -0.5, 0.5, false, mono, 2.5f, &index->knobReminder2) && mono) SetPanning(index->pan);
+						if (ImGui::Knob("L / R", &index->pan, -0.5, 0.5, false, mono, 2.5f, &index->knobReminder2) && mono) SetPanning(index->pan, index);
 						ImGui::Dummy(ImVec2{ 0.0f, 10.0f });
 
 						ImGui::TableNextRow(); ImGui::TableSetColumnIndex(0);
-						if (ImGui::Knob("Transpose", &transpose, -24.0, 24.0, false, true, -10, &index->knobReminder1)) SetTranspose(index->transpose);
+						if (ImGui::Knob("Transpose", &index->transpose, -24.0, 24.0, false, true, -10, &index->knobReminder1)) SetTranspose(index->transpose, index);
 					}
 					ImGui::EndTable();
 				}
@@ -247,19 +302,19 @@ private: // Methods
 						if (ImGui::Button("Add"))
 						{
 							index->effects.push_back(CreateEffect(index->currEffect, index));
-							fxTracker.erase(fxTracker.begin() + index->currEffect);
+							index->fxTracker.erase(index->fxTracker.begin() + index->currEffect);
 							index->currEffect--;
-							totalEffects--;
+							index->totalEffects--;
 						}
 					}
 
 					if (!index->effects.empty())
 					{
 						ImGui::SameLine();
-						if (ImGui::Button("Delete")) RemoveEffect();
+						if (ImGui::Button("Delete")) RemoveEffect(index);
 					}
 
-					ImGui::Combo("##Effects", &index->currEffect, &fxTracker[0], fxTracker.size());
+					ImGui::Combo("##Effects", &index->currEffect, &index->fxTracker[0], index->fxTracker.size());
 
 					bool select = false;
 					bool clicked = false;
@@ -308,7 +363,7 @@ private: // Methods
 		bool ret = true;
 
 		// open Dialog Simple
-		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose an Audio File", ".*,.wav,.mp3,.flac", ".*");
+		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose an Audio File", ".mp3,.wav,.flac", ".");
 
 		//display
 		if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey"), ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove)
@@ -366,7 +421,7 @@ private: // Methods
 	{
 		Effect* e = nullptr;
 
-		const char* eName = fxTracker[effect];
+		const char* eName = index->fxTracker[effect];
 
 		if ("EQ" == eName) e = new EQ(index->track.source, index->bypass);
 		else if ("Compressor" == eName) e = new Compressor(index->track.source, index->bypass);
@@ -389,9 +444,16 @@ private: // Methods
 		for (unsigned int i = 0; i < tracks.size(); i++)
 		{
 			TrackInstance* index = &tracks[i];
-			ALint sourceState;
-			alGetSourcei(index->track.source, AL_SOURCE_STATE, &sourceState);
-			(sourceState == AL_PLAYING) ? index->play = true : index->play = false;
+			if (index->track.channels != 0)
+			{
+				ALint sourceState;
+				alGetSourcei(index->track.source, AL_SOURCE_STATE, &sourceState);
+				(sourceState == AL_PLAYING) ? index->play = true : index->play = false;
+			}
+			if (index->play)
+			{
+				int a = 0;
+			}
 		}
 	}
 
@@ -438,21 +500,21 @@ private: // Methods
 			if (index->effects[i]->selected)
 			{
 				Effect* e = index->effects[i];
-				if (fxTracker.size() == 1) fxTracker.push_back(ReturnWrittedName(e->GetName()));
+				if (index->fxTracker.size() == 1) index->fxTracker.push_back(ReturnWrittedName(e->GetName()));
 				else
 				{
 					int delId = GetEffectNameId(e->GetName());
 					bool inserted = false;
-					for (unsigned int a = 1; a < fxTracker.size(); a++)
+					for (unsigned int a = 1; a < index->fxTracker.size(); a++)
 					{
-						if (delId < GetEffectNameId(fxTracker[a]))
+						if (delId < GetEffectNameId(index->fxTracker[a]))
 						{
-							fxTracker.insert(fxTracker.begin() + a, ReturnWrittedName(e->GetName()));
+							index->fxTracker.insert(index->fxTracker.begin() + a, ReturnWrittedName(e->GetName()));
 							inserted = true;
 							break;
 						}
 					}
-					if (!inserted) fxTracker.push_back(ReturnWrittedName(e->GetName()));
+					if (!inserted) index->fxTracker.push_back(ReturnWrittedName(e->GetName()));
 				}
 				index->effects[i]->Disconnect(index->track.source);
 				delete index->effects[i];
@@ -462,16 +524,71 @@ private: // Methods
 		}
 	}
 
+	TrackInstance* GetPlayingTrack()
+	{
+		for (unsigned int i = 0; i < tracks.size(); i++)
+		{
+			if (tracks[i].play) return &tracks[i];
+		}
+
+		return nullptr;
+	}
+
+	void SwitchFade(float fadeSeconds)
+	{
+		// Look if both tracks exist
+		if (switching)
+		{
+			if (!newTrack->play)
+			{
+				audio->PlayAudio(newTrack->track.source);
+				alSourcef(newTrack->track.source, AL_GAIN, 0.0f);
+			}
+
+			float t = gameTimer->RealReadSec() - switchTime;
+			float d = fadeSeconds;
+			if (t > d)
+			{
+				switching = false; // Stop source
+				audio->StopAudio(oldTrack->track.source);
+				SetVolume(oldTrack->volume, oldTrack);
+				SetVolume(newTrack->volume, newTrack);
+				oldTrack = nullptr;
+				newTrack = nullptr;
+			}
+			else
+			{
+				float volume = oldTrack->volume;
+				volume = Pow(volume, 2.5f) / 1000.0f;
+				if (volume > 99.0f) volume = 100.0f;
+				volume = (volume / 100) * (1.0f - t / d);
+				alSourcef(oldTrack->track.source, AL_GAIN, volume);
+
+				float nvolume = newTrack->volume;
+				nvolume = Pow(nvolume, 2.5f) / 1000.0f;
+				if (nvolume > 99.0f) nvolume = 100.0f;
+				nvolume = (nvolume / 100) * (t / d);
+				alSourcef(newTrack->track.source, AL_GAIN, nvolume);
+			}
+		}
+	}
+
 private: // Variables
 
 	bool browsing = false;
+	bool switching = false;
 
 	int totalTracks = 2;
 	int currentTrackEditor = 0;
+	int currentBrowsingTrack = 0;
 
-	const char* fxNames[13] = { "-----", "EQ", "Compressor", "Reverb", "Distortion", "Flanger", "Delay", "Chorus", "Auto Wah", "Ring Mod", "Pitch Shift", "Freq Shift", "Vocal Morph" };
-	std::vector<const char*> fxTracker = { "-----", "EQ", "Compressor", "Reverb", "Distortion", "Flanger", "Delay", "Chorus", "Auto Wah", "Ring Mod", "Pitch Shift", "Freq Shift", "Vocal Morph" };
-	unsigned int totalEffects = 13;
+	int nextSwitchTrack = 1;
+
+	int fadeTime = 100;
+
+	TrackInstance* oldTrack = nullptr;
+	TrackInstance* newTrack = nullptr;
+	float switchTime = 0;
 
 	std::vector<TrackInstance> tracks;
 

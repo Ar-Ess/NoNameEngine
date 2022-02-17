@@ -25,6 +25,8 @@ public:
 
 	uint32 Read() const;
 	float ReadSec() const;
+	uint32 RealRead() const;
+	float RealReadSec() const;
 
 	TimerState GetTimerState() const
 	{

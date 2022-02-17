@@ -79,6 +79,8 @@ protected:
 
 	void Generate(ALuint source = 0, bool bypass = false)
 	{
+		/*ALCdevice* device = alcOpenDevice(NULL);
+		const ALCchar* string = alcGetString(device, ALC_DEVICE_SPECIFIER);*/
 
 #define LOAD_PROC(T, x)  ((x) = (T)alGetProcAddress(#x))
 		LOAD_PROC(LPALGENEFFECTS, alGenEffects);

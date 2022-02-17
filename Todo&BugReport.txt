@@ -1,0 +1,13 @@
+- Bug: If effect disconected, and then change config, it reconnects.
+
+- Bug: Stop audio if it is playing before (avans) creating the plugin in code. 
+
+// NOT POSSIBLE - Todo: Add gain slider or change slider config to be able to gain up sound
+
+- Todo: Delete specific tracks
+
+- Todo: 2 tracks can't play at the same time. After play, stop all other tracks if not stopped.
+
+- Todo: Switch between track pause with pause button correctly
+
+- Todo: Save&Load of audio module

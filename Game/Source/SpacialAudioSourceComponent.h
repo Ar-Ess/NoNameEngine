@@ -50,7 +50,15 @@ public:
 
 	void Update(Shape3D* afected)
 	{
-		if (gameTimer->GetTimerState() != RUNNING) return;
+		if (gameTimer->GetTimerState() == STOPPED) return;
+
+		if (gameTimer->GetTimerState() == PAUSED)
+		{
+			audio->PauseAudio(track.source);
+			return;
+		}
+
+		audio->ResumeAudio(track.source);
 		UpdateSpatialAudio(afected);
 	}
 
@@ -290,7 +298,7 @@ private: // Methods
 		bool ret = true;
 
 		// open Dialog Simple
-		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose an Audio File", ".*,.wav,.mp3,.flac", ".");
+		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose an Audio File", ".wav,.mp3,.flac", ".");
 
 		//display
 		if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey"), ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove)
