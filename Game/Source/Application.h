@@ -20,6 +20,7 @@
 #include "Timer.h"
 #include "Defs.h"
 #include "Shapes3D.h"
+#include "Component.h"
 
 using namespace std;
 using namespace rapidjson;
@@ -124,6 +125,10 @@ private: // JSON Functions
 	void JsonSaveShapes(JSON_Array* arr, vector<Shape3D*>* shapes, int offset = 0);
 
 	void JsonLoadShapes(JSON_Array* arr, vector<Shape3D*>* shapes, Shape3D* parent = nullptr);
+
+	void JsonSaveComponents(JSON_Array* arr, vector<Component*>* comps);
+
+	void JsonLoadComponents(JSON_Array* arr, vector<Component*>* comps);
 
 public: // Variables
 

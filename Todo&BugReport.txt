@@ -14,7 +14,7 @@
 
 // DONE - Todo: If 1 track's window closed, stop audio from playing.
 
-- Todo: During track switching with fade, work in game mode so you can pause and then resume and the fade continues from its point
+// DONE - Todo: During track switching with fade, work in game mode so you can pause and then resume and the fade continues from its point
 
 // DONE - Todo: Play on start, but just one track. If 2 tracks has play on start checked == bad.
 

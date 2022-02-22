@@ -35,6 +35,17 @@ public:
 		return title.c_str();
 	}
 
+	bool GetEditorOpenState(const bool* getPrevOpen = nullptr) const
+	{
+		if (getPrevOpen != nullptr) getPrevOpen = &prevOpen;
+		return open;
+	}
+
+	ComponentID GetComponentID() const
+	{
+		return id;
+	}
+
 protected:
 	Component(const char* titleText, ComponentID componentId) 
 	{

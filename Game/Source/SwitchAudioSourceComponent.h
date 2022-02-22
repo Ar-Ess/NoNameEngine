@@ -107,11 +107,21 @@ public:
 			if (gameTimer->GetTimerState() == PAUSED)
 			{
 				audio->PauseAudio(index->track.source);
-				return;
+				if (switching) pauseDifference = gameTimer->RealReadSec() - switchTime;
+				continue;
 			}
 
 			audio->ResumeAudio(index->track.source);
 		}
+
+		if (input->GetKey(SDL_SCANCODE_F) == KEY_REPEAT)
+		{
+			if (input->GetKey(SDL_SCANCODE_1) == KEY_DOWN) SwitchTrack(0);
+			if (input->GetKey(SDL_SCANCODE_2) == KEY_DOWN) SwitchTrack(1);
+			if (input->GetKey(SDL_SCANCODE_3) == KEY_DOWN) SwitchTrack(2);
+		}
+
+		UpdatePlayState();
 	}
 
 	void Draw(Shape3D* affected, bool* onWindow = nullptr)
@@ -129,17 +139,10 @@ public:
 			// SWITCH BUTTON
 			if (ImGui::Button("Switch To") && !switching)
 			{
-				oldTrack = GetPlayingTrack();
-				newTrack = &tracks[nextSwitchTrack - 1];
-
-				if (oldTrack != nullptr && !newTrack->play && newTrack->IsLoaded())
-				{
-					switching = true;
-					switchTime = gameTimer->RealReadSec();
-				}
+				SwitchTrack(nextSwitchTrack - 1);
 			}
 			ImGui::SameLine();
-			ImGui::DragInt("##Switch", &nextSwitchTrack, 1.0f, 1, tracks.size(), "Track %d");
+			ImGui::DragInt("##Switch", &nextSwitchTrack, 0.1f, 1, tracks.size(), "Track %d");
 
 			ImGui::Spacing();
 
@@ -201,6 +204,7 @@ public:
 					{
 						totalTracks--;
 						if (nextSwitchTrack > 1) nextSwitchTrack--;
+						audio->StopAudio(index->track.source);
 						tracks.at(i).Delete(audio);
 						tracks.erase(tracks.begin() + i);
 						ImGui::PopID();
@@ -284,7 +288,95 @@ public:
 		for (unsigned int i = 0; i < tracks.size(); i++) audio->StopAudio(tracks[i].track.source);
 	}
 
-private: // Methods
+private: // Useful methods
+
+	void Play(int trackIndex)
+	{
+		if (trackIndex >= tracks.size()) return;
+
+		TrackInstance* index = &tracks[trackIndex];
+
+		audio->PlayAudio(index->track.source);
+	}
+
+	void Stop(int trackIndex)
+	{
+		if (trackIndex >= tracks.size()) return;
+
+		TrackInstance* index = &tracks[trackIndex];
+
+		audio->StopAudio(index->track.source);
+	}
+
+	void Pause(int trackIndex)
+	{
+		if (trackIndex >= tracks.size()) return;
+
+		TrackInstance* index = &tracks[trackIndex];
+
+		audio->PauseAudio(index->track.source);
+	}
+
+	void Resume(int trackIndex)
+	{
+		if (trackIndex >= tracks.size()) return;
+
+		TrackInstance* index = &tracks[trackIndex];
+
+		audio->ResumeAudio(index->track.source);
+	}
+
+	void SetVolume(float volume, int trackIndex)
+	{
+		if (trackIndex >= tracks.size()) return;
+
+		TrackInstance* index = &tracks[trackIndex];
+
+		if (index->mute)
+		{
+			alSourcef(index->track.source, AL_GAIN, 0);
+			return;
+		}
+
+		volume = Pow(volume, 2.5f) / 1000.0f;
+		if (volume > 99.0f) volume = 100.0f;
+		alSourcef(index->track.source, AL_GAIN, volume / 100);
+	}
+
+	void SwitchTrack(int newTrackIndex)
+	{
+		oldTrack = GetPlayingTrack();
+		if (newTrackIndex >= tracks.size()) return;
+		newTrack = &tracks[newTrackIndex];
+
+		if (oldTrack != nullptr && !newTrack->play && newTrack->IsLoaded())
+		{
+			switching = true;
+			switchTime = gameTimer->RealReadSec();
+		}
+	}
+
+	bool IsAnyAudioPlaying()
+	{
+		for (unsigned int i = 0; i < tracks.size(); i++)
+		{
+			if (!tracks[i].IsLoaded()) continue;
+
+			return tracks[i].play;
+		}
+	}
+
+	TrackInstance* GetPlayingTrack()
+	{
+		for (unsigned int i = 0; i < tracks.size(); i++)
+		{
+			if (tracks[i].play) return &tracks[i];
+		}
+
+		return nullptr;
+	}
+
+private: // Meta Methods (Do not use)
 
 	void DrawWindow(bool* onWindow, TrackInstance* index)
 	{
@@ -647,16 +739,7 @@ private: // Methods
 		}
 	}
 
-	TrackInstance* GetPlayingTrack()
-	{
-		for (unsigned int i = 0; i < tracks.size(); i++)
-		{
-			if (tracks[i].play) return &tracks[i];
-		}
-
-		return nullptr;
-	}
-
+	// Function wich actually updates the fade
 	void SwitchFade(float fadeSeconds)
 	{
 		// Look if both tracks exist
@@ -666,6 +749,12 @@ private: // Methods
 			{
 				audio->PlayAudio(newTrack->track.source);
 				alSourcef(newTrack->track.source, AL_GAIN, 0.0f);
+			}
+
+			if (gameTimer->GetTimerState() == PAUSED)
+			{
+				switchTime = gameTimer->RealReadSec() - pauseDifference;
+				return;
 			}
 
 			float t = gameTimer->RealReadSec() - switchTime;
@@ -679,6 +768,7 @@ private: // Methods
 				playingTrack = newTrack;
 				oldTrack = nullptr;
 				newTrack = nullptr;
+				pauseDifference = 0;
 			}
 			else
 			{
@@ -697,26 +787,6 @@ private: // Methods
 		}
 	}
 
-	void StopAllTracks()
-	{
-		for (unsigned int i = 0; i < tracks.size(); i++)
-		{
-			if (!tracks[i].IsLoaded()) continue;
-
-			audio->StopAudio(tracks[i].track.source);
-		}
-	}
-
-	bool IsAnyAudioPlaying()
-	{
-		for (unsigned int i = 0; i < tracks.size(); i++)
-		{
-			if (!tracks[i].IsLoaded()) continue;
-
-			return tracks[i].play;
-		}
-	}
-
 	void DisablePlayOnStart()
 	{
 		for (unsigned int i = 0; i < tracks.size(); i++)
@@ -724,6 +794,16 @@ private: // Methods
 			if (!tracks[i].IsLoaded()) continue;
 
 			tracks[i].playOnStart = false;
+		}
+	}
+
+	void StopAllTracks()
+	{
+		for (unsigned int i = 0; i < tracks.size(); i++)
+		{
+			if (!tracks[i].IsLoaded()) continue;
+
+			audio->StopAudio(tracks[i].track.source);
 		}
 	}
 
@@ -744,6 +824,7 @@ private: // Variables
 	TrackInstance* newTrack = nullptr;
 	TrackInstance* playingTrack = nullptr;
 	float switchTime = 0;
+	float pauseDifference = 0;
 
 	std::vector<TrackInstance> tracks;
 

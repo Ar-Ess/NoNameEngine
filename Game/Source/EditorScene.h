@@ -48,6 +48,13 @@ public:
 
 	bool CleanUp();
 
+public: // Getters
+
+	AudioSystem* GetAudioSystem()
+	{
+		return audio;
+	}
+
 private: // Functions
 	bool UpdateEditor();
 	bool UpdateGame();

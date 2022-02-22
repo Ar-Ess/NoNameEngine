@@ -10,18 +10,42 @@
 class SpacialAudioSourceComponent : public Component
 {
 public:
-	SpacialAudioSourceComponent(Timer* timer, AudioSystem* audioSystem, vec3* camPosition, EditorScene* scene,float* sCamSpeed) : Component("Spacial Audio Source", ComponentID::SPACIAL_AUDIO_SOURCE_COMPONENT)
+	SpacialAudioSourceComponent(Timer* timer, AudioSystem* audioSystem, vec3* camPosition, EditorScene* scene, float* sCamSpeed) : Component("Spacial Audio Source", ComponentID::SPACIAL_AUDIO_SOURCE_COMPONENT)
 	{
 		gameTimer = timer;
 		audio = audioSystem;
 		camPos = camPosition;
 		camSpeed = sCamSpeed;
-		editor = scene;
 
 		SetVolume(volume);
 		SetTranspose(transpose);
 		SetLoop(loop);
 	}
+	SpacialAudioSourceComponent(bool newOpen, bool newPrevOpen, float newVolume, float newTranspose, float newVelocity, float newFactor, bool newDoppler, bool newDopplerWindow, bool newDopplerEffect, bool newMute, bool newPlayOnStart, bool newLoop, bool newBypass, Timer* timer, AudioSystem* audioSystem, vec3* camPosition, float* sCamSpeed) : Component("Spacial Audio Source", ComponentID::SPACIAL_AUDIO_SOURCE_COMPONENT)
+	{
+		gameTimer = timer;
+		audio = audioSystem;
+		camPos = camPosition;
+		camSpeed = sCamSpeed;
+
+		volume = newVolume;
+		SetVolume(newVolume);
+		transpose = newTranspose;
+		SetTranspose(newTranspose);
+		loop = newLoop;
+		SetLoop(newLoop);
+		mute = newMute;
+		playOnStart = newPlayOnStart;
+		bypass = newBypass;
+		open = newOpen;
+		prevOpen = newPrevOpen;
+		velocity = newVelocity;
+		factor = newFactor;
+		doppler = newDoppler;
+		dopplerEffect = newDopplerEffect;
+		dopplerWindow = newDopplerWindow;
+	}
+
 	~SpacialAudioSourceComponent() 
 	{
 		audio->StopAudio(track.source);
@@ -110,7 +134,116 @@ public:
 		audio->StopAudio(track.source);
 	}
 
-private: // Methods
+public: // Getters
+
+	bool GetPlayOnStart() const
+	{
+		return playOnStart;
+	}
+
+	bool GetMute() const
+	{
+		return mute;
+	}
+
+	bool GetLoop() const
+	{
+		return loop;
+	}
+
+	bool GetBypass() const
+	{
+		return bypass;
+	}
+
+	bool GetDoppler() const
+	{
+		return doppler;
+	}
+
+	bool GetDopplerWindow() const
+	{
+		return dopplerWindow;
+	}
+
+	bool GetDopplerEffect() const
+	{
+		return dopplerEffect;
+	}
+
+	float GetVolume() const
+	{
+		return volume;
+	}
+
+	float GetTranspose() const
+	{
+		return transpose;
+	}
+
+	float GetVelocity() const
+	{
+		return velocity;
+	}
+
+	float GetFactor() const
+	{
+		return factor;
+	}
+
+	const char* GetPath() const
+	{
+		return track.path.c_str();
+	}
+
+	vector<Effect*>* GetEffectRack()
+	{
+		return &effects;
+	}
+
+	void LoadTrackFromLoadingProject(const char* path)
+	{
+		track = audio->LoadAudio(path);
+		track.source = audio->CreateAudioSource(track.buffer, true);
+	}
+
+private: // Useful Methods
+
+	void Play()
+	{
+		audio->PlayAudio(track.source);
+	}
+
+	void Stop()
+	{
+		audio->StopAudio(track.source);
+	}
+
+	void Pause(int trackIndex)
+	{
+		audio->PauseAudio(track.source);
+	}
+
+	void Resume(int trackIndex)
+	{
+		audio->ResumeAudio(track.source);
+	}
+
+	// Range [0 - 100]
+	void SetVolume(float volume)
+	{
+		if (mute)
+		{
+			alSourcef(track.source, AL_GAIN, 0);
+			return;
+		}
+
+		volume = Pow(volume, 2.5f) / 1000.0f;
+		if (volume > 99.0f) volume = 100.0f;
+		alSourcef(track.source, AL_GAIN, volume / 100);
+	}
+
+private: // Meta Methods
 
 	void DrawWindow(bool* onWindow)
 	{
@@ -332,19 +465,6 @@ private: // Methods
 		return ret;
 	}
 
-	void SetVolume(float volume)
-	{
-		if (mute)
-		{
-			alSourcef(track.source, AL_GAIN, 0);
-			return;
-		}
-
-		volume = Pow(volume, 2.5f) / 1000.0f;
-		if (volume > 99.0f) volume = 100.0f;
-		alSourcef(track.source, AL_GAIN, volume / 100);
-	}
-
 	void SetTranspose(float transpose)
 	{
 		transpose = exp(0.0577623f * transpose);
@@ -499,7 +619,6 @@ private: // Variables
 
 	ALfloat factor, velocity;
 	float* camSpeed = nullptr;
-	EditorScene* editor = nullptr;
 };
 
 #endif // !__SPACIAL_AUDIO_SOURCE_COMPONENT_H__

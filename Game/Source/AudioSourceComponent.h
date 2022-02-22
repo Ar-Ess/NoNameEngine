@@ -18,6 +18,25 @@ public:
 		SetTranspose(transpose);
 		SetLoop(loop);
 	}
+	AudioSourceComponent(bool newOpen, bool newPrevOpen, float newVolume, float newPan, float newTranspose, bool newMute, bool newPlayOnStart, bool newLoop, bool newBypass, Timer* timer, AudioSystem* audioSystem) : Component("Audio Source", ComponentID::AUDIO_SOURCE_COMPONENT)
+	{
+		gameTimer = timer;
+		audio = audioSystem;
+
+		volume = newVolume;
+		SetVolume(newVolume);
+		pan = newPan;
+		SetPanning(newPan);
+		transpose = newTranspose;
+		SetTranspose(newTranspose);
+		loop = newLoop;
+		SetLoop(newLoop);
+		mute = newMute;
+		playOnStart = newPlayOnStart;
+		bypass = newBypass;
+		open = newOpen;
+		prevOpen = newPrevOpen;
+	}
 	~AudioSourceComponent() 
 	{
 		audio->StopAudio(track.source);
@@ -89,7 +108,96 @@ public:
 		audio->StopAudio(track.source);
 	}
 
-private: // Methods
+public:
+
+	bool GetPlayOnStart() const
+	{
+		return playOnStart;
+	}
+
+	bool GetMute() const
+	{
+		return mute;
+	}
+
+	bool GetLoop() const
+	{
+		return loop;
+	}
+
+	bool GetBypass() const
+	{
+		return bypass;
+	}
+
+	float GetVolume() const
+	{
+		return volume;
+	}
+
+	float GetPan() const
+	{
+		return pan;
+	}
+
+	float GetTranspose() const
+	{
+		return transpose;
+	}
+
+	const char* GetPath() const
+	{
+		return track.path.c_str();
+	}
+
+	vector<Effect*>* GetEffectRack()
+	{
+		return &effects;
+	}
+
+	void LoadTrackFromLoadingProject(const char* path)
+	{
+		track = audio->LoadAudio(path);
+		track.source = audio->CreateAudioSource(track.buffer, false);
+	}
+
+private: // Useful Methods
+
+	void Play()
+	{
+		audio->PlayAudio(track.source);
+	}
+
+	void Stop()
+	{
+		audio->StopAudio(track.source);
+	}
+
+	void Pause(int trackIndex)
+	{
+		audio->PauseAudio(track.source);
+	}
+
+	void Resume(int trackIndex)
+	{
+		audio->ResumeAudio(track.source);
+	}
+
+	// Range [0 - 100]
+	void SetVolume(float volume)
+	{
+		if (mute)
+		{
+			alSourcef(track.source, AL_GAIN, 0);
+			return;
+		}
+
+		volume = Pow(volume, 2.5f) / 1000.0f;
+		if (volume > 99.0f) volume = 100.0f;
+		alSourcef(track.source, AL_GAIN, volume / 100);
+	}
+
+private: // Meta Methods
 
 	void DrawWindow(bool* onWindow)
 	{
@@ -300,19 +408,6 @@ private: // Methods
 		return ret;
 	}
 
-	void SetVolume(float volume)
-	{
-		if (mute)
-		{
-			alSourcef(track.source, AL_GAIN, 0);
-			return;
-		}
-
-		volume = Pow(volume, 2.5f) / 1000.0f;
-		if (volume > 99.0f) volume = 100.0f;
-		alSourcef(track.source, AL_GAIN, volume / 100);
-	}
-
 	void SetPanning(float pan)
 	{
 		alSource3f(track.source, AL_POSITION, pan, 0, -sqrtf(1.0f - pan * pan));
@@ -434,6 +529,7 @@ private: // Variables
 
 	bool knobReminder1 = false, knobReminder2 = false;
 	bool play = false, browsing = false;
+
 	bool playOnStart = true, loop = false, mute = false, bypass = false;
 
 	int currEffect = 0;

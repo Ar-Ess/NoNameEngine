@@ -104,6 +104,11 @@ private: // Private functions
 
 public: // Getters & Setters
 
+	AudioSystem* GetAudioSystem()
+	{
+		return editor->GetAudioSystem();
+	}
+
 	bool GetWindowState(Windows w)
 	{
 		bool state = false;

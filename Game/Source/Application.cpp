@@ -6,6 +6,11 @@
 #include "ModuleCamera3D.h"
 #include "ModuleRenderer3D.h"
 
+#include "AudioSourceComponent.h"
+#include "SpacialAudioSourceComponent.h"
+#include "SwitchAudioSourceComponent.h"
+
+
 //#include "Primitive.h"
 
 #include <stdio.h>
@@ -666,13 +671,15 @@ void Application::JsonSaveShapes(JSON_Array* arr, vector<Shape3D*>* shapes, int 
 		}
 		}
 
-		if (!shape->childs.empty())
-		{
-			JSON_Value* childValue = json_value_init_array();
-			JSON_Array* childArray = json_value_get_array(childValue);
-			JsonSaveShapes(childArray, &shape->childs); // Childs (1) - Depends
-			json_array_append_value(shapeArray, childValue);
-		}
+		JSON_Value* childValue = json_value_init_array();
+		JSON_Array* childArray = json_value_get_array(childValue);
+		if (!shape->childs.empty()) JsonSaveShapes(childArray, &shape->childs); // Childs (1) - Depends
+		json_array_append_value(shapeArray, childValue);
+
+		JSON_Value* componentValue = json_value_init_array();
+		JSON_Array* componentArray = json_value_get_array(componentValue);
+		if (!shape->components.empty()) JsonSaveComponents(componentArray, &shape->components); // Childs (1) - Depends
+		json_array_append_value(shapeArray, componentValue);
 
 		json_array_append_value(arr, shapeValue);
 	}
@@ -787,6 +794,131 @@ void Application::JsonLoadShapes(JSON_Array* arr, vector<Shape3D*>* shapes, Shap
 		{
 			JSON_Array* childArray = json_value_get_array(childValue);
 			JsonLoadShapes(childArray, &s->childs, s);
+		}
+
+		if (JSON_Value* compValue = json_array_get_value(shapeArray, lastSpace + 2))
+		{
+			JSON_Array* compArray = json_value_get_array(compValue);
+			JsonLoadComponents(compArray, &s->components);
+		}
+	}
+}
+
+void Application::JsonSaveComponents(JSON_Array* arr, vector<Component*>* comps)
+{
+	for (unsigned int i = 0; i < comps->size(); i++)
+	{
+		Component* comp = comps->at(i);
+		JSON_Value* compValue = json_value_init_array();
+		JSON_Array* compArray = json_value_get_array(compValue);
+
+		bool openFactor[2] = {};
+		openFactor[0] = comp->GetEditorOpenState(&openFactor[1]);
+		json_array_append_boolean(compArray, openFactor[0]); // Open (1) - 0
+		json_array_append_boolean(compArray, openFactor[1]); // PrevOpen (1) - 1
+		json_array_append_number(compArray, (int)comp->GetComponentID()); // ID (1) - 2
+
+		switch (comp->GetComponentID())
+		{
+			case AUDIO_SOURCE_COMPONENT:
+			{
+				AudioSourceComponent* a = (AudioSourceComponent*)comp;
+
+				json_array_append_boolean(compArray, a->GetMute()); // Mute (1) - 3
+				json_array_append_boolean(compArray, a->GetPlayOnStart()); // Play On Start (1) - 4
+				json_array_append_boolean(compArray, a->GetLoop()); // Loop (1) - 5
+				json_array_append_boolean(compArray, a->GetBypass()); // Bypass (1) - 6
+
+				json_array_append_number(compArray, a->GetVolume()); // Volume (1) - 7
+				json_array_append_number(compArray, a->GetPan()); // Pan (1) - 8
+				json_array_append_number(compArray, a->GetTranspose()); // Transpose (1) - 9
+
+				json_array_append_string(compArray, a->GetPath()); // Path (1) - 10
+
+				break;
+			}
+			case SPACIAL_AUDIO_SOURCE_COMPONENT:
+			{
+				SpacialAudioSourceComponent* a = (SpacialAudioSourceComponent*)comp;
+
+				json_array_append_boolean(compArray, a->GetMute()); // Mute (1) - 3
+				json_array_append_boolean(compArray, a->GetPlayOnStart()); // Play On Start (1) - 4
+				json_array_append_boolean(compArray, a->GetLoop()); // Loop (1) - 5
+				json_array_append_boolean(compArray, a->GetBypass()); // Bypass (1) - 6
+				json_array_append_boolean(compArray, a->GetDoppler()); // Doppler (1) - 7
+				json_array_append_boolean(compArray, a->GetDopplerWindow()); //  Doppler Window (1) - 8
+				json_array_append_boolean(compArray, a->GetDopplerEffect()); // Doppler Effect (1) - 9
+
+				json_array_append_number(compArray, a->GetVolume()); // Volume (1) - 10
+				json_array_append_number(compArray, a->GetTranspose()); // Transpose (1) - 11
+				json_array_append_number(compArray, a->GetVelocity()); // Velocity (1) - 12
+				json_array_append_number(compArray, a->GetFactor()); // Factor (1) - 13
+
+				json_array_append_string(compArray, a->GetPath()); // Path (1) - 14
+
+				break;
+			}
+			case SWITCH_AUDIO_SOURCE_COMPONENT:
+			{
+				SwitchAudioSourceComponent* a = (SwitchAudioSourceComponent*)comp;
+				break;
+			}
+		}
+
+		json_array_append_value(arr, compValue);
+	}
+}
+
+void Application::JsonLoadComponents(JSON_Array* arr, vector<Component*>* comps)
+{
+	for (unsigned int i = 0; i < json_array_get_count(arr); i++)
+	{
+		JSON_Value* compValue = json_array_get_value(arr, i);
+		JSON_Array* compArray = json_value_get_array(compValue);
+
+		bool open = json_array_get_boolean(compArray, 0);
+		bool prevOpen = json_array_get_boolean(compArray, 1);
+		int id = json_array_get_number(compArray, 2);
+
+		switch (id)
+		{
+			case 0:
+			{
+				bool mute = json_array_get_boolean(compArray, 3);
+				bool playOnStart = json_array_get_boolean(compArray, 4);
+				bool loop = json_array_get_boolean(compArray, 5);
+				bool bypass = json_array_get_boolean(compArray, 6);
+
+				float volume = json_array_get_number(compArray, 7);
+				float pan = json_array_get_number(compArray, 8);
+				float transpose = json_array_get_number(compArray, 9);
+
+				AudioSourceComponent* ASC = new AudioSourceComponent(open, prevOpen, volume, pan, transpose, mute, playOnStart, loop, bypass, &this->scene->gameTimer, this->scene->GetAudioSystem());
+				ASC->LoadTrackFromLoadingProject(json_array_get_string(compArray, 10));
+
+				comps->push_back(ASC);
+				break;
+			}
+			case 2:
+			{
+				bool mute = json_array_get_boolean(compArray, 3);
+				bool playOnStart = json_array_get_boolean(compArray, 4);
+				bool loop = json_array_get_boolean(compArray, 5);
+				bool bypass = json_array_get_boolean(compArray, 6);
+				bool doppler = json_array_get_boolean(compArray, 7);
+				bool dopplerWindow = json_array_get_boolean(compArray, 8);
+				bool dopplerEffect = json_array_get_boolean(compArray, 9);
+
+				float volume = json_array_get_number(compArray, 10);
+				float transpose = json_array_get_number(compArray, 11);
+				float velocity = json_array_get_number(compArray, 12);
+				float factor = json_array_get_number(compArray, 13);
+
+				SpacialAudioSourceComponent* SASC = new SpacialAudioSourceComponent(open, prevOpen, volume, transpose, velocity, factor, doppler, dopplerWindow, dopplerEffect, mute, playOnStart, loop, bypass, &this->scene->gameTimer, this->scene->GetAudioSystem(), &this->camera->position, &this->camera->speed);
+				SASC->LoadTrackFromLoadingProject(json_array_get_string(compArray, 14));
+
+				comps->push_back(SASC);
+			}
 		}
 	}
 }
