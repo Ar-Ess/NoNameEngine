@@ -833,7 +833,8 @@ void Application::JsonSaveComponents(JSON_Array* arr, vector<Component*>* comps)
 				json_array_append_number(compArray, a->GetPan()); // Pan (1) - 8
 				json_array_append_number(compArray, a->GetTranspose()); // Transpose (1) - 9
 
-				json_array_append_string(compArray, a->GetPath()); // Path (1) - 10
+				const char* path = a->IsTrackLoaded() ? a->GetPath() : "no track";
+				json_array_append_string(compArray, path); // Path (1) - 10
 
 				break;
 			}
@@ -854,7 +855,8 @@ void Application::JsonSaveComponents(JSON_Array* arr, vector<Component*>* comps)
 				json_array_append_number(compArray, a->GetVelocity()); // Velocity (1) - 12
 				json_array_append_number(compArray, a->GetFactor()); // Factor (1) - 13
 
-				json_array_append_string(compArray, a->GetPath()); // Path (1) - 14
+				const char* path = a->IsTrackLoaded() ? a->GetPath() : "no track";
+				json_array_append_string(compArray, path); // Path (1) - 14
 
 				break;
 			}
@@ -894,7 +896,8 @@ void Application::JsonLoadComponents(JSON_Array* arr, vector<Component*>* comps)
 				float transpose = json_array_get_number(compArray, 9);
 
 				AudioSourceComponent* ASC = new AudioSourceComponent(open, prevOpen, volume, pan, transpose, mute, playOnStart, loop, bypass, &this->scene->gameTimer, this->scene->GetAudioSystem());
-				ASC->LoadTrackFromLoadingProject(json_array_get_string(compArray, 10));
+				const char* path = json_array_get_string(compArray, 10);
+				if (!SameString(path, "no track")) ASC->LoadTrackFromLoadingProject(path);
 
 				comps->push_back(ASC);
 				break;
@@ -915,7 +918,8 @@ void Application::JsonLoadComponents(JSON_Array* arr, vector<Component*>* comps)
 				float factor = json_array_get_number(compArray, 13);
 
 				SpacialAudioSourceComponent* SASC = new SpacialAudioSourceComponent(open, prevOpen, volume, transpose, velocity, factor, doppler, dopplerWindow, dopplerEffect, mute, playOnStart, loop, bypass, &this->scene->gameTimer, this->scene->GetAudioSystem(), &this->camera->position, &this->camera->speed);
-				SASC->LoadTrackFromLoadingProject(json_array_get_string(compArray, 14));
+				const char* path = json_array_get_string(compArray, 14);
+				if (!SameString(path, "no track")) SASC->LoadTrackFromLoadingProject(path);
 
 				comps->push_back(SASC);
 			}

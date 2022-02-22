@@ -207,6 +207,11 @@ public: // Getters
 		track.source = audio->CreateAudioSource(track.buffer, true);
 	}
 
+	bool IsTrackLoaded()
+	{
+		return (track.channels != 0);
+	}
+
 private: // Useful Methods
 
 	void Play()
