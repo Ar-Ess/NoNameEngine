@@ -43,9 +43,24 @@ protected:
 		id = componentId;
 	}
 
+	void AddHelper(const char* title = "(?)", const char* desc = "", bool startWithSameLine = false)
+	{
+		if (startWithSameLine) ImGui::SameLine();
+		ImGui::TextDisabled(title);
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+			ImGui::TextUnformatted(desc);
+			ImGui::PopTextWrapPos();
+			ImGui::EndTooltip();
+		}
+	}
+
 	std::string title;
 	ComponentID id = NO_COMPONENT;
 	bool open = false;
+	bool prevOpen = false;
 	Timer* gameTimer = nullptr;
 };
 

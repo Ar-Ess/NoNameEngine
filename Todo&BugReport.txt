@@ -1,17 +1,23 @@
 - Bug: If effect bypassed, and then change it's config, it reconnects.
 
-- Bug: Stop audio if it is playing before (avans) creating the plugin in code.
+// NOT WELL EXPLAINED - Bug: Stop audio (if it is playing) before (avans) creating the component in code.
+
+- Bug: Pausing track in game mode does not work
+
+- Bug: Transpose does not work perfect. Does not transpose 1st by 1 st
 
 // NOT POSSIBLE - Todo: Add gain slider or change slider config to be able to gain up sound.
 
 // DONE - Todo: Delete specific tracks.
 
-- Todo: 2 tracks can't play at the same time. After play, stop all other tracks if not stopped.
+// DONE - Todo: 2 tracks can't play at the same time. After play, stop all other tracks if not stopped.
 
-- Todo: If 1 track's window closed, stop audio from playing.
+// DONE - Todo: If 1 track's window closed, stop audio from playing.
 
-- Todo: Switch between track pause with pause button correctly.
+- Todo: During track switching with fade, work in game mode so you can pause and then resume and the fade continues from its point
 
-- Todo: Play on start, but just one track. If 2 tracks has play on start checked == bad.
+// DONE - Todo: Play on start, but just one track. If 2 tracks has play on start checked == bad.
 
 - Todo: Save&Load of audio module.
+
+// DONE - Todo: File Dialog Cancel

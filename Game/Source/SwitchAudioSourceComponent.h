@@ -27,10 +27,15 @@ struct TrackInstance
 		effects.clear();
 	}
 
+	bool IsLoaded()
+	{
+		return (track.channels != 0);
+	}
+
 	Track track;
 	std::vector<Effect*> effects;
 	bool play = false;
-	bool playOnStart = true, loop = false, mute = false, bypass = false;
+	bool playOnStart = false, loop = false, mute = false, bypass = false;
 	bool knobReminder1 = false, knobReminder2 = false;
 	float volume = 100.0f, pan = 0, transpose = 0, offset = 0;
 	int currEffect = 0;
@@ -43,10 +48,11 @@ struct TrackInstance
 class SwitchAudioSourceComponent : public Component
 {
 public:
-	SwitchAudioSourceComponent(Timer* timer, AudioSystem* audioSystem) : Component("Switch Audio Source", ComponentID::AUDIO_SOURCE_COMPONENT)
+	SwitchAudioSourceComponent(Timer* timer, AudioSystem* audioSystem, ModuleInput* input) : Component("Switch Audio Source", ComponentID::AUDIO_SOURCE_COMPONENT)
 	{
 		gameTimer = timer;
 		audio = audioSystem;
+		this->input = input;
 
 		tracks.push_back({});
 		tracks.push_back({});
@@ -70,6 +76,7 @@ public:
 
 	void Start(Shape3D* afected)
 	{
+		StopAllTracks();
 		for (unsigned int i = 0; i < tracks.size(); i++) tracks[i].Start(audio);
 		switching = false;
 		browsing = false;
@@ -113,7 +120,7 @@ public:
 				oldTrack = GetPlayingTrack();
 				newTrack = &tracks[nextSwitchTrack - 1];
 
-				if (oldTrack != nullptr && !newTrack->play && newTrack->track.channels != 0)
+				if (oldTrack != nullptr && !newTrack->play && newTrack->IsLoaded())
 				{
 					switching = true;
 					switchTime = gameTimer->RealReadSec();
@@ -124,12 +131,28 @@ public:
 
 			ImGui::Spacing();
 
-			ImGui::Text("Fade time ");
-			ImGui::SameLine();
-			ImGui::DragFloat("##FadeTime", &fadeTime, 0.1f, 0.1f, 10.0f, "%f.3 sec");
+			ImGui::Text("Fade Time "); ImGui::SameLine(73);
+			AddHelper("?", "Fade Time:\nModifying this variable changes the time the\ntracks will be in switching mode. The higher the\nvalue, the slower it will fade and viceversa.\n\nOperations:\nShift-Click for precision changing", false);
+			ImGui::SameLine(87);
+			
+			float speed = 1.0f;
+			((input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) || (input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)) ? speed = 0.001f : speed = 0.2f;
+			ImGui::DragFloat("##FadeTime", &fadeTime, speed, 0.005f, 10.0f, "%.2f sec");
 
 			ImGui::Spacing();
 			ImGui::Spacing();
+
+			// STOP TRACK
+			if (IsAnyAudioPlaying())
+			{
+				if (ImGui::Button("Stop Track"))
+				{
+					StopAllTracks();
+				}
+
+				ImGui::Spacing();
+				ImGui::Spacing();
+			}
 
 			// TRACK LIST
 
@@ -164,7 +187,7 @@ public:
 					if (ImGui::Button("X"))
 					{
 						totalTracks--;
-						nextSwitchTrack--;
+						if (nextSwitchTrack > 1) nextSwitchTrack--;
 						tracks.at(i).Delete(audio);
 						tracks.erase(tracks.begin() + i);
 						ImGui::PopID();
@@ -174,7 +197,7 @@ public:
 					ImGui::SameLine();
 				}
 				std::string trackName = trackNaming[i];
-				if (index->track.channels == 0)
+				if (!index->IsLoaded()) // false
 				{
 					ImGui::PushStyleColor(ImGuiCol_Header, ImVec4{ 0.7f, 0, 0, 0.2f });
 					trackName += " (no audio)";
@@ -192,13 +215,13 @@ public:
 						ImGui::TableSetColumnIndex(0);
 						ImGui::TableSetColumnIndex(1);
 
-						if (ImGui::Button("Browse Audio"))
+						if (ImGui::Button("Browse Audio") && !browsing)
 						{
 							browsing = true;
 							currentBrowsingTrack = i;
 						}
 
-						if (index->track.channels != 0)
+						if (index->IsLoaded()) // True
 						{
 							ImGui::SameLine();
 							if (ImGui::Button("Edit"))
@@ -208,11 +231,18 @@ public:
 								index->offset = 0;
 								index->knobReminder1 = false;
 								index->knobReminder2 = false;
+
+								StopAllTracks();
 							}
 							ImGui::Spacing();
 							ImGui::Text("Options");
 							if (ImGui::Checkbox("Mute", &index->mute)) SetVolume(index->volume, &tracks[i]);
-							ImGui::Checkbox("Play on start", &index->playOnStart);
+							if (ImGui::Checkbox("Play on start", &index->playOnStart) && index->playOnStart)
+							{
+								DisablePlayOnStart();
+								index->playOnStart = true;
+							}
+							AddHelper("?", "Play On Start:\nEnabling this option will play the audio\nat the start of the game.\nOnly one track can be checked with this option.\nWhenever you check it, the option will be\ndisabled in other tracks automatically.", true);
 							if (ImGui::Checkbox("Loop", &index->loop)) SetLoop(index->loop, &tracks[i]);
 							if (ImGui::Checkbox("Bypass FX", &index->bypass))
 							{
@@ -222,7 +252,7 @@ public:
 					}
 					ImGui::EndTable();
 				}
-				if (index->track.channels == 0) ImGui::PopStyleColor();
+				if (!index->IsLoaded()) ImGui::PopStyleColor(); // False
 				ImGui::PopID();
 			}
 
@@ -287,7 +317,15 @@ private: // Methods
 					if (ImGui::Button(t))
 					{
 						float time = index->track.duration * index->offset;
-						index->play ? audio->StopAudio(index->track.source) : audio->PlayAudio(index->track.source, time);
+						bool p = false;
+						index->play ? audio->StopAudio(index->track.source) : p = true;
+						if (p)
+						{
+							StopAllTracks();
+
+							audio->PlayAudio(index->track.source, time);
+						}
+
 					}
 				}
 			}
@@ -414,6 +452,10 @@ private: // Methods
 			ImGui::EndTable();
 		}
 		ImGui::End();
+
+		if (!open && prevOpen) audio->StopAudio(index->track.source);
+
+		prevOpen = open;
 	}
 
 	bool BrowseAudio(TrackInstance* index)
@@ -424,7 +466,7 @@ private: // Methods
 		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose an Audio File", ".mp3,.wav,.flac", ".");
 
 		//display
-		if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey"), ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove)
+		if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey", ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove))
 		{
 			// action if OK
 			if (ImGuiFileDialog::Instance()->IsOk() == true)
@@ -436,6 +478,12 @@ private: // Methods
 				SetPanning(index->pan, index);
 				SetTranspose(index->transpose, index);
 				ret = false;
+				ImGuiFileDialog::Instance()->Close();
+			}
+			else
+			{
+				ret = false;
+				ImGuiFileDialog::Instance()->Close();
 			}
 		}
 
@@ -502,7 +550,7 @@ private: // Methods
 		for (unsigned int i = 0; i < tracks.size(); i++)
 		{
 			TrackInstance* index = &tracks[i];
-			if (index->track.channels != 0)
+			if (index->IsLoaded()) // True
 			{
 				ALint sourceState;
 				alGetSourcei(index->track.source, AL_SOURCE_STATE, &sourceState);
@@ -631,6 +679,36 @@ private: // Methods
 		}
 	}
 
+	void StopAllTracks()
+	{
+		for (unsigned int i = 0; i < tracks.size(); i++)
+		{
+			if (!tracks[i].IsLoaded()) continue;
+
+			audio->StopAudio(tracks[i].track.source);
+		}
+	}
+
+	bool IsAnyAudioPlaying()
+	{
+		for (unsigned int i = 0; i < tracks.size(); i++)
+		{
+			if (!tracks[i].IsLoaded()) continue;
+
+			return tracks[i].play;
+		}
+	}
+
+	void DisablePlayOnStart()
+	{
+		for (unsigned int i = 0; i < tracks.size(); i++)
+		{
+			if (!tracks[i].IsLoaded()) continue;
+
+			tracks[i].playOnStart = false;
+		}
+	}
+
 private: // Variables
 
 	bool browsing = false;
@@ -652,6 +730,7 @@ private: // Variables
 
 	std::string trackNaming[10] = {"Track 1", "Track 2", "Track 3", "Track 4", "Track 5", "Track 6", "Track 7", "Track 8", "Track 9", "Track 10"};
 	AudioSystem* audio = nullptr;
+	ModuleInput* input = nullptr;
 
 };
 

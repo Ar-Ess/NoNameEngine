@@ -281,7 +281,13 @@ private: // Methods
 				SetVolume(volume);
 				SetPanning(pan);
 				SetTranspose(transpose);
+				ImGuiFileDialog::Instance()->Close();
 				ret = false;
+			}
+			else
+			{
+				ret = false;
+				ImGuiFileDialog::Instance()->Close();
 			}
 		}
 

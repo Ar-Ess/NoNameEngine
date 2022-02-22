@@ -1220,7 +1220,7 @@ void EditorScene::AddComponent(ComponentID component, Shape3D* recipient)
 		break;
 
 	case SWITCH_AUDIO_SOURCE_COMPONENT:
-		recipient->components.push_back(new SwitchAudioSourceComponent(timer, audio));
+		recipient->components.push_back(new SwitchAudioSourceComponent(timer, audio, app->input));
 		break;
 	}
 }
