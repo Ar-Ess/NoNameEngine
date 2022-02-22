@@ -7,12 +7,12 @@
 
 struct TrackInstance
 {
-	void Start(AudioSystem* audio)
+	bool Start(AudioSystem* audio)
 	{
 		knobReminder1 = false;
 		knobReminder2 = false;
-		bypass = false;
 		if (playOnStart) audio->PlayAudio(track.source);
+		return playOnStart;
 	}
 
 	void Delete(AudioSystem* audio)
@@ -67,6 +67,7 @@ public:
 	}
 	~SwitchAudioSourceComponent()
 	{
+		StopAllTracks();
 		for (unsigned int i = 0; i < tracks.size(); i++)
 		{
 			tracks[i].Delete(audio);
@@ -77,7 +78,10 @@ public:
 	void Start(Shape3D* afected)
 	{
 		StopAllTracks();
-		for (unsigned int i = 0; i < tracks.size(); i++) tracks[i].Start(audio);
+		for (unsigned int i = 0; i < tracks.size(); i++)
+		{
+			if (tracks[i].Start(audio)) playingTrack = &tracks[i];
+		}
 		switching = false;
 		browsing = false;
 		switchTime = 0;
@@ -88,6 +92,14 @@ public:
 		SwitchFade(fadeTime);
 
 		if (gameTimer->GetTimerState() == STOPPED) return;
+
+		//if (gameTimer->GetTimerState() == PAUSED)
+		//{
+		//	audio->PauseAudio(playingTrack->track.source);
+		//	return;
+		//}
+
+		//audio->ResumeAudio(playingTrack->track.source);
 		
 		for (unsigned int i = 0; i < tracks.size(); i++)
 		{
@@ -98,7 +110,7 @@ public:
 				return;
 			}
 
-			audio->PlayAudio(index->track.source);
+			audio->ResumeAudio(index->track.source);
 		}
 	}
 
@@ -148,6 +160,7 @@ public:
 				if (ImGui::Button("Stop Track"))
 				{
 					StopAllTracks();
+					playingTrack = nullptr;
 				}
 
 				ImGui::Spacing();
@@ -322,8 +335,12 @@ private: // Methods
 						if (p)
 						{
 							StopAllTracks();
-
 							audio->PlayAudio(index->track.source, time);
+							playingTrack = index;
+						}
+						else
+						{
+							playingTrack = nullptr;
 						}
 
 					}
@@ -514,7 +531,7 @@ private: // Methods
 		transpose = exp(0.0577623f * transpose);
 		if (transpose > 4.0f) transpose = 4.0f;
 		if (transpose < 0.25f) transpose = 0.25f;
-		if (transpose > 0.98f && transpose < 1.2f) transpose = 1.0f;
+		if (transpose > 0.98f && transpose < 1.02f) transpose = 1.0f;
 		alSourcef(index->track.source, AL_PITCH, transpose);
 	}
 
@@ -659,6 +676,7 @@ private: // Methods
 				audio->StopAudio(oldTrack->track.source);
 				SetVolume(oldTrack->volume, oldTrack);
 				SetVolume(newTrack->volume, newTrack);
+				playingTrack = newTrack;
 				oldTrack = nullptr;
 				newTrack = nullptr;
 			}
@@ -724,6 +742,7 @@ private: // Variables
 
 	TrackInstance* oldTrack = nullptr;
 	TrackInstance* newTrack = nullptr;
+	TrackInstance* playingTrack = nullptr;
 	float switchTime = 0;
 
 	std::vector<TrackInstance> tracks;

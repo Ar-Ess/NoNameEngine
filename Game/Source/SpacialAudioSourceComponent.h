@@ -24,6 +24,7 @@ public:
 	}
 	~SpacialAudioSourceComponent() 
 	{
+		audio->StopAudio(track.source);
 		fxTracker.clear();
 		for (unsigned int i = 0; i < effects.size(); i++)
 		{
@@ -36,6 +37,8 @@ public:
 
 	void Start(Shape3D* afected)
 	{
+		audio->StopAudio(track.source);
+
 		knobReminder1 = false;
 		knobReminder2 = false;
 		if (playOnStart) audio->PlayAudio(track.source);
@@ -280,6 +283,10 @@ private: // Methods
 			ImGui::EndTable();
 		}
 		ImGui::End();
+
+		if (!open && prevOpen) audio->StopAudio(track.source);
+
+		prevOpen = open;
 	}
 
 	void DrawDopplerWindow()
@@ -291,6 +298,7 @@ private: // Methods
 		}
 		ImGui::End();
 
+
 	}
 
 	bool BrowseAudio()
@@ -301,7 +309,7 @@ private: // Methods
 		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose an Audio File", ".wav,.mp3,.flac", ".");
 
 		//display
-		if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey"), ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove)
+		if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey", ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove))
 		{
 			// action if OK
 			if (ImGuiFileDialog::Instance()->IsOk() == true)
@@ -342,7 +350,7 @@ private: // Methods
 		transpose = exp(0.0577623f * transpose);
 		if (transpose > 4.0f) transpose = 4.0f;
 		if (transpose < 0.25f) transpose = 0.25f;
-		if (transpose > 0.98f && transpose < 1.2f) transpose = 1.0f;
+		if (transpose > 0.98f && transpose < 1.02f) transpose = 1.0f;
 		alSourcef(track.source, AL_PITCH, transpose);
 	}
 

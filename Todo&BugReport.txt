@@ -1,10 +1,10 @@
-- Bug: If effect bypassed, and then change it's config, it reconnects.
+// FIXED - Bug: If effect bypassed, and then change it's config, it reconnects.
 
 // NOT WELL EXPLAINED - Bug: Stop audio (if it is playing) before (avans) creating the component in code.
 
-- Bug: Pausing track in game mode does not work
+// FIXED - Bug: Pausing track in game mode does not work
 
-- Bug: Transpose does not work perfect. Does not transpose 1st by 1 st
+// FIXED - Bug: Transpose does not work perfect. Does not transpose 1st by 1 st
 
 // NOT POSSIBLE - Todo: Add gain slider or change slider config to be able to gain up sound.
 

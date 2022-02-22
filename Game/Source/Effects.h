@@ -182,6 +182,7 @@ public:
 		if (ImGui::Checkbox("##BypassR", &nobypass)) ToggleBypass(nobypass);
 
 		ImGui::PushItemWidth(70.0f);
+		ImGui::BeginDisabled(!nobypass);
 
 		//REVERB
 		ImGui::SliderFloat("##ReverbWet", &gain, 0.0f, 1.0f, "%f");
@@ -255,6 +256,7 @@ public:
 		AddHelper("Mod Time", "MODULATION DEPTH PROPERTY:\nModulation Depth controls the amount of pitch change.\nLow values of Diffusion will contribute to reinforcing the perceived effect by reducing the mixing of overlapping reflections in the reverberation decay.", true);
 		ImGui::SameLine(); ImGui::Text(""); ImGui::SameLine();
 
+		ImGui::EndDisabled();
 		ImGui::PopItemWidth();
 	}
 
@@ -297,6 +299,7 @@ public:
 		ImGui::Text("Delay"); ImGui::SameLine();
 		if (ImGui::Checkbox("##BypassDl", &nobypass)) ToggleBypass(nobypass);
 
+		ImGui::BeginDisabled(!nobypass);
 		ImGui::PushItemWidth(185.0f);
 
 		ImGui::SliderFloat("##DelayFeedback", &feedback, 0.0f, 1.0f, "%f");
@@ -323,6 +326,7 @@ public:
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_ECHO_DAMPING, damping);
 		AddHelper("Damping", "DAMPING PROPERTY:\nThis property controls the amount of high frequency damping applied to each echo.\nAs the sound is subsequently fed back for further echoes, damping results in an echo which progressively gets softer in tone as well as intensity.", true);
 
+		ImGui::EndDisabled();
 		ImGui::PopItemWidth();
 	}
 
@@ -362,6 +366,7 @@ public:
 		ImGui::Text("Distortion"); ImGui::SameLine();
 		if (ImGui::Checkbox("##BypassD", &nobypass)) ToggleBypass(nobypass);
 
+		ImGui::BeginDisabled(!nobypass);
 		ImGui::PushItemWidth(130.0f);
 
 		//WET
@@ -389,6 +394,7 @@ public:
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_DISTORTION_EQBANDWIDTH, eqBandWidth);
 		AddHelper("EQ Band W", "EQ BAND WIDTH PROPERTY:\nThis property controls the bandwidth of the post-distortion attenuation.", true);
 
+		ImGui::EndDisabled();
 		ImGui::PopItemWidth();
 	}
 
@@ -428,6 +434,7 @@ public:
 		ImGui::Text("Flanger"); ImGui::SameLine();
 		if (ImGui::Checkbox("##BypassF", &nobypass)) ToggleBypass(nobypass);
 
+		ImGui::BeginDisabled(!nobypass);
 		ImGui::PushItemWidth(130.0f);
 
 		ImGui::SliderFloat("##FlangerDepth", &depth, 0.01f, 1.0f, "%f");
@@ -463,7 +470,7 @@ public:
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_FLANGER_PHASE, phase);
 		AddHelper("Phase", "PHASE PROPERTY:\nThis changes the phase difference between the left and right LFO’s.\nAt zero degrees the two LFOs are synchronized.", true);
 
-
+		ImGui::EndDisabled();
 		ImGui::PopItemWidth();
 	}
 
@@ -506,6 +513,7 @@ public:
 		ImGui::Text("Chorus"); ImGui::SameLine();
 		if (ImGui::Checkbox("##BypassC", &nobypass)) ToggleBypass(nobypass);
 
+		ImGui::BeginDisabled(!nobypass);
 		ImGui::PushItemWidth(130.0f);
 
 		ImGui::SliderFloat("##ChorusDepth", &depth, 0.01f, 1.0f, "%f");
@@ -541,6 +549,7 @@ public:
 		if (ImGui::IsItemDeactivatedAfterEdit()) SetEffectValue(AL_CHORUS_PHASE, phase);
 		AddHelper("Phase", "PHASE PROPERTY:\nThis property controls the phase difference between the left and right LFO’s.\nAt zero degrees the two LFOs are synchronized.\nUse this parameter to create the illusion of an expanded stereo field of the output signal. ", true);
 
+		ImGui::EndDisabled();
 		ImGui::PopItemWidth();
 	}
 
