@@ -1,6 +1,6 @@
 // FIXED - Bug: If effect bypassed, and then change it's config, it reconnects.
 
-// NOT WELL EXPLAINED - Bug: Stop audio (if it is playing) before (avans) creating the component in code.
+// NOT NEEDED - Bug: Stop audio (if it is playing) before (avans) creating the component in code.
 
 // FIXED - Bug: Pausing track in game mode does not work
 
@@ -18,6 +18,8 @@
 
 // DONE - Todo: Play on start, but just one track. If 2 tracks has play on start checked == bad.
 
-- Todo: Save&Load of audio module.
+// DONE - Todo: Save&Load of audio module.
 
 // DONE - Todo: File Dialog Cancel
+
+- Todo: Not allow loading a stereo sound in SASC

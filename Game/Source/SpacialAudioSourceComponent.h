@@ -91,6 +91,8 @@ public:
 
 	void Draw(Shape3D* afected, bool* onWindow = nullptr)
 	{
+		if (monoWarning) ImGui::Text("Audio must be mono!");
+
 		if (ImGui::Button("Browse Audio")) browsing = true;
 
 		if (track.channels != 0)
@@ -454,6 +456,15 @@ private: // Meta Methods
 			{
 				std::string path = ImGuiFileDialog::Instance()->GetCurrentPath() + "\\" + ImGuiFileDialog::Instance()->GetCurrentFileName();
 				track = audio->LoadAudio(path.c_str());
+				if (track.channels != 1)
+				{
+					ret = false;
+					monoWarning = true;
+					ImGuiFileDialog::Instance()->Close();
+					track = {};
+					return false;
+				}
+				monoWarning = false;
 				track.source = audio->CreateAudioSource(track.buffer, true);
 				SetVolume(volume);
 				SetTranspose(transpose);
@@ -624,6 +635,8 @@ private: // Variables
 
 	ALfloat factor, velocity;
 	float* camSpeed = nullptr;
+
+	bool monoWarning = false;
 };
 
 #endif // !__SPACIAL_AUDIO_SOURCE_COMPONENT_H__
