@@ -7,6 +7,24 @@
 
 struct TrackInstance
 {
+	TrackInstance()
+	{
+
+	}
+
+	TrackInstance(float newVolume, float newPan, float newTranspose, bool newMute, bool newPlayOnStart, bool newLoop, bool newBypass, const char* path = nullptr, AudioSystem* audio = nullptr)
+	{
+		volume = newVolume;
+		pan = newPan;
+		transpose = newTranspose;
+		loop = newLoop;
+		mute = newMute;
+		playOnStart = newPlayOnStart;
+		bypass = newBypass;
+
+		if (path != nullptr) LoadTrackFromLoadingProject(path, audio);
+	}
+
 	bool Start(AudioSystem* audio)
 	{
 		knobReminder1 = false;
@@ -32,6 +50,66 @@ struct TrackInstance
 		return (track.channels != 0);
 	}
 
+	bool GetPlayOnStart() const
+	{
+		return playOnStart;
+	}
+
+	bool GetMute() const
+	{
+		return mute;
+	}
+
+	bool GetLoop() const
+	{
+		return loop;
+	}
+
+	bool GetBypass() const
+	{
+		return bypass;
+	}
+
+	float GetVolume() const
+	{
+		return volume;
+	}
+
+	float GetPan() const
+	{
+		return pan;
+	}
+
+	float GetTranspose() const
+	{
+		return transpose;
+	}
+
+	const char* GetPath() const
+	{
+		return track.path.c_str();
+	}
+
+	vector<Effect*>* GetEffectRack()
+	{
+		return &effects;
+	}
+
+	bool IsTrackLoaded()
+	{
+		return (track.channels != 0);
+	}
+
+private:
+
+	void LoadTrackFromLoadingProject(const char* path, AudioSystem* audio)
+	{
+		track = audio->LoadAudio(path);
+		track.source = audio->CreateAudioSource(track.buffer, false);
+	}
+
+public:
+
 	Track track;
 	std::vector<Effect*> effects;
 	bool play = false;
@@ -48,7 +126,7 @@ struct TrackInstance
 class SwitchAudioSourceComponent : public Component
 {
 public:
-	SwitchAudioSourceComponent(Timer* timer, AudioSystem* audioSystem, ModuleInput* input) : Component("Switch Audio Source", ComponentID::AUDIO_SOURCE_COMPONENT)
+	SwitchAudioSourceComponent(Timer* timer, AudioSystem* audioSystem, ModuleInput* input) : Component("Switch Audio Source", ComponentID::SWITCH_AUDIO_SOURCE_COMPONENT)
 	{
 		gameTimer = timer;
 		audio = audioSystem;
@@ -65,6 +143,39 @@ public:
 			SetLoop(tracks[i].loop, &tracks[i]);
 		}
 	}
+	SwitchAudioSourceComponent(bool newOpen, bool newPrevOpen, int newTotalTracks, int newCurrentTrackEditor, int newNextSwitchTrack, float newFadeTime, std::vector<TrackInstance> newTracks, Timer* timer, AudioSystem* audioSystem, ModuleInput* input) : Component("Switch Audio Source", ComponentID::SWITCH_AUDIO_SOURCE_COMPONENT)
+	{
+		gameTimer = timer;
+		audio = audioSystem;
+		this->input = input;
+
+		totalTracks = newTotalTracks;
+		currentTrackEditor = newCurrentTrackEditor;
+		nextSwitchTrack = newNextSwitchTrack;
+		fadeTime = newFadeTime;
+
+		open = newOpen;
+		prevOpen = newPrevOpen;
+
+		StopAllTracks();
+		for (unsigned int i = 0; i < tracks.size(); i++)
+		{
+			tracks[i].Delete(audio);
+		}
+		tracks.clear();
+
+		tracks = newTracks;
+
+		for (unsigned int i = 0; i < tracks.size(); i++)
+		{
+			TrackInstance* t = &tracks[i];
+			SetVolume(t->volume, t);
+			SetPanning(t->pan, t);
+			SetTranspose(t->transpose, t);
+			SetLoop(t->loop, t);
+		}
+	}
+
 	~SwitchAudioSourceComponent()
 	{
 		StopAllTracks();
@@ -72,6 +183,7 @@ public:
 		{
 			tracks[i].Delete(audio);
 		}
+		tracks.clear();
 		this->title.clear();
 	}
 
@@ -98,7 +210,6 @@ public:
 		//	audio->PauseAudio(playingTrack->track.source);
 		//	return;
 		//}
-
 		//audio->ResumeAudio(playingTrack->track.source);
 		
 		for (unsigned int i = 0; i < tracks.size(); i++)
@@ -114,12 +225,12 @@ public:
 			audio->ResumeAudio(index->track.source);
 		}
 
-		if (input->GetKey(SDL_SCANCODE_F) == KEY_REPEAT)
-		{
-			if (input->GetKey(SDL_SCANCODE_1) == KEY_DOWN) SwitchTrack(0);
-			if (input->GetKey(SDL_SCANCODE_2) == KEY_DOWN) SwitchTrack(1);
-			if (input->GetKey(SDL_SCANCODE_3) == KEY_DOWN) SwitchTrack(2);
-		}
+		//if (input->GetKey(SDL_SCANCODE_F) == KEY_REPEAT)
+		//{
+		//	if (input->GetKey(SDL_SCANCODE_1) == KEY_DOWN) SwitchTrack(0);
+		//	if (input->GetKey(SDL_SCANCODE_2) == KEY_DOWN) SwitchTrack(1);
+		//	if (input->GetKey(SDL_SCANCODE_3) == KEY_DOWN) SwitchTrack(2);
+		//}
 
 		UpdatePlayState();
 	}
@@ -288,6 +399,33 @@ public:
 		for (unsigned int i = 0; i < tracks.size(); i++) audio->StopAudio(tracks[i].track.source);
 	}
 
+public:
+
+	int GetTotalTracks() const
+	{
+		return totalTracks;
+	}
+
+	int GetCurrentTrackEditor() const
+	{
+		return currentTrackEditor;
+	}
+
+	int GetNextSwitchTrack() const
+	{
+		return nextSwitchTrack;
+	}
+
+	float GetFadeTime() const
+	{
+		return fadeTime;
+	}
+
+	std::vector<TrackInstance>* GetTrackInstances()
+	{
+		return &tracks;
+	}
+
 private: // Useful methods
 
 	void Play(int trackIndex)
@@ -345,6 +483,7 @@ private: // Useful methods
 
 	void SwitchTrack(int newTrackIndex)
 	{
+		nextSwitchTrack = newTrackIndex;
 		oldTrack = GetPlayingTrack();
 		if (newTrackIndex >= tracks.size()) return;
 		newTrack = &tracks[newTrackIndex];
@@ -364,6 +503,8 @@ private: // Useful methods
 
 			return tracks[i].play;
 		}
+
+		return false;
 	}
 
 	TrackInstance* GetPlayingTrack()
@@ -812,8 +953,8 @@ private: // Variables
 	bool browsing = false;
 	bool switching = false;
 
-	int totalTracks = 2;
-	int currentTrackEditor = 0;
+	int totalTracks = 2; //
+	int currentTrackEditor = 0; //
 	int currentBrowsingTrack = 0;
 
 	int nextSwitchTrack = 1;

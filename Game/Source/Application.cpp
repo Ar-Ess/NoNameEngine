@@ -863,6 +863,32 @@ void Application::JsonSaveComponents(JSON_Array* arr, vector<Component*>* comps)
 			case SWITCH_AUDIO_SOURCE_COMPONENT:
 			{
 				SwitchAudioSourceComponent* a = (SwitchAudioSourceComponent*)comp;
+				json_array_append_number(compArray, a->GetTotalTracks()); // Total Tracks (1) - 3
+				json_array_append_number(compArray, a->GetCurrentTrackEditor()); // Current Track Editor (1) - 4
+				json_array_append_number(compArray, a->GetNextSwitchTrack()); // Next Switch Track (1) - 5
+				json_array_append_number(compArray, a->GetFadeTime()); // Fade Time (1) - 6
+
+				for (unsigned int i = 0; i < a->GetTrackInstances()->size(); i++)
+				{
+					TrackInstance* t = &a->GetTrackInstances()->at(i);
+					JSON_Value* trackValue = json_value_init_array();
+					JSON_Array* trackArray = json_value_get_array(trackValue);
+
+					json_array_append_boolean(trackArray, t->GetMute()); // Mute (1) - 0
+					json_array_append_boolean(trackArray, t->GetPlayOnStart()); // Play On Start (1) - 1
+					json_array_append_boolean(trackArray, t->GetLoop()); // Loop (1) - 2
+					json_array_append_boolean(trackArray, t->GetBypass()); // Bypass (1) - 3
+
+					json_array_append_number(trackArray, t->GetVolume()); // Volume (1) - 4
+					json_array_append_number(trackArray, t->GetPan()); // Pan (1) - 5
+					json_array_append_number(trackArray, t->GetTranspose()); // Transpose (1) - 6
+
+					const char* path = t->IsTrackLoaded() ? t->GetPath() : "no track";
+					json_array_append_string(trackArray, path); // Path (1) - 7
+
+					json_array_append_value(compArray, trackValue);
+				}
+
 				break;
 			}
 		}
@@ -884,7 +910,7 @@ void Application::JsonLoadComponents(JSON_Array* arr, vector<Component*>* comps)
 
 		switch (id)
 		{
-			case 0:
+			case 0: // AUDIO SOURCE COMPONENT
 			{
 				bool mute = json_array_get_boolean(compArray, 3);
 				bool playOnStart = json_array_get_boolean(compArray, 4);
@@ -902,7 +928,41 @@ void Application::JsonLoadComponents(JSON_Array* arr, vector<Component*>* comps)
 				comps->push_back(ASC);
 				break;
 			}
-			case 2:
+			case 1: // SWITCH AUDIO SOURCE COMPONENT
+			{
+				int totalTracks = json_array_get_number(compArray, 3);
+				int currentTrackEditor = json_array_get_number(compArray, 4);
+				int nextSwitchTrack = json_array_get_number(compArray, 5);
+				float fadeTime = json_array_get_number(compArray, 6);
+
+				vector<TrackInstance> tracks;
+
+				for (unsigned int i = 0; i < totalTracks; i++)
+				{
+					JSON_Value* trackValue = json_array_get_value(compArray, 7 + i);
+					JSON_Array* trackArray = json_value_get_array(trackValue);
+
+					bool mute = json_array_get_boolean(trackArray, 0);
+					bool playOnStart = json_array_get_boolean(trackArray, 1);
+					bool loop = json_array_get_boolean(trackArray, 2);
+					bool bypass = json_array_get_boolean(trackArray, 3);
+
+					float volume = json_array_get_number(trackArray, 4);
+					float pan = json_array_get_number(trackArray, 5);
+					float transpose = json_array_get_number(trackArray, 6);
+
+					const char* path = json_array_get_string(trackArray, 7);
+					if (SameString(path, "no track")) path = nullptr;
+
+					tracks.push_back(TrackInstance(volume, pan, transpose, mute, playOnStart, loop,bypass, path, this->scene->GetAudioSystem()));
+				}
+
+				SwitchAudioSourceComponent* SwASC = new SwitchAudioSourceComponent(open, prevOpen, totalTracks, currentTrackEditor, nextSwitchTrack, fadeTime, tracks, &this->scene->gameTimer, this->scene->GetAudioSystem(), this->input);
+				comps->push_back(SwASC);
+
+				break;
+			}
+			case 2: // SPACIAL AUDIO SOURCE COMPONENT
 			{
 				bool mute = json_array_get_boolean(compArray, 3);
 				bool playOnStart = json_array_get_boolean(compArray, 4);
@@ -922,6 +982,8 @@ void Application::JsonLoadComponents(JSON_Array* arr, vector<Component*>* comps)
 				if (!SameString(path, "no track")) SASC->LoadTrackFromLoadingProject(path);
 
 				comps->push_back(SASC);
+
+				break;
 			}
 		}
 	}
